@@ -1,18 +1,4 @@
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./sel", "./uploader", "vue"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const test = `
+const test = `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
@@ -47,45 +33,48 @@ Generic event
  0101h|   02h| 5ed00c55h |  21h|   00h|   04h|   0ch|     e6h|   6fh|  a5h|  02h|  60h|
  0100h|   02h| 5ed00c55h |  21h|   00h|   04h|   0ch|     e6h|   6fh|  a5h|  02h|  60h|
  0cbeh|   02h| 5ecd735dh |  20h|   00h|   04h|   01h|     2ch|   01h|  59h|  2dh|  2dh|
-`;
-    const sel_1 = require("./sel");
-    const uploader_1 = require("./uploader");
-    const vue_1 = __importDefault(require("vue"));
-    const app = new vue_1.default({
-        el: '#app',
-        data: {
-            timezone: sel_1.SelRecord.timezone,
-            raw: '',
-            srs: [],
-            files: []
+`
+
+import { SelRecord } from './sel'
+import { Uploader } from './uploader'
+import Vue from 'vue'
+
+const app = new Vue({
+    el: '#app',
+    data: {
+        timezone: SelRecord.timezone,
+        raw: '',
+        srs: [],
+        files: []
+    },
+    watch: {
+        timezone: function () {
+            this.srs.forEach((i: SelRecord) => i.change_timezone(this.timezone))
         },
-        watch: {
-            timezone: function () {
-                this.srs.forEach((i) => i.change_timezone(this.timezone));
-            },
-            raw: function () {
-                let x = null;
-                try {
-                    x = [];
-                    this.raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new sel_1.SelRecord(i)) : null);
-                }
-                catch (error) {
-                }
-                if (x !== null) {
-                    this.srs = x;
-                }
+        raw: function () {
+            let x: SelRecord[] | null = null
+            try {
+                x = []
+                this.raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null)
+            } catch (error) {
+
+            }
+            if (x !== null) {
+                this.srs = x
             }
         }
-    });
-    app.raw = test;
-    new uploader_1.Uploader('raw_file', () => {
-        // console.log('clear list')
-        while (app.files.length > 0)
-            app.files.pop();
-        app.raw = '';
-    }, (_, name, data) => {
-        // console.log('on_file: ' + index + ', ' + name)
-        app.files.push(name);
-        app.raw += data;
-    });
-});
+    }
+})
+
+app.raw = test
+
+new Uploader('raw_file', () => {
+    // console.log('clear list')
+    while (app.files.length > 0) app.files.pop()
+    app.raw = ''
+}, (_, name, data) => {
+    // console.log('on_file: ' + index + ', ' + name)
+    app.files.push(name)
+    app.raw += data
+}
+)

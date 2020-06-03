@@ -1,4 +1,4 @@
-class IPMI_Spec {
+export class IPMI_Spec {
     static event_data23: { [key: string]: { [key: string]: string[] } } = {
         'threshold': {
             b76: [

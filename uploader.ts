@@ -5,7 +5,7 @@ interface IOn_data {
     (index: number, name: string, data: string): void
 }
 
-class Uploader {
+export class Uploader {
     constructor(ele_id: string,
         on_before: IOn_before,
         on_data: IOn_data) {

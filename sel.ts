@@ -2,7 +2,8 @@
 //   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
 //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
-class SelRecord {
+import { IPMI_Spec } from './ipmi_spec'
+export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
 
     id: number
@@ -51,7 +52,7 @@ class SelRecord {
     }
     event_type_of(n: number) {
         if (n == 1) { return 'threshold' }
-        if ((n >= 0x2) && (n <= 0xc)) { return 'generic' }
+        if ((n >= 0x2) && (n <= 0xc)) { return Object.keys(IPMI_Spec.generic_event_type_codes[n])[0] }
         if (n == 0x6f) { return 'sensor-specific' }
         if ((n >= 0x70) && (n <= 0x7f)) { return 'OEM' }
         return 'undefined'

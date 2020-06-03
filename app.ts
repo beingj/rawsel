@@ -44,8 +44,8 @@ const app = new Vue({
     data: {
         timezone: SelRecord.timezone,
         raw: '',
-        srs: [],
-        files: []
+        srs: [] as SelRecord[],
+        files: [] as string[]
     },
     watch: {
         timezone: function () {
@@ -54,7 +54,7 @@ const app = new Vue({
         raw: function () {
             let x: SelRecord[] | null = null
             try {
-                x = []
+                let x: SelRecord[] = []
                 this.raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null)
             } catch (error) {
 

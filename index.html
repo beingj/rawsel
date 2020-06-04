@@ -1,86 +1,100 @@
-<style>
-    body {
-        width: 1100px;
-        margin: auto;
-        margin-bottom: 3em;
-    }
+<!DOCTYPE html>
 
-    h1 {
-        text-align: center;
-        margin-top: 20px;
-        margin-bottom: 10px;
-    }
+<head>
+    <title>raw SEL viewer</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="raw SEL viewer">
+    <meta name="keywords" content="IPMI,BMC,SEL,raw">
+    <meta name="author" content="beingj@163.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    table {
-        border-collapse: collapse;
-    }
+    <style>
+        body {
+            width: 1100px;
+            margin: auto;
+            margin-bottom: 3em;
+        }
 
-    table,
-    th,
-    td {
-        border: 1px solid blue;
-    }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
 
-    th,
-    td {
-        padding: 2px;
-    }
+        table {
+            border-collapse: collapse;
+        }
 
-    .small-text {
-        width: 3em;
-    }
+        table,
+        th,
+        td {
+            border: 1px solid blue;
+        }
 
-    .error {
-        color: orangered;
-    }
-</style>
+        th,
+        td {
+            padding: 2px;
+        }
 
-<h1>raw SEL viewer</h1>
-A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
-<input type="file" id="raw_file" multiple />
-<div id='app'>
-    <p v-if="emsg" class="error">
-        {{ emsg }}
-    </p>
-    <p>
-        <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
-        <b>Files: </b>{{ files.length }}: {{ files.join(', ') }}
-        <b>Records:</b> {{ srs.length }}
-    </p>
-    <table>
-        <tr>
-            <th>id</th>
-            <th>record_type</th>
-            <!-- <th>timezone</th> -->
-            <th>timestamp</th>
-            <th>generator</th>
-            <!-- <th>event_receiver</th> -->
-            <th>sensor_type</th>
-            <th>sensor_num</th>
-            <th>event_dir</th>
-            <th>event_type</th>
-            <th>event</th>
-            <th>event_data23</th>
-            <th>event_data2</th>
-            <th>event_data3</th>
-        </tr>
-        <tr v-for='sr in srs'>
-            <td>{{sr.id}}</td>
-            <td>{{sr.record_type}}</td>
-            <!-- <td>{{sr.timezone}}</td> -->
-            <td>{{sr.timestamp}}</td>
-            <td>{{sr.generator}}</td>
-            <!-- <td>{{sr.event_receiver}}</td> -->
-            <td>{{sr.sensor_type}}</td>
-            <td>{{sr.sensor_num}}</td>
-            <td>{{sr.event_direction}}</td>
-            <td>{{sr.event_type}}</td>
-            <td>{{sr.event}}</td>
-            <td>{{sr.event_data23}}</td>
-            <td>{{sr.event_data2}}</td>
-            <td>{{sr.event_data3}}</td>
-        </tr>
-    </table>
-</div>
+        .small-text {
+            width: 3em;
+        }
 
-<script data-main="app.js" src="require.js"></script>
+        .error {
+            color: orangered;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <h1>raw SEL viewer</h1>
+    A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
+    <input type="file" id="raw_file" multiple />
+    <div id='app'>
+        <p v-if="emsg" class="error">
+            {{ emsg }}
+        </p>
+        <p>
+            <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
+            <b>Files: </b>{{ files.length }}: {{ files.join(', ') }}
+            <b>Records:</b> {{ srs.length }}
+        </p>
+        <table>
+            <tr>
+                <th>id</th>
+                <th>record_type</th>
+                <!-- <th>timezone</th> -->
+                <th>timestamp</th>
+                <th>generator</th>
+                <!-- <th>event_receiver</th> -->
+                <th>sensor_type</th>
+                <th>sensor_num</th>
+                <th>event_dir</th>
+                <th>event_type</th>
+                <th>event</th>
+                <th>event_data23</th>
+                <th>event_data2</th>
+                <th>event_data3</th>
+            </tr>
+            <tr v-for='sr in srs'>
+                <td>{{sr.id}}</td>
+                <td>{{sr.record_type}}</td>
+                <!-- <td>{{sr.timezone}}</td> -->
+                <td>{{sr.timestamp}}</td>
+                <td>{{sr.generator}}</td>
+                <!-- <td>{{sr.event_receiver}}</td> -->
+                <td>{{sr.sensor_type}}</td>
+                <td>{{sr.sensor_num}}</td>
+                <td>{{sr.event_direction}}</td>
+                <td>{{sr.event_type}}</td>
+                <td>{{sr.event}}</td>
+                <td>{{sr.event_data23}}</td>
+                <td>{{sr.event_data2}}</td>
+                <td>{{sr.event_data3}}</td>
+            </tr>
+        </table>
+    </div>
+    <script data-main="app.js" src="require.js"></script>
+</body>

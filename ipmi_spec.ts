@@ -45,7 +45,7 @@ export class IPMI_Spec {
     }
     static generic_event_type_codes: { [key: string]: string[] }[] = [
         {
-            'undefied': []
+            'unspecified': []
         },
         { //1
             'Threshold': [
@@ -456,7 +456,7 @@ export class IPMI_Spec {
                 'S5 entered by override',
                 'Legacy ON state',
                 'Legacy OFF state',
-                'undefined',
+                'unspecified',
                 'Unknown',
             ]
         },

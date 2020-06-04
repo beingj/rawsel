@@ -44,9 +44,9 @@ Generic event
  ffffh|   ffh| 5ecd735fh |  20h|   00h|   04h|   01h|     2ch|   81h|  59h|  2ch|  2dh|
  `;
             const srs = sel_1.SelRecord.from_raw(raw);
-            chai_1.expect(srs[0].record_type).to.equal('undefined');
+            chai_1.expect(srs[0].record_type).to.equal('unspecified');
             chai_1.expect(srs[1].record_type).to.equal('system event');
-            chai_1.expect(srs[2].record_type).to.equal('undefined');
+            chai_1.expect(srs[2].record_type).to.equal('unspecified');
             chai_1.expect(srs[3].record_type).to.equal('OEM timestamped');
             chai_1.expect(srs[4].record_type).to.equal('OEM timestamped');
             chai_1.expect(srs[5].record_type).to.equal('OEM non-timestamped');
@@ -284,10 +284,34 @@ Generic event
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     33h|   01h|  01h|  ffh|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   00h|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   0dh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   03h|  02h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   00h|     ffh|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     ffh|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2dh|     ffh|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   ffh|     ffh|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  09h|  ffh|  ffh|
  `;
             const srs = sel_1.SelRecord.from_raw(raw);
             chai_1.expect(srs[0].event).to.equal('Lower Non-critical - going high');
             chai_1.expect(srs[1].event).to.equal('Thermal Trip');
+            // event type 0
+            chai_1.expect(srs[2].event).to.equal('unspecified');
+            // event type dh
+            chai_1.expect(srs[3].event).to.equal('reserved');
+            // event type 3h with offset out of range
+            chai_1.expect(srs[4].event).to.equal('unspecified');
+            // sensor-specific with sensor type 0
+            chai_1.expect(srs[5].event).to.equal('reserved');
+            // sensor-specific with sensor type 4 (<= 4)
+            chai_1.expect(srs[6].event).to.equal('Fan');
+            // sensor-specific with sensor type 2dh (> 2ch)
+            chai_1.expect(srs[7].event).to.equal('reserved');
+            // sensor-specific with sensor type ffh
+            chai_1.expect(srs[8].event).to.equal('OEM');
+            // sensor-specific with sensor type 05, offset out of range
+            chai_1.expect(srs[9].event).to.equal('unspecified');
         });
         it('event data 2&3', () => {
             const raw = `

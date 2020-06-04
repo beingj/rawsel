@@ -52,7 +52,7 @@
             if ((n >= 0xe0) && (n <= 0xff)) {
                 return 'OEM non-timestamped';
             }
-            return 'undefined';
+            return 'unspecified';
         }
         sensor_type_of(n) {
             if (n < ipmi_spec_1.IPMI_Spec.sensor_type_codes.length) {
@@ -89,10 +89,10 @@
             if (et == 1) {
                 k = 'threshold';
             }
-            else if (et == 0x6f) {
+            else if ((et >= 0x2) && (et <= 0xc)) {
                 k = 'discrete';
             }
-            else if ((et >= 0x2) && (et <= 0xc)) {
+            else if (et == 0x6f) {
                 k = 'discrete';
             }
             else {
@@ -106,38 +106,52 @@
         event_of(n, offset, sensor_type) {
             n = n & 0x7f;
             offset = offset & 0xf;
+            if (n == 0) {
+                return "unspecified";
+            }
             if ((n >= 0x1) && (n <= 0xc)) {
                 return this.generic_event_of(n, offset);
             }
             if (n == 0x6f) {
-                if (sensor_type >= ipmi_spec_1.IPMI_Spec.sensor_type_codes.length) {
-                    return 'undefined';
-                }
                 return this.sensor_event_of(sensor_type, offset);
             }
-            return 'undefined';
+            if ((n >= 0x70) && (n <= 0x7f)) {
+                return 'OEM';
+            }
+            else {
+                // [0xd, 0x6e]
+                return 'reserved';
+            }
         }
         generic_event_of(n, offset) {
-            if ((n == 0) || (n >= ipmi_spec_1.IPMI_Spec.generic_event_type_codes.length)) {
-                return 'undefined';
-            }
             const x = ipmi_spec_1.IPMI_Spec.generic_event_type_codes[n];
             const name = Object.keys(x)[0];
             const values = Object.values(x)[0];
-            if (offset > values.length) {
-                return name + ': undefined';
+            if (offset >= values.length) {
+                return 'unspecified';
             }
             return values[offset];
         }
         sensor_event_of(n, offset) {
-            if ((n <= 4) || (n >= ipmi_spec_1.IPMI_Spec.sensor_type_codes.length)) {
-                return 'undefined';
+            if (n == 0) {
+                return 'reserved';
             }
+            if ((n >= ipmi_spec_1.IPMI_Spec.sensor_type_codes.length) && (n <= 0xc0)) {
+                return 'reserved';
+            }
+            if ((n >= 0xc0) && (n <= 0xff)) {
+                return 'OEM';
+            }
+            // [01h, IPMI_Spec.sensor_type_codes.length)
             const x = ipmi_spec_1.IPMI_Spec.sensor_type_codes[n];
             const name = Object.keys(x)[0];
             const values = Object.values(x)[0];
-            if (offset > values.length) {
-                return name + ': undefined';
+            if ((n >= 1) && (n <= 4)) {
+                return name;
+            }
+            // [05h, IPMI_Spec.sensor_type_codes.length)
+            if (offset >= values.length) {
+                return 'unspecified';
             }
             return values[offset];
         }

@@ -1,5 +1,7 @@
 
 Todo:
   ✔ change generic codes to DMI-based “Usage State” STATES... @done(20-06-04 11:36)
-  ☐ add more test
+  ✔ add more test @done(20-06-04 15:18)
+  ✔ check all undefined => reserved @done(20-06-04 16:44)
+  ☐ event 2 & 3 in IPMI spec
   ☐ speed js load, or load js before body

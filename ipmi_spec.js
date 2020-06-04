@@ -57,7 +57,7 @@
     };
     IPMI_Spec.generic_event_type_codes = [
         {
-            'undefied': []
+            'unspecified': []
         },
         {
             'Threshold': [
@@ -450,7 +450,7 @@
                 'S5 entered by override',
                 'Legacy ON state',
                 'Legacy OFF state',
-                'undefined',
+                'unspecified',
                 'Unknown',
             ]
         },

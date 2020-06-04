@@ -18,6 +18,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const app = new vue_1.default({
         el: '#app',
         data: {
+            loading: false,
             timezone: sel_1.SelRecord.timezone,
             raw: '',
             srs: [],
@@ -55,17 +56,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 `;
     new uploader_1.Uploader('raw_file', (files) => {
         // console.log('clear list')
-        while (app.done_files.length > 0)
-            app.done_files.pop();
         while (app.files.length > 0)
             app.files.pop();
         for (let i = 0; i < files.length; i++) {
             app.files.push(files[i].name);
         }
         app.raw = '';
+        while (app.done_files.length > 0)
+            app.done_files.pop();
     }, (_, name, data) => {
         // console.log('on_file: ' + index + ', ' + name)
-        app.raw += data;
         app.done_files.push(name);
+        app.raw += data;
     });
 });

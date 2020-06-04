@@ -5,6 +5,7 @@ import Vue from 'vue'
 const app = new Vue({
     el: '#app',
     data: {
+        loading: false,
         timezone: SelRecord.timezone,
         raw: '',
         srs: [] as SelRecord[],
@@ -42,15 +43,15 @@ app.raw = `
 
 new Uploader('raw_file', (files) => {
     // console.log('clear list')
-    while (app.done_files.length > 0) app.done_files.pop()
     while (app.files.length > 0) app.files.pop()
     for (let i = 0; i < files.length; i++) {
         app.files.push(files[i].name)
     }
     app.raw = ''
+    while (app.done_files.length > 0) app.done_files.pop()
 }, (_, name, data) => {
     // console.log('on_file: ' + index + ', ' + name)
-    app.raw += data
     app.done_files.push(name)
+    app.raw += data
 }
 )

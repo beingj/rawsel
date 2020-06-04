@@ -46,6 +46,7 @@
 
         .blink {
             animation: blinker 1s linear infinite;
+            color: royalblue;
         }
 
         @keyframes blinker {
@@ -57,12 +58,11 @@
 </head>
 
 <body>
-
-
     <h1>raw SEL viewer</h1>
     A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
     <input type="file" id="raw_file" multiple />
     <div id='app'>
+        <template v-if='loading'>loading...</template>
         <template>
             <p v-if="emsg" class="error">
                 {{ emsg }}
@@ -70,7 +70,9 @@
             <p>
                 <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
                 <b>Files: </b>
-                <span v-bind:class="[((files.length>0)&&(done_files.length<files.length)) ? 'blink' : '']">{{ done_files.length }} </span>
+                <span
+                    v-bind:class="[((files.length>0)&&(done_files.length<files.length)) ? 'blink' : '']">{{ done_files.length }}
+                </span>
                 / {{ files.length }}: {{ files.join(', ') }}
                 <b>Records:</b> {{ srs.length }}
             </p>

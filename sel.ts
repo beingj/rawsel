@@ -28,7 +28,6 @@ export class SelRecord {
 
     timezone = SelRecord.timezone
     constructor(raw: string) {
-
         //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
         const a = raw.split('|').map(i => parseInt(i.trim(), 16))
         this.id = a[0]
@@ -37,12 +36,12 @@ export class SelRecord {
         this.timestamp = this.timestamp_with_timezone(this.time_seconds, this.timezone)
         this.generator = this.int_to_hex(a[3] + a[4] * 0x100)
         this.event_receiver = a[5]
-        this.sensor_type = (a[6] < IPMI_Spec.sensor_type_codes.length) ? Object.keys(IPMI_Spec.sensor_type_codes[a[6]])[0] : 'undefined'
+        this.sensor_type = this.sensor_type_of(a[6])
         this.sensor_num = this.int_to_hex(a[7])
         this.event_direction = ((a[8] >> 7) & 1) == 0 ? 'Assert' : 'Deassert'
-        this.event_type = this.event_type_of(a[8] & 0x7f)
-        this.event_data23 = this.event_data23_of(a[9])
-        this.event = this.event_of(a[8] & 0x7f, a[9] & 0xf, a[6])
+        this.event_type = this.event_type_of(a[8])
+        this.event_data23 = this.event_data23_of(a[8], a[9])
+        this.event = this.event_of(a[8], a[9], a[6])
         this.event_data2 = a[10]
         this.event_data3 = a[11]
     }
@@ -55,23 +54,43 @@ export class SelRecord {
         if ((n >= 0xe0) && (n <= 0xff)) { return 'OEM non-timestamped' }
         return 'undefined'
     }
+    sensor_type_of(n: number) {
+        if (n < IPMI_Spec.sensor_type_codes.length) {
+            return Object.keys(IPMI_Spec.sensor_type_codes[n])[0]
+        }
+        if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
+        return 'reserved'
+    }
     event_type_of(n: number) {
+        n = n & 0x7f
+        if (n == 0) { return 'unspecified' }
         if (n == 1) { return 'threshold' }
         if ((n >= 0x2) && (n <= 0xc)) { return Object.keys(IPMI_Spec.generic_event_type_codes[n])[0] }
         if (n == 0x6f) { return 'sensor-specific' }
         if ((n >= 0x70) && (n <= 0x7f)) { return 'OEM' }
-        return 'undefined'
+        // 0dh-6eh
+        return 'reserved'
     }
-    event_data23_of(n: number) {
+    event_data23_of(et: number, n: number) {
+        et = et & 0x7f
+        let k: string
+        if (et == 1) {
+            k = 'threshold'
+        } else if (et == 0x6f) {
+            k = 'discrete'
+        } else if ((et >= 0x2) && (et <= 0xc)) {
+            k = 'discrete'
+        } else {
+            k = 'OEM'
+        }
         const b76 = (n >> 6) & 0x3
         const b54 = (n >> 4) & 0x3
-        let k = 'threshold'
-        if (this.event_type != 'threshold') {
-            k = 'discrete'
-        }
+        // console.log('n ' + (n >> 4) + ', k ' + k + ', b76 ' + b76 + ', b54 ' + b54)
         return IPMI_Spec.event_data23[k]['b76'][b76] + ', ' + IPMI_Spec.event_data23[k]['b54'][b54]
     }
     event_of(n: number, offset: number, sensor_type: number) {
+        n = n & 0x7f
+        offset = offset & 0xf
         if ((n >= 0x1) && (n <= 0xc)) {
             return this.generic_event_of(n, offset)
         }

@@ -27,6 +27,20 @@ export class IPMI_Spec {
                 'OEM code in byte 3',
                 'sensor-specific event extension code in byte 3',
             ]
+        },
+        'OEM': {
+            b76: [
+                'unspecified byte 2',
+                'previous state and/or severity in byte 2',
+                'OEM code in byte 2',
+                'reserved',
+            ],
+            b54: [
+                'unspecified byte 3',
+                'reserved',
+                'OEM code in byte 3',
+                'reserved',
+            ]
         }
     }
     static generic_event_type_codes: { [key: string]: string[] }[] = [

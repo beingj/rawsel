@@ -43,6 +43,16 @@
         .error {
             color: orangered;
         }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -53,48 +63,52 @@
     A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
     <input type="file" id="raw_file" multiple />
     <div id='app'>
-        <p v-if="emsg" class="error">
-            {{ emsg }}
-        </p>
-        <p>
-            <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
-            <b>Files: </b>{{ files.length }}: {{ files.join(', ') }}
-            <b>Records:</b> {{ srs.length }}
-        </p>
-        <table>
-            <tr>
-                <th>id</th>
-                <th>record_type</th>
-                <!-- <th>timezone</th> -->
-                <th>timestamp</th>
-                <th>generator</th>
-                <!-- <th>event_receiver</th> -->
-                <th>sensor_type</th>
-                <th>sensor_num</th>
-                <th>event_dir</th>
-                <th>event_type</th>
-                <th>event</th>
-                <th>event_data23</th>
-                <th>event_data2</th>
-                <th>event_data3</th>
-            </tr>
-            <tr v-for='sr in srs'>
-                <td>{{sr.id}}</td>
-                <td>{{sr.record_type}}</td>
-                <!-- <td>{{sr.timezone}}</td> -->
-                <td>{{sr.timestamp}}</td>
-                <td>{{sr.generator}}</td>
-                <!-- <td>{{sr.event_receiver}}</td> -->
-                <td>{{sr.sensor_type}}</td>
-                <td>{{sr.sensor_num}}</td>
-                <td>{{sr.event_direction}}</td>
-                <td>{{sr.event_type}}</td>
-                <td>{{sr.event}}</td>
-                <td>{{sr.event_data23}}</td>
-                <td>{{sr.event_data2}}</td>
-                <td>{{sr.event_data3}}</td>
-            </tr>
-        </table>
+        <template>
+            <p v-if="emsg" class="error">
+                {{ emsg }}
+            </p>
+            <p>
+                <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
+                <b>Files: </b>
+                <span v-bind:class="[((files.length>0)&&(done_files.length<files.length)) ? 'blink' : '']">{{ done_files.length }} </span>
+                / {{ files.length }}: {{ files.join(', ') }}
+                <b>Records:</b> {{ srs.length }}
+            </p>
+            <table>
+                <tr>
+                    <th>id</th>
+                    <th>record_type</th>
+                    <!-- <th>timezone</th> -->
+                    <th>timestamp</th>
+                    <th>generator</th>
+                    <!-- <th>event_receiver</th> -->
+                    <th>sensor_type</th>
+                    <th>sensor_num</th>
+                    <th>event_dir</th>
+                    <th>event_type</th>
+                    <th>event</th>
+                    <th>event_data23</th>
+                    <th>event_data2</th>
+                    <th>event_data3</th>
+                </tr>
+                <tr v-for='sr in srs'>
+                    <td>{{sr.id}}</td>
+                    <td>{{sr.record_type}}</td>
+                    <!-- <td>{{sr.timezone}}</td> -->
+                    <td>{{sr.timestamp}}</td>
+                    <td>{{sr.generator}}</td>
+                    <!-- <td>{{sr.event_receiver}}</td> -->
+                    <td>{{sr.sensor_type}}</td>
+                    <td>{{sr.sensor_num}}</td>
+                    <td>{{sr.event_direction}}</td>
+                    <td>{{sr.event_type}}</td>
+                    <td>{{sr.event}}</td>
+                    <td>{{sr.event_data23}}</td>
+                    <td>{{sr.event_data2}}</td>
+                    <td>{{sr.event_data3}}</td>
+                </tr>
+            </table>
+        </template>
     </div>
     <script data-main="app.js" src="require.js"></script>
 </body>

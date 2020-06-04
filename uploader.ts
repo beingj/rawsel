@@ -1,5 +1,5 @@
 interface IOn_before {
-    (): void
+    (files: FileList): void
 }
 interface IOn_data {
     (index: number, name: string, data: string): void
@@ -28,7 +28,7 @@ export class Uploader {
         }
         // console.log('upload files:')
         // console.log(files)
-        on_before()
+        on_before(files)
         for (let i = 0; i < files.length; i++) {
             read_file(i, files[i], on_data)
         }

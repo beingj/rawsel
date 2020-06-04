@@ -9,6 +9,7 @@ const app = new Vue({
         raw: '',
         srs: [] as SelRecord[],
         files: [] as string[],
+        done_files: [] as string[],
         emsg: ''
     },
     watch: {
@@ -16,6 +17,7 @@ const app = new Vue({
             this.srs.forEach((i: SelRecord) => i.change_timezone(this.timezone))
         },
         raw: function () {
+            if (this.raw == '') return
             const x = SelRecord.from_raw(this.raw)
             if (x.length == 0) {
                 this.emsg = 'no raw sel in file'
@@ -38,13 +40,17 @@ app.raw = `
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     ffh|   6fh|  01h|  ffh|  ffh|
 `
 
-new Uploader('raw_file', () => {
+new Uploader('raw_file', (files) => {
     // console.log('clear list')
+    while (app.done_files.length > 0) app.done_files.pop()
     while (app.files.length > 0) app.files.pop()
+    for (let i = 0; i < files.length; i++) {
+        app.files.push(files[i].name)
+    }
     app.raw = ''
 }, (_, name, data) => {
     // console.log('on_file: ' + index + ', ' + name)
-    app.files.push(name)
     app.raw += data
+    app.done_files.push(name)
 }
 )

@@ -22,6 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             raw: '',
             srs: [],
             files: [],
+            done_files: [],
             emsg: ''
         },
         watch: {
@@ -29,6 +30,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.srs.forEach((i) => i.change_timezone(this.timezone));
             },
             raw: function () {
+                if (this.raw == '')
+                    return;
                 const x = sel_1.SelRecord.from_raw(this.raw);
                 if (x.length == 0) {
                     this.emsg = 'no raw sel in file';
@@ -50,14 +53,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   0ch|  f1h|  ffh|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     ffh|   6fh|  01h|  ffh|  ffh|
 `;
-    new uploader_1.Uploader('raw_file', () => {
+    new uploader_1.Uploader('raw_file', (files) => {
         // console.log('clear list')
+        while (app.done_files.length > 0)
+            app.done_files.pop();
         while (app.files.length > 0)
             app.files.pop();
+        for (let i = 0; i < files.length; i++) {
+            app.files.push(files[i].name);
+        }
         app.raw = '';
     }, (_, name, data) => {
         // console.log('on_file: ' + index + ', ' + name)
-        app.files.push(name);
         app.raw += data;
+        app.done_files.push(name);
     });
 });

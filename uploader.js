@@ -28,7 +28,7 @@
             }
             // console.log('upload files:')
             // console.log(files)
-            on_before();
+            on_before(files);
             for (let i = 0; i < files.length; i++) {
                 read_file(i, files[i], on_data);
             }

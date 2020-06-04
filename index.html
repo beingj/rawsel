@@ -54,6 +54,11 @@
                 opacity: 0;
             }
         }
+
+        .loading {
+            text-align: center;
+            font-size: large;
+        }
     </style>
 </head>
 
@@ -62,7 +67,7 @@
     A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
     <input type="file" id="raw_file" multiple />
     <div id='app'>
-        <template v-if='loading'>loading...</template>
+        <div v-if='loading' class="loading">loading...</div>
         <template>
             <p v-if="emsg" class="error">
                 {{ emsg }}

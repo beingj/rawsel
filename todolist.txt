@@ -1,5 +1,5 @@
 
 Todo:
-  ☐ change generic codes to DMI-based “Usage State” STATES...
+  ✔ change generic codes to DMI-based “Usage State” STATES... @done(20-06-04 11:36)
   ☐ add more test
   ☐ speed js load, or load js before body

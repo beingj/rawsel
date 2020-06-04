@@ -5,6 +5,11 @@
 import { IPMI_Spec } from './ipmi_spec'
 export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
+    static from_raw(raw: string) {
+        const x = [] as SelRecord[]
+        raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null)
+        return x
+    }
 
     id: number
     record_type: string

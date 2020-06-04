@@ -21,20 +21,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             timezone: sel_1.SelRecord.timezone,
             raw: '',
             srs: [],
-            files: []
+            files: [],
+            emsg: ''
         },
         watch: {
             timezone: function () {
                 this.srs.forEach((i) => i.change_timezone(this.timezone));
             },
             raw: function () {
-                let x = [];
-                try {
-                    this.raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new sel_1.SelRecord(i)) : null);
+                const x = sel_1.SelRecord.from_raw(this.raw);
+                if (x.length == 0) {
+                    this.emsg = 'no raw sel in file';
                 }
-                catch (error) {
-                }
-                if (x.length > 0) {
+                else {
+                    this.emsg = '';
                     this.srs = x;
                 }
             }

@@ -29,12 +29,19 @@
     .small-text {
         width: 3em;
     }
+
+    .error {
+        color: orangered;
+    }
 </style>
 
 <h1>raw SEL viewer</h1>
 A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
 <input type="file" id="raw_file" multiple />
 <div id='app'>
+    <p v-if="emsg" class="error">
+        {{ emsg }}
+    </p>
     <p>
         <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
         <b>Files: </b>{{ files.length }}: {{ files.join(', ') }}

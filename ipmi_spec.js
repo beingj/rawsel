@@ -62,7 +62,7 @@
             ],
         },
         {
-            'Discrete': [
+            'DMI-based Usage State': [
                 'Transition to Idle',
                 'Transition to Active',
                 'Transition to Busy',
@@ -93,7 +93,7 @@
             ]
         },
         {
-            'Discrete': [
+            'severity': [
                 'transition to OK',
                 'transition to Non-Critical from OK',
                 'transition to Critical from less severe',
@@ -106,19 +106,19 @@
             ]
         },
         {
-            'digital Discrete': [
+            'availability': [
                 'Device Removed / Device Absent',
                 'Device Inserted / Device Present',
             ]
         },
         {
-            'digital Discrete': [
+            'availability': [
                 'Device Disabled',
                 'Device Enabled',
             ]
         },
         {
-            'Discrete': [
+            'availability': [
                 'transition to Running',
                 'transition to In Test',
                 'transition to Power Off',
@@ -131,7 +131,7 @@
             ]
         },
         {
-            'Discrete': [
+            'redundancy': [
                 'Fully Redundant',
                 'Redundancy Lost',
                 'Redundancy Degraded',
@@ -143,7 +143,7 @@
             ]
         },
         {
-            'Discrete': [
+            'ACPI Device Power': [
                 'D0 Power State',
                 'D1 Power State',
                 'D2 Power State',

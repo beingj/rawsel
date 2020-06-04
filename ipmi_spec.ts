@@ -50,7 +50,7 @@ export class IPMI_Spec {
             ],
         },
         { // 2
-            'Discrete': [
+            'DMI-based Usage State': [
                 'Transition to Idle',
                 'Transition to Active',
                 'Transition to Busy',
@@ -81,7 +81,7 @@ export class IPMI_Spec {
             ]
         },
         { // 7
-            'Discrete': [
+            'severity': [
                 'transition to OK',
                 'transition to Non-Critical from OK',
                 'transition to Critical from less severe',
@@ -94,19 +94,19 @@ export class IPMI_Spec {
             ]
         },
         { // 8
-            'digital Discrete': [
+            'availability': [
                 'Device Removed / Device Absent',
                 'Device Inserted / Device Present',
             ]
         },
         { // 9
-            'digital Discrete': [
+            'availability': [
                 'Device Disabled',
                 'Device Enabled',
             ]
         },
         { // 10
-            'Discrete': [
+            'availability': [
                 'transition to Running',
                 'transition to In Test',
                 'transition to Power Off',
@@ -119,7 +119,7 @@ export class IPMI_Spec {
             ]
         },
         { // 11
-            'Discrete': [
+            'redundancy': [
                 'Fully Redundant',
                 'Redundancy Lost',
                 'Redundancy Degraded',
@@ -131,7 +131,7 @@ export class IPMI_Spec {
             ]
         },
         { // 12
-            'Discrete': [
+            'ACPI Device Power': [
                 'D0 Power State',
                 'D1 Power State',
                 'D2 Power State',

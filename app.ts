@@ -8,20 +8,19 @@ const app = new Vue({
         timezone: SelRecord.timezone,
         raw: '',
         srs: [] as SelRecord[],
-        files: [] as string[]
+        files: [] as string[],
+        emsg: ''
     },
     watch: {
         timezone: function () {
             this.srs.forEach((i: SelRecord) => i.change_timezone(this.timezone))
         },
         raw: function () {
-            let x = [] as SelRecord[]
-            try {
-                this.raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null)
-            } catch (error) {
-
-            }
-            if (x.length > 0) {
+            const x = SelRecord.from_raw(this.raw)
+            if (x.length == 0) {
+                this.emsg = 'no raw sel in file'
+            } else {
+                this.emsg = ''
                 this.srs = x
             }
         }

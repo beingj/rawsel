@@ -34,6 +34,11 @@
             this.event_data2 = a[10];
             this.event_data3 = a[11];
         }
+        static from_raw(raw) {
+            const x = [];
+            raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null);
+            return x;
+        }
         int_to_hex(n) {
             return (n < 16 ? '0' : '') + n.toString(16) + 'h';
         }

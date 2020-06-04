@@ -1,3 +1,5 @@
 
 Todo:
   ☐ change generic codes to DMI-based “Usage State” STATES...
+  ☐ add more test
+  ☐ speed js load, or load js before body

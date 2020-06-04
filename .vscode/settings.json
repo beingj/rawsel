@@ -1,4 +1,12 @@
 {
     "mochaExplorer.files": "test/**/*.ts",
     "mochaExplorer.require": "ts-node/register",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/node_modules": true,
+        "**/.DS_Store": true
+    }
 }

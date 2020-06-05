@@ -9,6 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Uploader = void 0;
     class Uploader {
         constructor(ele_id, on_before, on_data) {
             const ele = document.getElementById(ele_id);

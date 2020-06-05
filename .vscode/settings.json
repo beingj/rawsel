@@ -1,12 +1,24 @@
 {
-    "mochaExplorer.files": "test/**/*.ts",
-    "mochaExplorer.require": "ts-node/register",
+    "mocha.files.glob": "test/**/*.ts",
+    "mocha.requires": [
+        "ts-node/register"
+    ],
+    "mocha.debugSettingsName": "Mocha Tests",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
         "**/.hg": true,
         "**/CVS": true,
+        "**/.DS_Store": true,
+        "node_modules": true,
+        ".nyc_output": true,
+        "coverage": true,
+        "js": true
+    },
+    "search.exclude": {
         "**/node_modules": true,
-        "**/.DS_Store": true
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "js": true
     }
 }

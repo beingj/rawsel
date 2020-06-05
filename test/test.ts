@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { SelRecord } from '../sel'
+import { SelRecord } from '../src/sel'
 
 describe('SelRecord', () => {
     it('id', () => {

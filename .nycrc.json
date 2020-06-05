@@ -1,0 +1,8 @@
+{
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "src/app.ts"
+    ]
+}

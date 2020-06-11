@@ -104,8 +104,8 @@ describe('sdr', () => {
         expect(sdr.reading(100)).to.equal(Math.log10(60).toFixed2(2))
         sdr.linear = Linearization.log2
         expect(sdr.reading(100)).to.equal(Math.log2(60).toFixed2(2))
-        // sdr.linear = Linearization.e
-        // expect(sdr.reading(100)).to.equal(Math.exp(60).toFixed2(2))
+        sdr.linear = Linearization.e
+        expect(sdr.reading(100)).to.equal(Math.exp(60).toFixed2(2))
         sdr.linear = Linearization.exp10
         expect(sdr.reading(100)).to.equal(Math.pow(10, 60).toFixed2(2))
         sdr.linear = Linearization.exp2

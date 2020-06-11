@@ -4,6 +4,7 @@
 //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
 import { IPMI_Spec } from './ipmi_spec'
 import { SdrRecordType1 } from './sdr'
+import './ext'
 export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
     static from_raw(raw: string) {
@@ -139,31 +140,6 @@ export class SelRecord {
     timestamp_with_timezone(t: number, tz: number) {
         if (t == 0xffffffff) { return t.toString(16) + 'h' } // invalid
         if (t <= 0x20000000) { return t + 's' } // initialization
-        // return new Date((t + (tz * 3600)) * 1000).pattern("yyyy/MM/dd-hh:mm:ss")
-        return this.format_date(new Date((t + (tz * 3600)) * 1000), ("yyyy/MM/dd-hh:mm:ss"))
+        return new Date((t + (tz * 3600)) * 1000).format("yyyy/MM/dd-hh:mm:ss")
     }
-
-    format_date(d: Date, fmt: string) {
-        // https://stackoverflow.com/questions/36467469/is-key-value-pair-available-in-typescript/50167055#50167055
-        const o: { [key: string]: number } = {
-            "M+": d.getMonth() + 1, //月份         
-            "d+": d.getDate(), //日         
-            "h+": d.getHours() % 12 == 0 ? 12 : d.getHours() % 12, //小时         
-            "H+": d.getHours(), //小时         
-            "m+": d.getMinutes(), //分         
-            "s+": d.getSeconds(), //秒         
-            "q+": Math.floor((d.getMonth() + 3) / 3), //季度         
-            "S": d.getMilliseconds() //毫秒         
-        };
-        if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (d.getFullYear() + "").substr(4 - RegExp.$1.length));
-        }
-        for (let k in o) {
-            if (new RegExp("(" + k + ")").test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k].toString()) : (("00" + o[k]).substr(("" + o[k]).length)));
-            }
-        }
-        return fmt;
-    }
-
 }

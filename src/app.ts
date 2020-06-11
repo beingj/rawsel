@@ -18,7 +18,7 @@ const app = new Vue({
             emsg: ''
         },
         sdr: {
-            show: false,
+            show: true,
             files: [] as string[],
             done_files: [] as string[],
             sdrs: [] as SdrRecord[],

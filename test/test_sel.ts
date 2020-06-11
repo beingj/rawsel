@@ -69,6 +69,9 @@ Generic event
 
         // 0xFFFFFFFF indicates an invalid or unspecified time value.
         expect(srs[5].timestamp).to.equal('ffffffffh')
+
+        srs[4].change_timezone(9)
+        expect(srs[4].timestamp).to.equal('2020/05/27-12:51:59')
     });
     it('generator id', () => {
         const raw = `

@@ -7,6 +7,6 @@ Todo:
   ☐ sel record_type change to enum
   ☐ check sdr bin file whether invalid
   ☐ move refresh files code in on_data to app method?
-  ☐ extend Date format method: http://definitelytyped.org/guides/best-practices.html => Extending built-in types
+  ✔ extend Date format method: http://definitelytyped.org/guides/best-practices.html => Extending built-in types @done(20-06-11 21:34)
   ☐ event 2 & 3 in IPMI spec
   ☐ speed js load, or load js before body

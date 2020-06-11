@@ -31,7 +31,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 emsg: ''
             },
             sdr: {
-                show: false,
+                show: true,
                 files: [],
                 done_files: [],
                 sdrs: [],

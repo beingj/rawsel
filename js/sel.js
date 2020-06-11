@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./ipmi_spec"], factory);
+        define(["require", "exports", "./ipmi_spec", "./ext"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -15,6 +15,7 @@
     //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
     //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
     const ipmi_spec_1 = require("./ipmi_spec");
+    require("./ext");
     let SelRecord = /** @class */ (() => {
         class SelRecord {
             constructor(raw) {
@@ -169,30 +170,7 @@
                 if (t <= 0x20000000) {
                     return t + 's';
                 } // initialization
-                // return new Date((t + (tz * 3600)) * 1000).pattern("yyyy/MM/dd-hh:mm:ss")
-                return this.format_date(new Date((t + (tz * 3600)) * 1000), ("yyyy/MM/dd-hh:mm:ss"));
-            }
-            format_date(d, fmt) {
-                // https://stackoverflow.com/questions/36467469/is-key-value-pair-available-in-typescript/50167055#50167055
-                const o = {
-                    "M+": d.getMonth() + 1,
-                    "d+": d.getDate(),
-                    "h+": d.getHours() % 12 == 0 ? 12 : d.getHours() % 12,
-                    "H+": d.getHours(),
-                    "m+": d.getMinutes(),
-                    "s+": d.getSeconds(),
-                    "q+": Math.floor((d.getMonth() + 3) / 3),
-                    "S": d.getMilliseconds() //毫秒         
-                };
-                if (/(y+)/.test(fmt)) {
-                    fmt = fmt.replace(RegExp.$1, (d.getFullYear() + "").substr(4 - RegExp.$1.length));
-                }
-                for (let k in o) {
-                    if (new RegExp("(" + k + ")").test(fmt)) {
-                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k].toString()) : (("00" + o[k]).substr(("" + o[k]).length)));
-                    }
-                }
-                return fmt;
+                return new Date((t + (tz * 3600)) * 1000).format("yyyy/MM/dd-hh:mm:ss");
             }
         }
         SelRecord.timezone = 0 - (new Date().getTimezoneOffset() / 60);

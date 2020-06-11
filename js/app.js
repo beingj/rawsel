@@ -97,6 +97,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (Number.isNaN(n))
                     return n.toString();
                 return n.toString(16).padStart(2, '0') + 'h';
+            },
+            toDecHex: function (n) {
+                if (!n)
+                    return '';
+                if (Number.isNaN(n))
+                    return n.toString();
+                return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`;
             }
         }
     });

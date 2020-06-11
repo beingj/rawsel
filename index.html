@@ -115,7 +115,7 @@
                     <tr>
                         <td>{{sdrr.record_id}}</td>
                         <td>{{sdrr | record_type}}</td>
-                        <td>{{sdrr.sensor_num | toHex}}</td>
+                        <td class="number">{{sdrr.sensor_num | toHex}}</td>
                         <td>{{sdrr.sensor_name}}</td>
                         <template v-if="sdrr.reading">
                             <td><input type="text" v-model="sdr.raw_reading[idx]" class="small-text number"></td>
@@ -141,7 +141,7 @@
                     {{ sel.emsg }}
                 </p>
                 <p>
-                    <b>Timezone:</b> <input type="text" class="small-text" v-model='sel.timezone'>
+                    <b>Timezone:</b> <input type="text" class="small-text number" v-model='sel.timezone'>
                     <b>Files: </b>
                     <span
                         v-bind:class="[((sel.files.length>0)&&(sel.done_files.length<sel.files.length)) ? 'blink' : '']">{{ sel.done_files.length }}
@@ -179,19 +179,19 @@
                         <td>{{selr.sdr.sensor_name}}</td>
                     </template>
                     <template v-else>
-                        <td>{{selr.sensor_num | toHex}}</td>
+                        <td class="number">{{selr.sensor_num | toHex}}</td>
                     </template>
                     <td>{{selr.event_direction}}</td>
                     <td>{{selr.event_type}}</td>
                     <td>{{selr.event}}</td>
                     <td>{{selr.event_data23}}</td>
                     <template v-if="selr.sdr">
-                        <td>{{selr.sdr.reading(selr.event_data2)}}</td>
-                        <td>{{selr.sdr.reading(selr.event_data3)}}</td>
+                        <td class="number">{{selr.sdr.reading(selr.event_data2)}}</td>
+                        <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>
                     </template>
                     <template v-else>
-                        <td>{{selr.event_data2}}</td>
-                        <td>{{selr.event_data3}}</td>
+                        <td class="number">{{selr.event_data2 | toDecHex}}</td>
+                        <td class="number">{{selr.event_data3 | toDecHex}}</td>
                     </template>
                 </tr>
             </table>

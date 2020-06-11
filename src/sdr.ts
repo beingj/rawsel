@@ -213,7 +213,7 @@ export class SdrRecordType1 extends SdrRecord {
     b: number
     rexp: number
     bexp: number
-    reading: (x: number | string) => (number | string)
+    reading: (x: number | string) => string
     reading_formula: string
 
     constructor(dv: DataView, offset: number = 0) {
@@ -291,8 +291,6 @@ export class SdrRecordType1 extends SdrRecord {
             } else {
                 y = x
             }
-            if (Math.floor(y) == y) return y
-            // return y.toFixed(2)
             return y.toFixed2(2)
         }
     }

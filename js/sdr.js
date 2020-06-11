@@ -304,9 +304,6 @@
                 else {
                     y = x;
                 }
-                if (Math.floor(y) == y)
-                    return y;
-                // return y.toFixed(2)
                 return y.toFixed2(2);
             };
         }

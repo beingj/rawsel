@@ -15,6 +15,8 @@
             const ele = document.getElementById(ele_id);
             if (!ele)
                 return;
+            console.log(`add onchange to ${ele_id}`);
+            console.log(ele);
             ele.addEventListener('change', e => {
                 this.on_change(e, on_before, this.read_file, on_data, as_text);
             });

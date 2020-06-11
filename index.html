@@ -86,6 +86,9 @@
         <div v-if='loading' class="loading">loading...</div>
 
         <h2 @click="sdr.show=!sdr.show" class="clickable">SDR</h2>
+        <p>
+            <button @click="update_sel_with_sdr">Update</button>
+        </p>
         <template v-if="sdr.show">
             <p>
                 <b>Files: </b>
@@ -109,12 +112,12 @@
                     <tr>
                         <td>{{sdrr.record_id}}</td>
                         <td>{{sdrr | record_type}}</td>
-                        <td>{{sdrr | sensor_num}}</td>
+                        <td>{{sdrr.sensor_num | toHex}}</td>
                         <td>{{sdrr.sensor_name}}</td>
                         <template v-if="sdrr.reading">
                             <td><input type="text" v-model="sdr.raw[idx]" class="small-text number"></td>
-                            <td>{{sdrr | formula}}</td>
-                            <td class="number">{{sdrr.reading(sdr.raw[idx]) | toFixed}}</td>
+                            <td>{{sdrr.reading_formula}}</td>
+                            <td class="number">{{sdrr.reading(sdr.raw[idx])}}</td>
                             <td>{{sdrr.unit}}</td>
                         </template>
                         <template v-else>
@@ -153,7 +156,7 @@
                     <th>generator</th>
                     <!-- <th>event_receiver</th> -->
                     <th>sensor_type</th>
-                    <th>sensor_num</th>
+                    <th>sensor_num/name</th>
                     <th>event_dir</th>
                     <th>event_type</th>
                     <th>event</th>
@@ -169,13 +172,24 @@
                     <td>{{selr.generator}}</td>
                     <!-- <td>{{selr.event_receiver}}</td> -->
                     <td>{{selr.sensor_type}}</td>
-                    <td>{{selr.sensor_num}}</td>
+                    <template v-if="selr.sdr">
+                        <td>{{selr.sdr.sensor_name}}</td>
+                    </template>
+                    <template v-else>
+                        <td>{{selr.sensor_num | toHex}}</td>
+                    </template>
                     <td>{{selr.event_direction}}</td>
                     <td>{{selr.event_type}}</td>
                     <td>{{selr.event}}</td>
                     <td>{{selr.event_data23}}</td>
-                    <td>{{selr.event_data2}}</td>
-                    <td>{{selr.event_data3}}</td>
+                    <template v-if="selr.sdr">
+                        <td>{{selr.sdr.reading(selr.event_data2)}}</td>
+                        <td>{{selr.sdr.reading(selr.event_data3)}}</td>
+                    </template>
+                    <template v-else>
+                        <td>{{selr.event_data2}}</td>
+                        <td>{{selr.event_data3}}</td>
+                    </template>
                 </tr>
             </table>
         </template>

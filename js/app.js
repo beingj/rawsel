@@ -39,6 +39,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 default_raw: 100 // default raw value of sensor reading
             }
         },
+        methods: {
+            update_sel_with_sdr: function () {
+                const type1s = this.sdr.sdrs.filter((i) => i instanceof sdr_1.SdrRecordType1);
+                this.sel.sels.forEach((selr, idx) => {
+                    const sdrr = type1s.find((i) => i.sensor_num == selr.sensor_num);
+                    if (sdrr) {
+                        selr.sdr = sdrr;
+                    }
+                });
+            }
+        },
         watch: {
             "sel.timezone": function () {
                 this.sel.sels.forEach((i) => i.change_timezone(this.sel.timezone));
@@ -60,36 +71,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             record_type: function (sdr) {
                 return sdr_1.SdrRecord.record_type_of(sdr.record_type);
             },
-            sensor_num: function (sdr) {
-                return sdr.sensor_num ? sdr.sensor_num.toString(16).padStart(2, '0') + 'h' : '';
+            toHex: function (n) {
+                // return n ? (Number.isNaN(n) ? n.toString() : (n.toString(16).padStart(2, '0') + 'h')) : ''
+                if (!n)
+                    return '';
+                if (Number.isNaN(n))
+                    return n.toString();
+                return n.toString(16).padStart(2, '0') + 'h';
             },
-            formula: function (sdr) {
-                // y=L((m*x+(b*power(10,bexp))*power(10,r))
-                const f = sdr_1.SdrRecord.linear_of(sdr.linear);
-                return `${f}[(${sdr.m}*x + (${sdr.b} * 10^(${sdr.bexp}))) * 10^(${sdr.rexp})]`;
-            },
-            toFixed: function (v) {
-                if (Number.isNaN(v)) {
-                    return '-';
-                }
-                else {
-                    if (Math.floor(v) == v)
-                        return v;
-                    return v.toFixed(2);
-                }
-            }
         }
     });
     app.sel.raw = `
-      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
-  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
-     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
- 0109h|   02h| 5ed08d86h |  20h|   00h|   04h|   01h|     2ch|   81h|  57h|  27h|  28h|
- 0e35h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   02h|  a1h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   0ch|  f1h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     ffh|   6fh|  01h|  ffh|  ffh|
-`;
+    | Record |           | GenID | GenID |      | Sensor |        | EvtDir | Event | Event | Event |
+    ID | Type | TimeStamp | (Low) | (High) | EvMRev | Type | Sensor # | Type | Data1 | Data2 | Data3 |
+        0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+        0109h | 02h | 5ed08d86h | 20h | 00h | 04h | 01h | 01h | 81h | 57h | 27h | 28h |
+            0e35h | 02h | 00000001h | 20h | 00h | 04h | 07h | 92h | 83h | 01h | ffh | ffh |
+                0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 07h | ffh | 02h | a1h | ffh | ffh |
+                    0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 07h | ffh | 0ch | f1h | ffh | ffh |
+                        0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 04h | ffh | 6fh | 01h | ffh | ffh |
+                            `;
     new uploader_1.Uploader('sel_raw_file', (files) => {
         // console.log('clear list')
         const o = app.sel;
@@ -122,7 +123,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         while (o.raw.length > 0)
             o.raw.pop();
     }, (_, name, data) => {
-        // console.log(`on_file: ${name}`)
+        // console.log(`on_file: ${ name } `)
         const o = app.sdr;
         o.done_files.push(name);
         // console.log(typeof data)

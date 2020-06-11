@@ -3,5 +3,10 @@ Todo:
   ✔ change generic codes to DMI-based “Usage State” STATES... @done(20-06-04 11:36)
   ✔ add more test @done(20-06-04 15:18)
   ✔ check all undefined => reserved @done(20-06-04 16:44)
+  ☐ refresh sensor name and reading with sdr
+  ☐ sel record_type change to enum
+  ☐ check sdr bin file whether invalid
+  ☐ move refresh files code in on_data to app method?
+  ☐ extend Date format method: http://definitelytyped.org/guides/best-practices.html => Extending built-in types
   ☐ event 2 & 3 in IPMI spec
   ☐ speed js load, or load js before body

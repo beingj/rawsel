@@ -3,6 +3,7 @@
 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
 //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
 import { IPMI_Spec } from './ipmi_spec'
+import { SdrRecordType1 } from './sdr'
 export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
     static from_raw(raw: string) {
@@ -18,13 +19,14 @@ export class SelRecord {
     generator: string
     event_receiver: number
     sensor_type: string
-    sensor_num: string
+    sensor_num: number
     event_direction: string
     event_type: string
     event_data23: string
     event: string
     event_data2: number
     event_data3: number
+    sdr: SdrRecordType1 | null = null
 
     timezone = SelRecord.timezone
     constructor(raw: string) {
@@ -37,7 +39,7 @@ export class SelRecord {
         this.generator = this.int_to_hex(a[3] + a[4] * 0x100)
         this.event_receiver = a[5]
         this.sensor_type = this.sensor_type_of(a[6])
-        this.sensor_num = this.int_to_hex(a[7])
+        this.sensor_num = a[7]
         this.event_direction = ((a[8] >> 7) & 1) == 0 ? 'Assert' : 'Deassert'
         this.event_type = this.event_type_of(a[8])
         this.event_data23 = this.event_data23_of(a[8], a[9])

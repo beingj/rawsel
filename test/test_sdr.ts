@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { SdrRecord, SdrRecordType1, SdrRecordType2 } from '../src/sdr'
 import { SdrRecordType, Linearization, name_of } from '../src/sdr'
 import fs from 'fs'
+// import '../src/ext'
 
 const bin_file = 'test/sdr.bin'
 
@@ -15,6 +16,10 @@ function to_ArrayBuffer(buf: Buffer) {
 }
 
 describe('sdr', () => {
+    it('extending', () => {
+        const x=1/3
+        // expect(x.toFixed2(2)).to.equal('1.33')
+    })
     it('new', () => {
         const dv = new DataView(to_ArrayBuffer(fs.readFileSync(bin_file)))
         let sdr = new SdrRecord(dv)
@@ -93,30 +98,34 @@ describe('sdr', () => {
         sdr.unit1 = 2
         // expect(sdr.reading(0xff)).to.equal(-0.60)
         // expected -0.6000000000000001 to equal -0.6
-        expect(sdr.reading(0xff).toFixed(2)).to.equal('-0.60')
+        expect(sdr.reading(0xff)).to.equal('-0.60')
         sdr.unit1 = 1
 
+        // Number.prototype.toFixed2=(n:number)=>{
+        //     return this.toFixed(n)
+        // }
+        // Number.MAX_SAFE_INTEGER.toFixed
         // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
         sdr.linear = Linearization.ln
-        expect(sdr.reading(100)).to.equal(Math.log(60))
+        expect(sdr.reading(100)).to.equal(Math.log(60).toFixed(2))
         sdr.linear = Linearization.log10
-        expect(sdr.reading(100)).to.equal(Math.log10(60))
+        expect(sdr.reading(100)).to.equal(Math.log10(60).toFixed(2))
         sdr.linear = Linearization.log2
-        expect(sdr.reading(100)).to.equal(Math.log2(60))
+        expect(sdr.reading(100)).to.equal(Math.log2(60).toFixed(2))
         sdr.linear = Linearization.e
-        expect(sdr.reading(100)).to.equal(Math.exp(60))
+        expect(sdr.reading(100)).to.equal(Math.exp(60).toFixed(2))
         sdr.linear = Linearization.exp10
-        expect(sdr.reading(100)).to.equal(Math.pow(10, 60))
+        expect(sdr.reading(100)).to.equal(Math.pow(10, 60).toFixed(2))
         sdr.linear = Linearization.exp2
-        expect(sdr.reading(100)).to.equal(Math.pow(2, 60))
+        expect(sdr.reading(100)).to.equal(Math.pow(2, 60).toFixed(2))
         sdr.linear = Linearization.reciprocal
-        expect(sdr.reading(100)).to.equal(Math.pow(60, -1))
+        expect(sdr.reading(100)).to.equal(Math.pow(60, -1).toFixed(2))
         sdr.linear = Linearization.sqr
-        expect(sdr.reading(100)).to.equal(Math.pow(60, 2))
+        expect(sdr.reading(100)).to.equal(Math.pow(60, 2).toFixed(2))
         sdr.linear = Linearization.cube
-        expect(sdr.reading(100)).to.equal(Math.pow(60, 3))
+        expect(sdr.reading(100)).to.equal(Math.pow(60, 3).toFixed(2))
         sdr.linear = Linearization.sqrt
-        expect(sdr.reading(100)).to.equal(Math.sqrt(60))
+        expect(sdr.reading(100)).to.equal(Math.sqrt(60).toFixed(2))
         sdr.linear = Linearization.cubeByNegOne
         expect(sdr.reading(100)).to.equal(Math.pow(Math.pow(60, 3), -1))
 

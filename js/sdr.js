@@ -4,12 +4,13 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./ext"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SdrRecordTypeC0 = exports.SdrRecordType12 = exports.SdrRecordType11 = exports.SdrRecordType3 = exports.SdrRecordType2 = exports.SdrRecordType1 = exports.SdrRecord = exports.Linearization = exports.name_of = exports.EventType = exports.SdrRecordType = void 0;
+    require("./ext");
     var SdrRecordType;
     (function (SdrRecordType) {
         SdrRecordType[SdrRecordType["Full"] = 1] = "Full";
@@ -227,6 +228,8 @@
             this.b = this.two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8);
             this.rexp = this.two_complement((dv.getUint8(offset + 29) >> 4) & 0xf, 4);
             this.bexp = this.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
+            this.reading = SdrRecordType1.get_reading_formula(this);
+            this.reading_formula = SdrRecordType1.get_reading_formula_text(this);
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 47); // offset of 'id string type/length code'
         }
         two_complement(v, bits = 8) {
@@ -239,64 +242,73 @@
                 return v - (1 << bits);
             }
         }
-        reading(raw) {
-            let x;
-            if (typeof raw == 'string') {
-                x = parseInt(raw);
-            }
-            else {
-                x = raw;
-            }
-            if (this.unit1 == 2) {
-                x = this.two_complement(x);
-            }
-            // y=L((m*x+(b*power(10,bexp))*power(10,r))
-            let y = x;
-            x = (this.m * x + (this.b * Math.pow(10, this.bexp))) * Math.pow(10, this.rexp);
-            // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
-            if (this.linear == Linearization.linear) {
-                y = x;
-            }
-            else if (this.linear == Linearization.ln) {
-                y = Math.log(x);
-            }
-            else if (this.linear == Linearization.log10) {
-                y = Math.log10(x);
-            }
-            else if (this.linear == Linearization.log2) {
-                y = Math.log2(x);
-            }
-            else if (this.linear == Linearization.e) {
-                y = Math.exp(x);
-            }
-            else if (this.linear == Linearization.exp10) {
-                y = Math.pow(10, x);
-            }
-            else if (this.linear == Linearization.exp2) {
-                y = Math.pow(2, x);
-            }
-            else if (this.linear == Linearization.reciprocal) {
-                y = Math.pow(x, -1);
-            }
-            else if (this.linear == Linearization.sqr) {
-                // sqrt = square root.
-                // sqr = square.
-                // sqrt(9) = 3, while sqr(9) = 81.
-                y = Math.pow(x, 2);
-            }
-            else if (this.linear == Linearization.cube) {
-                y = Math.pow(x, 3);
-            }
-            else if (this.linear == Linearization.sqrt) {
-                y = Math.sqrt(x);
-            }
-            else if (this.linear == Linearization.cubeByNegOne) {
-                y = Math.pow(Math.pow(x, 3), -1);
-            }
-            else {
-                y = x;
-            }
-            return y;
+        static get_reading_formula_text(sdr) {
+            const f = SdrRecord.linear_of(sdr.linear);
+            return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`;
+        }
+        static get_reading_formula(sdr) {
+            return (raw) => {
+                let x;
+                if (typeof raw == 'string') {
+                    x = parseInt(raw);
+                }
+                else {
+                    x = raw;
+                }
+                if (sdr.unit1 == 2) {
+                    x = sdr.two_complement(x);
+                }
+                // y=L((m*x+(b*power(10,bexp))*power(10,r))
+                let y = x;
+                x = (sdr.m * x + (sdr.b * Math.pow(10, sdr.bexp))) * Math.pow(10, sdr.rexp);
+                // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
+                if (sdr.linear == Linearization.linear) {
+                    y = x;
+                }
+                else if (sdr.linear == Linearization.ln) {
+                    y = Math.log(x);
+                }
+                else if (sdr.linear == Linearization.log10) {
+                    y = Math.log10(x);
+                }
+                else if (sdr.linear == Linearization.log2) {
+                    y = Math.log2(x);
+                }
+                else if (sdr.linear == Linearization.e) {
+                    y = Math.exp(x);
+                }
+                else if (sdr.linear == Linearization.exp10) {
+                    y = Math.pow(10, x);
+                }
+                else if (sdr.linear == Linearization.exp2) {
+                    y = Math.pow(2, x);
+                }
+                else if (sdr.linear == Linearization.reciprocal) {
+                    y = Math.pow(x, -1);
+                }
+                else if (sdr.linear == Linearization.sqr) {
+                    // sqrt = square root.
+                    // sqr = square.
+                    // sqrt(9) = 3, while sqr(9) = 81.
+                    y = Math.pow(x, 2);
+                }
+                else if (sdr.linear == Linearization.cube) {
+                    y = Math.pow(x, 3);
+                }
+                else if (sdr.linear == Linearization.sqrt) {
+                    y = Math.sqrt(x);
+                }
+                else if (sdr.linear == Linearization.cubeByNegOne) {
+                    y = Math.pow(Math.pow(x, 3), -1);
+                }
+                else {
+                    y = x;
+                }
+                if (Math.floor(y) == y)
+                    return y;
+                // return y.toFixed(2)
+                return y.toFixed2(2);
+            };
         }
     }
     exports.SdrRecordType1 = SdrRecordType1;

@@ -201,8 +201,8 @@ Generic event
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   01h|  01h|  ffh|  ffh|
  `
         const srs = SelRecord.from_raw(raw)
-        expect(srs[0].sensor_num).to.equal('33h')
-        expect(srs[1].sensor_num).to.equal('ffh')
+        expect(srs[0].sensor_num).to.equal(0x33)
+        expect(srs[1].sensor_num).to.equal(0xff)
     })
     it('event dir', () => {
         const raw = `

@@ -18,6 +18,7 @@
     let SelRecord = /** @class */ (() => {
         class SelRecord {
             constructor(raw) {
+                this.sdr = null;
                 this.timezone = SelRecord.timezone;
                 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
                 const a = raw.split('|').map(i => parseInt(i.trim(), 16));
@@ -28,7 +29,7 @@
                 this.generator = this.int_to_hex(a[3] + a[4] * 0x100);
                 this.event_receiver = a[5];
                 this.sensor_type = this.sensor_type_of(a[6]);
-                this.sensor_num = this.int_to_hex(a[7]);
+                this.sensor_num = a[7];
                 this.event_direction = ((a[8] >> 7) & 1) == 0 ? 'Assert' : 'Deassert';
                 this.event_type = this.event_type_of(a[8]);
                 this.event_data23 = this.event_data23_of(a[8], a[9]);

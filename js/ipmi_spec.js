@@ -547,3 +547,4 @@
     })();
     exports.IPMI_Spec = IPMI_Spec;
 });
+//# sourceMappingURL=ipmi_spec.js.map

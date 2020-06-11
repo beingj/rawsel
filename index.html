@@ -21,6 +21,10 @@
             margin-bottom: 10px;
         }
 
+        .clickable {
+            cursor: pointer;
+        }
+
         table {
             border-collapse: collapse;
         }
@@ -38,6 +42,10 @@
 
         .small-text {
             width: 3em;
+        }
+
+        .number {
+            text-align: right;
         }
 
         .error {
@@ -64,23 +72,78 @@
 
 <body>
     <h1>raw SEL viewer</h1>
-    A raw SEL file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the raw SEL file here:
-    <input type="file" id="raw_file" multiple />
+    <p>
+        A SEL raw file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>". Drag the SEL raw file
+        here:
+        <input type="file" id="sel_raw_file" multiple />
+    </p>
+    <p>
+        A SDR bin file is dumped by ipmitool command: <code>ipmitool sdr dump sdr.bin</code>. Drag the SDR bin file
+        sdr.bin here:
+        <input type="file" id="sdr_bin_file" multiple />
+    </p>
     <div id='app'>
         <div v-if='loading' class="loading">loading...</div>
-        <template>
-            <p v-if="emsg" class="error">
-                {{ emsg }}
-            </p>
+
+        <h2 @click="sdr.show=!sdr.show" class="clickable">SDR</h2>
+        <template v-if="sdr.show">
             <p>
-                <b>Timezone:</b> <input type="text" class="small-text" v-model='timezone'>
                 <b>Files: </b>
                 <span
-                    v-bind:class="[((files.length>0)&&(done_files.length<files.length)) ? 'blink' : '']">{{ done_files.length }}
+                    v-bind:class="[((sdr.files.length>0)&&(sdr.done_files.length<sdr.files.length)) ? 'blink' : '']">{{ sdr.done_files.length }}
                 </span>
-                / {{ files.length }}: {{ files.join(', ') }}
-                <b>Records:</b> {{ srs.length }}
+                / {{ sdr.files.length }}: {{ sdr.files.join(', ') }}
             </p>
+            <table>
+                <tr>
+                    <th>id</th>
+                    <th>record_type</th>
+                    <th>sensor_num</th>
+                    <th>sensor_name</th>
+                    <th>raw</th>
+                    <th>formula</th>
+                    <th>reading</th>
+                    <th>unit</th>
+                </tr>
+                <template v-for='(sdrr,idx) in sdr.sdrs'>
+                    <tr>
+                        <td>{{sdrr.record_id}}</td>
+                        <td>{{sdrr | record_type}}</td>
+                        <td>{{sdrr | sensor_num}}</td>
+                        <td>{{sdrr.sensor_name}}</td>
+                        <template v-if="sdrr.reading">
+                            <td><input type="text" v-model="sdr.raw[idx]" class="small-text number"></td>
+                            <td>{{sdrr | formula}}</td>
+                            <td class="number">{{sdrr.reading(sdr.raw[idx]) | toFixed}}</td>
+                            <td>{{sdrr.unit}}</td>
+                        </template>
+                        <template v-else>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </template>
+                    </tr>
+                </template>
+            </table>
+        </template>
+
+        <h2 @click="sel.show=!sel.show" class="clickable">SEL</h2>
+        <template v-if="sel.show">
+            <div>
+                <p v-if="sel.emsg" class="error">
+                    {{ sel.emsg }}
+                </p>
+                <p>
+                    <b>Timezone:</b> <input type="text" class="small-text" v-model='sel.timezone'>
+                    <b>Files: </b>
+                    <span
+                        v-bind:class="[((sel.files.length>0)&&(sel.done_files.length<sel.files.length)) ? 'blink' : '']">{{ sel.done_files.length }}
+                    </span>
+                    / {{ sel.files.length }}: {{ sel.files.join(', ') }}
+                    <b>Records:</b> {{ sel.sels.length }}
+                </p>
+            </div>
             <table>
                 <tr>
                     <th>id</th>
@@ -98,21 +161,21 @@
                     <th>event_data2</th>
                     <th>event_data3</th>
                 </tr>
-                <tr v-for='sr in srs'>
-                    <td>{{sr.id}}</td>
-                    <td>{{sr.record_type}}</td>
-                    <!-- <td>{{sr.timezone}}</td> -->
-                    <td>{{sr.timestamp}}</td>
-                    <td>{{sr.generator}}</td>
-                    <!-- <td>{{sr.event_receiver}}</td> -->
-                    <td>{{sr.sensor_type}}</td>
-                    <td>{{sr.sensor_num}}</td>
-                    <td>{{sr.event_direction}}</td>
-                    <td>{{sr.event_type}}</td>
-                    <td>{{sr.event}}</td>
-                    <td>{{sr.event_data23}}</td>
-                    <td>{{sr.event_data2}}</td>
-                    <td>{{sr.event_data3}}</td>
+                <tr v-for='selr in sel.sels'>
+                    <td>{{selr.id}}</td>
+                    <td>{{selr.record_type}}</td>
+                    <!-- <td>{{selr.timezone}}</td> -->
+                    <td>{{selr.timestamp}}</td>
+                    <td>{{selr.generator}}</td>
+                    <!-- <td>{{selr.event_receiver}}</td> -->
+                    <td>{{selr.sensor_type}}</td>
+                    <td>{{selr.sensor_num}}</td>
+                    <td>{{selr.event_direction}}</td>
+                    <td>{{selr.event_type}}</td>
+                    <td>{{selr.event}}</td>
+                    <td>{{selr.event_data23}}</td>
+                    <td>{{selr.event_data2}}</td>
+                    <td>{{selr.event_data3}}</td>
                 </tr>
             </table>
         </template>

@@ -11,15 +11,15 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Uploader = void 0;
     class Uploader {
-        constructor(ele_id, on_before, on_data, as_text = true) {
+        constructor(ele_id, on_before, on_data) {
             const ele = document.getElementById(ele_id);
             if (!ele)
                 return;
             ele.addEventListener('change', e => {
-                this.on_change(e, on_before, this.read_file, on_data, as_text);
+                this.on_change(e, on_before, this.read_file, on_data);
             });
         }
-        on_change(e, on_before, read_file, on_data, as_text = true) {
+        on_change(e, on_before, read_file, on_data) {
             const t = e.target;
             if (!t)
                 return;
@@ -31,26 +31,30 @@
             // console.log(files)
             on_before(files);
             for (let i = 0; i < files.length; i++) {
-                read_file(i, files[i], on_data, as_text);
+                read_file(i, files[i], on_data);
             }
         }
-        read_file(index, file, on_data, as_text = true) {
+        read_file(index, file, on_data) {
             const reader = new FileReader();
             reader.onload = function (e) {
                 // https://github.com/Microsoft/TypeScript/issues/4163
                 // or http://definitelytyped.org/guides/best-practices.html => Extending built-in types
-                if (!reader.result)
+                const result = reader.result;
+                if (!result)
                     return;
-                on_data(index, file.name, reader.result);
+                // result = result as string
+                let data;
+                if (result == 'data:') {
+                    data = '';
+                }
+                else {
+                    data = atob(result.split(';')[1].split(',')[1]);
+                }
+                on_data(index, file.name, data);
             };
-            if (as_text) {
-                reader.readAsText(file);
-            }
-            else {
-                reader.readAsArrayBuffer(file);
-            }
+            reader.readAsDataURL(file);
         }
     }
     exports.Uploader = Uploader;
 });
-//# sourceMappingURL=uploader.js.map
+//# sourceMappingURL=uploader-1.js.map

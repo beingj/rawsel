@@ -4,6 +4,9 @@
         "ts-node/register"
     ],
     "mocha.debugSettingsName": "Mocha Tests",
+    "mocha.coverage": {
+        "enable": true
+    },
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,

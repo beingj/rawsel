@@ -7,44 +7,80 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./sel", "./uploader", "vue"], factory);
+        define(["require", "exports", "./sel", "./sdr", "./uploader", "vue", "./test_data"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const sel_1 = require("./sel");
+    const sdr_1 = require("./sdr");
     const uploader_1 = require("./uploader");
     const vue_1 = __importDefault(require("vue"));
+    const test_data_1 = require("./test_data");
     const app = new vue_1.default({
         el: '#app',
         data: {
             loading: false,
-            timezone: sel_1.SelRecord.timezone,
-            raw: '',
-            srs: [],
-            files: [],
-            done_files: [],
-            emsg: ''
+            sel: {
+                show: true,
+                timezone: sel_1.SelRecord.timezone,
+                raw: '',
+                sels: [],
+                files: [],
+                done_files: [],
+                emsg: ''
+            },
+            sdr: {
+                show: false,
+                files: [],
+                done_files: [],
+                sdrs: [],
+                raw: [],
+                default_raw: 100 // default raw value of sensor reading
+            }
         },
         watch: {
-            timezone: function () {
-                this.srs.forEach((i) => i.change_timezone(this.timezone));
+            "sel.timezone": function () {
+                this.sel.sels.forEach((i) => i.change_timezone(this.sel.timezone));
             },
-            raw: function () {
-                if (this.raw == '')
+            "sel.raw": function () {
+                if (this.sel.raw == '')
                     return;
-                const x = sel_1.SelRecord.from_raw(this.raw);
+                const x = sel_1.SelRecord.from_raw(this.sel.raw);
                 if (x.length == 0) {
-                    this.emsg = 'no raw sel in file';
+                    this.sel.emsg = 'no raw sel in file';
                 }
                 else {
-                    this.emsg = '';
-                    this.srs = x;
+                    this.sel.emsg = '';
+                    this.sel.sels = x;
+                }
+            }
+        },
+        filters: {
+            record_type: function (sdr) {
+                return sdr_1.SdrRecord.record_type_of(sdr.record_type);
+            },
+            sensor_num: function (sdr) {
+                return sdr.sensor_num ? sdr.sensor_num.toString(16).padStart(2, '0') + 'h' : '';
+            },
+            formula: function (sdr) {
+                // y=L((m*x+(b*power(10,bexp))*power(10,r))
+                const f = sdr_1.SdrRecord.linear_of(sdr.linear);
+                return `${f}[(${sdr.m}*x + (${sdr.b} * 10^(${sdr.bexp}))) * 10^(${sdr.rexp})]`;
+            },
+            toFixed: function (v) {
+                if (Number.isNaN(v)) {
+                    return '-';
+                }
+                else {
+                    if (Math.floor(v) == v)
+                        return v;
+                    return v.toFixed(2);
                 }
             }
         }
     });
-    app.raw = `
+    app.sel.raw = `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
@@ -54,19 +90,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     ffh|   0ch|  f1h|  ffh|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     ffh|   6fh|  01h|  ffh|  ffh|
 `;
-    new uploader_1.Uploader('raw_file', (files) => {
+    new uploader_1.Uploader('sel_raw_file', (files) => {
         // console.log('clear list')
-        while (app.files.length > 0)
-            app.files.pop();
+        const o = app.sel;
+        while (o.files.length > 0)
+            o.files.pop();
         for (let i = 0; i < files.length; i++) {
-            app.files.push(files[i].name);
+            o.files.push(files[i].name);
         }
-        app.raw = '';
-        while (app.done_files.length > 0)
-            app.done_files.pop();
+        o.raw = '';
+        while (o.done_files.length > 0)
+            o.done_files.pop();
     }, (_, name, data) => {
         // console.log('on_file: ' + index + ', ' + name)
-        app.done_files.push(name);
-        app.raw += data;
+        const o = app.sel;
+        o.done_files.push(name);
+        o.raw += data;
+    });
+    new uploader_1.Uploader('sdr_bin_file', (files) => {
+        // console.log('clear list')
+        const o = app.sdr;
+        while (o.files.length > 0)
+            o.files.pop();
+        for (let i = 0; i < files.length; i++) {
+            o.files.push(files[i].name);
+        }
+        while (o.done_files.length > 0)
+            o.done_files.pop();
+        while (o.sdrs.length > 0)
+            o.sdrs.pop();
+        while (o.raw.length > 0)
+            o.raw.pop();
+    }, (_, name, data) => {
+        // console.log(`on_file: ${name}`)
+        const o = app.sdr;
+        o.done_files.push(name);
+        // console.log(typeof data)
+        if (data instanceof ArrayBuffer) {
+            sdr_1.SdrRecord.from(data).forEach(sdr => {
+                o.sdrs.push(sdr);
+                o.raw.push(o.default_raw);
+            });
+        }
+        else {
+        }
+    }, false);
+    sdr_1.SdrRecord.from(test_data_1.test_data()).forEach(sdr => {
+        app.sdr.sdrs.push(sdr);
+        app.sdr.raw.push(app.sdr.default_raw);
     });
 });
+//# sourceMappingURL=app.js.map

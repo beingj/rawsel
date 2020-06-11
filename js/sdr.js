@@ -162,6 +162,10 @@
             let offset = 0;
             let sdrs = [];
             while (offset < buf_len) {
+                if (dv.getUint8(offset + 2) != 0x51) {
+                    // sdr_version invalid
+                    break;
+                }
                 let sdr;
                 let rt = dv.getUint8(offset + 3);
                 if (rt == SdrRecordType.Full) {

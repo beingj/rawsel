@@ -34,9 +34,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 show: true,
                 files: [],
                 done_files: [],
+                bin: null,
                 sdrs: [],
-                raw: [],
-                default_raw: 100 // default raw value of sensor reading
+                raw_reading: [],
+                default_raw_reading: 100,
+                emsg: ''
             }
         },
         methods: {
@@ -65,6 +67,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.sel.emsg = '';
                     this.sel.sels = x;
                 }
+            },
+            "sdr.bin": function () {
+                if (!this.sdr.bin)
+                    return;
+                const x = sdr_1.SdrRecord.from(this.sdr.bin);
+                if (x.length == 0) {
+                    this.sdr.emsg = 'no sdr in file';
+                }
+                else {
+                    this.sdr.emsg = '';
+                    const o = this.sdr;
+                    while (o.raw_reading.length > 0)
+                        o.raw_reading.pop();
+                    this.sdr.sdrs = x;
+                    this.sdr.sdrs.forEach((_) => {
+                        this.sdr.raw_reading.push(app.sdr.default_raw_reading);
+                    });
+                }
             }
         },
         filters: {
@@ -72,25 +92,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return sdr_1.SdrRecord.record_type_of(sdr.record_type);
             },
             toHex: function (n) {
-                // return n ? (Number.isNaN(n) ? n.toString() : (n.toString(16).padStart(2, '0') + 'h')) : ''
                 if (!n)
                     return '';
                 if (Number.isNaN(n))
                     return n.toString();
                 return n.toString(16).padStart(2, '0') + 'h';
-            },
+            }
         }
     });
-    app.sel.raw = `
-    | Record |           | GenID | GenID |      | Sensor |        | EvtDir | Event | Event | Event |
-    ID | Type | TimeStamp | (Low) | (High) | EvMRev | Type | Sensor # | Type | Data1 | Data2 | Data3 |
-        0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-        0109h | 02h | 5ed08d86h | 20h | 00h | 04h | 01h | 01h | 81h | 57h | 27h | 28h |
-            0e35h | 02h | 00000001h | 20h | 00h | 04h | 07h | 92h | 83h | 01h | ffh | ffh |
-                0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 07h | ffh | 02h | a1h | ffh | ffh |
-                    0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 07h | ffh | 0ch | f1h | ffh | ffh |
-                        0e35h | 02h | 5ecd80f5h | 20h | 00h | 04h | 04h | ffh | 6fh | 01h | ffh | ffh |
-                            `;
     new uploader_1.Uploader('sel_raw_file', (files) => {
         // console.log('clear list')
         const o = app.sel;
@@ -99,9 +108,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         for (let i = 0; i < files.length; i++) {
             o.files.push(files[i].name);
         }
-        o.raw = '';
         while (o.done_files.length > 0)
             o.done_files.pop();
+        o.raw = '';
     }, (_, name, data) => {
         // console.log('on_file: ' + index + ', ' + name)
         const o = app.sel;
@@ -118,27 +127,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         while (o.done_files.length > 0)
             o.done_files.pop();
-        while (o.sdrs.length > 0)
-            o.sdrs.pop();
-        while (o.raw.length > 0)
-            o.raw.pop();
+        o.bin = null;
     }, (_, name, data) => {
         // console.log(`on_file: ${ name } `)
         const o = app.sdr;
         o.done_files.push(name);
-        // console.log(typeof data)
         if (data instanceof ArrayBuffer) {
-            sdr_1.SdrRecord.from(data).forEach(sdr => {
-                o.sdrs.push(sdr);
-                o.raw.push(o.default_raw);
-            });
-        }
-        else {
+            o.bin = data;
         }
     }, false);
-    sdr_1.SdrRecord.from(test_data_1.test_data()).forEach(sdr => {
-        app.sdr.sdrs.push(sdr);
-        app.sdr.raw.push(app.sdr.default_raw);
-    });
+    app.sdr.bin = test_data_1.test_data.sdr;
+    app.sel.raw = test_data_1.test_data.sel;
 });
 //# sourceMappingURL=app.js.map

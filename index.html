@@ -4,7 +4,7 @@
     <title>raw SEL viewer</title>
     <meta charset="UTF-8">
     <meta name="description" content="raw SEL viewer">
-    <meta name="keywords" content="IPMI,BMC,SEL,raw">
+    <meta name="keywords" content="IPMI,BMC,SEL,SDR,raw">
     <meta name="author" content="beingj@163.com">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -87,16 +87,19 @@
 
         <h2 @click="sdr.show=!sdr.show" class="clickable">SDR</h2>
         <p>
-            <button @click="update_sel_with_sdr">Update</button>
+            <button @click="update_sel_with_sdr">Update SEL with SDR</button>
         </p>
         <template v-if="sdr.show">
-            <p>
+            <div>
+                <p v-if="sdr.emsg" class="error">
+                    {{ sdr.emsg }}
+                </p>
                 <b>Files: </b>
                 <span
                     v-bind:class="[((sdr.files.length>0)&&(sdr.done_files.length<sdr.files.length)) ? 'blink' : '']">{{ sdr.done_files.length }}
                 </span>
                 / {{ sdr.files.length }}: {{ sdr.files.join(', ') }}
-            </p>
+            </div>
             <table>
                 <tr>
                     <th>id</th>
@@ -115,9 +118,9 @@
                         <td>{{sdrr.sensor_num | toHex}}</td>
                         <td>{{sdrr.sensor_name}}</td>
                         <template v-if="sdrr.reading">
-                            <td><input type="text" v-model="sdr.raw[idx]" class="small-text number"></td>
+                            <td><input type="text" v-model="sdr.raw_reading[idx]" class="small-text number"></td>
                             <td>{{sdrr.reading_formula}}</td>
-                            <td class="number">{{sdrr.reading(sdr.raw[idx])}}</td>
+                            <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
                             <td>{{sdrr.unit}}</td>
                         </template>
                         <template v-else>

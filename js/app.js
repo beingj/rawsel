@@ -20,7 +20,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const app = new vue_1.default({
         el: '#app',
         data: {
-            loading: false,
+            loading: true,
             sel: {
                 show: true,
                 timezone: sel_1.SelRecord.timezone,
@@ -50,6 +50,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         selr.sdr = sdrr;
                     }
                 });
+            },
+            bind_uploader: function () {
+                new uploader_1.Uploader('sel_raw_file', (files) => {
+                    // console.log('clear list')
+                    const o = this.sel;
+                    while (o.files.length > 0)
+                        o.files.pop();
+                    for (let i = 0; i < files.length; i++) {
+                        o.files.push(files[i].name);
+                    }
+                    while (o.done_files.length > 0)
+                        o.done_files.pop();
+                    o.raw = '';
+                }, (_, name, data) => {
+                    // console.log('on_file: ' + index + ', ' + name)
+                    const o = this.sel;
+                    o.done_files.push(name);
+                    o.raw += data;
+                });
+                new uploader_1.Uploader('sdr_bin_file', (files) => {
+                    // console.log('clear list')
+                    const o = this.sdr;
+                    while (o.files.length > 0)
+                        o.files.pop();
+                    for (let i = 0; i < files.length; i++) {
+                        o.files.push(files[i].name);
+                    }
+                    while (o.done_files.length > 0)
+                        o.done_files.pop();
+                    o.bin = null;
+                }, (_, name, data) => {
+                    // console.log(`on_file: ${ name } `)
+                    const o = this.sdr;
+                    o.done_files.push(name);
+                    if (data instanceof ArrayBuffer) {
+                        o.bin = data;
+                    }
+                }, false);
             }
         },
         watch: {
@@ -82,7 +120,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         o.raw_reading.pop();
                     this.sdr.sdrs = x;
                     this.sdr.sdrs.forEach((_) => {
-                        this.sdr.raw_reading.push(app.sdr.default_raw_reading);
+                        this.sdr.raw_reading.push(this.sdr.default_raw_reading);
                     });
                 }
             }
@@ -92,55 +130,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return sdr_1.SdrRecord.record_type_of(sdr.record_type);
             },
             toHex: function (n) {
+                if ((n == undefined) || (n == null))
+                    return '';
                 if (Number.isNaN(n))
                     return n.toString();
                 return n.toString(16).padStart(2, '0') + 'h';
             },
             toDecHex: function (n) {
+                if ((n == undefined) || (n == null))
+                    return '';
                 if (Number.isNaN(n))
                     return n.toString();
                 return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`;
             }
         },
+        created: function () {
+            this.loading = false;
+        },
         mounted: function () {
             this.sdr.bin = test_data_1.test_data.sdr;
             this.sel.raw = test_data_1.test_data.sel;
-            new uploader_1.Uploader('sel_raw_file', (files) => {
-                // console.log('clear list')
-                const o = app.sel;
-                while (o.files.length > 0)
-                    o.files.pop();
-                for (let i = 0; i < files.length; i++) {
-                    o.files.push(files[i].name);
-                }
-                while (o.done_files.length > 0)
-                    o.done_files.pop();
-                o.raw = '';
-            }, (_, name, data) => {
-                // console.log('on_file: ' + index + ', ' + name)
-                const o = app.sel;
-                o.done_files.push(name);
-                o.raw += data;
-            });
-            new uploader_1.Uploader('sdr_bin_file', (files) => {
-                // console.log('clear list')
-                const o = app.sdr;
-                while (o.files.length > 0)
-                    o.files.pop();
-                for (let i = 0; i < files.length; i++) {
-                    o.files.push(files[i].name);
-                }
-                while (o.done_files.length > 0)
-                    o.done_files.pop();
-                o.bin = null;
-            }, (_, name, data) => {
-                // console.log(`on_file: ${ name } `)
-                const o = app.sdr;
-                o.done_files.push(name);
-                if (data instanceof ArrayBuffer) {
-                    o.bin = data;
-                }
-            }, false);
+            this.bind_uploader();
+            // // test slow loading
+            // window.setTimeout(() => {
+            //     this.loading = false
+            //     this.$nextTick(() => {
+            //         this.bind_uploader()
+            //     })
+            // }, 3000)
         }
     });
 });

@@ -82,142 +82,146 @@
     <h1>raw SEL viewer</h1>
     <div id='app'>
         <div v-if='loading' class="loading blink">loading...</div>
-        <div class="sect">
-            <p class="subsect">
-                Upload a raw SEL file to view it in a human friendly way
-            </p>
-            <p class="subsect">
-                You can optionally upload a SDR file to update sensor name and reading
-            </p>
-        </div>
+        <template v-else>
+            <div class="sect">
+                <p class="subsect">
+                    Upload a raw SEL file to view it in a human friendly way
+                </p>
+                <p class="subsect">
+                    You can optionally upload a SDR file to update sensor name and reading
+                </p>
+            </div>
 
-        <div class="sect">
-            <h2 @click="sdr.show=!sdr.show" class="clickable">SDR</h2>
-            <p class="subsect">
-                A SDR bin file is dumped by ipmitool command: <code>ipmitool sdr dump sdr.bin</code>.
-                Drag the SDR bin file sdr.bin here:
-                <input type="file" id="sdr_bin_file" multiple />
-            </p>
-            <p>
-                <button @click="update_sel_with_sdr">Update SEL with SDR</button>
-                <button @click="sdr.show=!sdr.show">show SDR</button>
-            </p>
-            <template v-if="sdr.show">
-                <div class="subsect">
-                    <p v-if="sdr.emsg" class="error">
-                        {{ sdr.emsg }}
-                    </p>
-                    <b>Files: </b>
-                    <span
-                        v-bind:class="[((sdr.files.length>0)&&(sdr.done_files.length<sdr.files.length)) ? 'blink' : '']">{{ sdr.done_files.length }}
-                    </span>
-                    / {{ sdr.files.length }}: {{ sdr.files.join(', ') }}
-                    <b>Records:</b> {{ sdr.sdrs.length }}
-                </div>
-                <table>
-                    <tr>
-                        <th>id</th>
-                        <th>record_type</th>
-                        <th>sensor_num</th>
-                        <th>sensor_name</th>
-                        <th>raw</th>
-                        <th>formula</th>
-                        <th>reading</th>
-                        <th>unit</th>
-                    </tr>
-                    <template v-for='(sdrr,idx) in sdr.sdrs'>
-                        <tr>
-                            <td>{{sdrr.record_id}}</td>
-                            <td>{{sdrr | record_type}}</td>
-                            <td class="number">{{sdrr.sensor_num | toHex}}</td>
-                            <td>{{sdrr.sensor_name}}</td>
-                            <template v-if="sdrr.reading">
-                                <td><input type="text" v-model="sdr.raw_reading[idx]" class="small-text number"></td>
-                                <td>{{sdrr.reading_formula}}</td>
-                                <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
-                                <td>{{sdrr.unit}}</td>
-                            </template>
-                            <template v-else>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </template>
-                        </tr>
-                    </template>
-                </table>
-            </template>
-        </div>
-
-        <div class="sect">
-            <h2 @click="sel.show=!sel.show" class="clickable">SEL</h2>
-            <p class="subsect">
-                A SEL raw file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>".
-                Drag the SEL raw file here:
-                <input type="file" id="sel_raw_file" multiple />
-            </p>
-            <template v-if="sel.show">
-                <div class="subsect">
-                    <p v-if="sel.emsg" class="error">
-                        {{ sel.emsg }}
-                    </p>
-                    <p>
-                        <b>Timezone:</b> <input type="text" class="small-text number" v-model='sel.timezone'>
+            <div class="sect">
+                <h2 @click="sdr.show=!sdr.show" class="clickable">SDR</h2>
+                <p class="subsect">
+                    A SDR bin file is dumped by ipmitool command: <code>ipmitool sdr dump sdr.bin</code>.
+                    Drag the SDR bin file sdr.bin here:
+                    <input type="file" id="sdr_bin_file" multiple />
+                </p>
+                <p v-if="sdr.emsg" class="error">
+                    {{ sdr.emsg }}
+                </p>
+                <p>
+                    <button @click="update_sel_with_sdr">Update SEL with SDR</button>
+                    <button @click="sdr.show=!sdr.show">show SDR</button>
+                </p>
+                <template v-if="sdr.show">
+                    <div class="subsect">
                         <b>Files: </b>
                         <span
-                            v-bind:class="[((sel.files.length>0)&&(sel.done_files.length<sel.files.length)) ? 'blink' : '']">{{ sel.done_files.length }}
+                            v-bind:class="[((sdr.files.length>0)&&(sdr.done_files.length<sdr.files.length)) ? 'blink' : '']">{{ sdr.done_files.length }}
                         </span>
-                        / {{ sel.files.length }}: {{ sel.files.join(', ') }}
-                        <b>Records:</b> {{ sel.sels.length }}
-                    </p>
-                </div>
-                <table>
-                    <tr>
-                        <th>id</th>
-                        <th>record_type</th>
-                        <!-- <th>timezone</th> -->
-                        <th>timestamp</th>
-                        <th>generator</th>
-                        <!-- <th>event_receiver</th> -->
-                        <th>sensor_type</th>
-                        <th>sensor_num/name</th>
-                        <th>event_dir</th>
-                        <th>event_type</th>
-                        <th>event</th>
-                        <th>event_data23</th>
-                        <th>event_data2</th>
-                        <th>event_data3</th>
-                    </tr>
-                    <tr v-for='selr in sel.sels'>
-                        <td>{{selr.id}}</td>
-                        <td>{{selr.record_type}}</td>
-                        <!-- <td>{{selr.timezone}}</td> -->
-                        <td>{{selr.timestamp}}</td>
-                        <td>{{selr.generator}}</td>
-                        <!-- <td>{{selr.event_receiver}}</td> -->
-                        <td>{{selr.sensor_type}}</td>
-                        <template v-if="selr.sdr">
-                            <td>{{selr.sdr.sensor_name}}</td>
+                        / {{ sdr.files.length }}: {{ sdr.files.join(', ') }}
+                        <b>Records:</b> {{ sdr.sdrs.length }}
+                    </div>
+                    <table>
+                        <tr>
+                            <th>id</th>
+                            <th>record_type</th>
+                            <th>sensor_num</th>
+                            <th>sensor_name</th>
+                            <th>raw</th>
+                            <th>formula</th>
+                            <th>reading</th>
+                            <th>unit</th>
+                        </tr>
+                        <template v-for='(sdrr,idx) in sdr.sdrs'>
+                            <tr>
+                                <td>{{sdrr.record_id}}</td>
+                                <td>{{sdrr | record_type}}</td>
+                                <td class="number">{{sdrr.sensor_num | toHex}}</td>
+                                <td>{{sdrr.sensor_name}}</td>
+                                <template v-if="sdrr.reading">
+                                    <td>
+                                        <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
+                                    </td>
+                                    <td>{{sdrr.reading_formula}}</td>
+                                    <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
+                                    <td>{{sdrr.unit}}</td>
+                                </template>
+                                <template v-else>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </template>
+                            </tr>
                         </template>
-                        <template v-else>
-                            <td class="number">{{selr.sensor_num | toHex}}</td>
-                        </template>
-                        <td>{{selr.event_direction}}</td>
-                        <td>{{selr.event_type}}</td>
-                        <td>{{selr.event}}</td>
-                        <td>{{selr.event_data23}}</td>
-                        <template v-if="selr.sdr">
-                            <td class="number">{{selr.sdr.reading(selr.event_data2)}}</td>
-                            <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>
-                        </template>
-                        <template v-else>
-                            <td class="number">{{selr.event_data2 | toDecHex}}</td>
-                            <td class="number">{{selr.event_data3 | toDecHex}}</td>
-                        </template>
-                    </tr>
-                </table>
-            </template>
-        </div>
+                    </table>
+                </template>
+            </div>
+
+            <div class="sect">
+                <h2 @click="sel.show=!sel.show" class="clickable">SEL</h2>
+                <p class="subsect">
+                    A SEL raw file is downloaded from BMC web, with name like "<strong>RawSELLog</strong>".
+                    Drag the SEL raw file here:
+                    <input type="file" id="sel_raw_file" multiple />
+                </p>
+                <p v-if="sel.emsg" class="error">
+                    {{ sel.emsg }}
+                </p>
+                <template v-if="sel.show">
+                    <div class="subsect">
+                        <p>
+                            <b>Timezone:</b> <input type="text" class="small-text number" v-model='sel.timezone'>
+                            <b>Files: </b>
+                            <span
+                                v-bind:class="[((sel.files.length>0)&&(sel.done_files.length<sel.files.length)) ? 'blink' : '']">{{ sel.done_files.length }}
+                            </span>
+                            / {{ sel.files.length }}: {{ sel.files.join(', ') }}
+                            <b>Records:</b> {{ sel.sels.length }}
+                        </p>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>id</th>
+                            <th>record_type</th>
+                            <!-- <th>timezone</th> -->
+                            <th>timestamp</th>
+                            <th>generator</th>
+                            <!-- <th>event_receiver</th> -->
+                            <th>sensor_type</th>
+                            <th>sensor_num/name</th>
+                            <th>event_dir</th>
+                            <th>event_type</th>
+                            <th>event</th>
+                            <th>event_data23</th>
+                            <th>event_data2</th>
+                            <th>event_data3</th>
+                        </tr>
+                        <tr v-for='selr in sel.sels'>
+                            <td>{{selr.id}}</td>
+                            <td>{{selr.record_type}}</td>
+                            <!-- <td>{{selr.timezone}}</td> -->
+                            <td>{{selr.timestamp}}</td>
+                            <td>{{selr.generator}}</td>
+                            <!-- <td>{{selr.event_receiver}}</td> -->
+                            <td>{{selr.sensor_type}}</td>
+                            <template v-if="selr.sdr">
+                                <td>{{selr.sdr.sensor_name}}</td>
+                            </template>
+                            <template v-else>
+                                <td class="number">{{selr.sensor_num | toHex}}</td>
+                            </template>
+                            <td>{{selr.event_direction}}</td>
+                            <td>{{selr.event_type}}</td>
+                            <td>{{selr.event}}</td>
+                            <td>{{selr.event_data23}}</td>
+                            <template v-if="selr.sdr">
+                                <td class="number">{{selr.sdr.reading(selr.event_data2)}}</td>
+                                <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>
+                            </template>
+                            <template v-else>
+                                <td class="number">{{selr.event_data2 | toDecHex}}</td>
+                                <td class="number">{{selr.event_data3 | toDecHex}}</td>
+                            </template>
+                        </tr>
+                    </table>
+                </template>
+            </div>
+        </template>
     </div>
     <script data-main="js/app.js" src="js/require.js"></script>
 </body>

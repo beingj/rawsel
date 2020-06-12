@@ -109,7 +109,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             "sdr.bin": function () {
                 if (!this.sdr.bin)
                     return;
-                const x = sdr_1.SdrRecord.from(this.sdr.bin);
+                let x;
+                if (this.sdr.bin instanceof ArrayBuffer) {
+                    x = sdr_1.SdrRecord.from(this.sdr.bin);
+                }
+                else {
+                    x = this.sdr.bin;
+                }
                 if (x.length == 0) {
                     this.sdr.emsg = 'no sdr in file';
                 }
@@ -121,6 +127,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.sdr.sdrs = x;
                     this.sdr.sdrs.forEach((_) => {
                         this.sdr.raw_reading.push(this.sdr.default_raw_reading);
+                    });
+                    this.$nextTick(() => {
+                        // ReferenceError: "MathJax" is not defined
+                        // https://stackoverflow.com/questions/858181/how-to-check-a-not-defined-variable-in-javascript
+                        if (typeof MathJax !== "undefined") {
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
+                        }
                     });
                 }
             }
@@ -151,6 +164,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.sdr.bin = test_data_1.test_data.sdr;
             this.sel.raw = test_data_1.test_data.sel;
             this.bind_uploader();
+            // the following code will not run, cause MathJax === "undefined" at this monent
+            // they are put here to let vscode/tsc intelisense options of MathJax.Hub.Config
+            // so we can copy the options from here to MathJax.Hub.Config in index.html
+            if (typeof MathJax !== "undefined") {
+                MathJax.Hub.Config({});
+            }
             // // test slow loading
             // window.setTimeout(() => {
             //     this.loading = false

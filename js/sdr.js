@@ -248,7 +248,84 @@
         }
         static get_reading_formula_text(sdr) {
             const f = SdrRecord.linear_of(sdr.linear);
-            return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`;
+            // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
+            // return `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
+            const f1 = `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`;
+            let m = '';
+            // m=1
+            if (sdr.m == 1) {
+                m = `x`;
+            }
+            else {
+                m = `${sdr.m}x`;
+            }
+            let b = `${sdr.b}`;
+            let bexp = '';
+            let b_bexp = '';
+            // bexp=0,1
+            // b=0,1
+            if (sdr.b == 0) {
+                b_bexp = '';
+            }
+            else {
+                if (sdr.bexp == 0) {
+                    bexp = '';
+                }
+                else if (sdr.bexp == 1) {
+                    bexp = `\\times 10`;
+                }
+                else {
+                    bexp = `\\times 10 ^ {${sdr.bexp}}`;
+                }
+                if (sdr.b == 1) {
+                    if (sdr.bexp == 0) {
+                        // 1 x 1
+                        b_bexp = `+ 1`;
+                    }
+                    else {
+                        // 1 x ?
+                        b_bexp = `+ ${bexp}`;
+                    }
+                }
+                else {
+                    if (sdr.bexp == 0) {
+                        b_bexp = `+ ${b}`;
+                    }
+                    else if (sdr.bexp == 1) {
+                        // ? x 10 = ?0
+                        b_bexp = `+ ${b}0`;
+                    }
+                    else {
+                        b_bexp = `+ (${b} ${bexp})`;
+                    }
+                }
+            }
+            let rexp = '';
+            // rexp=0,1
+            if (sdr.rexp == 0) {
+                rexp = '';
+            }
+            else if (sdr.rexp == 1) {
+                rexp = `\\times 10`;
+            }
+            else {
+                rexp = `\\times 10 ^ {${sdr.rexp}}`;
+            }
+            let m_b_bexp = `${m} ${b_bexp}`;
+            let m_b_bexp_r_rexp = '';
+            if (sdr.rexp == 0) {
+                m_b_bexp_r_rexp = m_b_bexp;
+            }
+            else {
+                if (sdr.m != 1) {
+                    m_b_bexp = `(${m_b_bexp})`;
+                }
+                m_b_bexp_r_rexp = `${m_b_bexp} ${rexp}`;
+            }
+            const f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`;
+            // return `${f1} \\(\\Rightarrow\\) ${f2}`
+            // return `${f1} $$=$$ ${f2}`
+            return f2;
         }
         static get_reading_formula(sdr) {
             return (raw) => {

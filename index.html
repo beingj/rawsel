@@ -76,6 +76,15 @@
             margin-bottom: 1em;
         }
     </style>
+    <script type="text/x-mathjax-config">
+        // http://docs.mathjax.org/en/v2.7-latest/configuration.html
+        MathJax.Hub.Config({
+            "displayAlign": "left",
+            // "skipStartupTypeset": true,
+            "showMathMenu": false
+        })
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML"></script>
 </head>
 
 <body>
@@ -115,7 +124,7 @@
                         / {{ sdr.files.length }}: {{ sdr.files.join(', ') }}
                         <b>Records:</b> {{ sdr.sdrs.length }}
                     </div>
-                    <table>
+                    <table id="math">
                         <tr>
                             <th>id</th>
                             <th>record_type</th>

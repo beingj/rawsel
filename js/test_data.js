@@ -4,12 +4,13 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./sdr"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.test_data = void 0;
+    const sdr_1 = require("./sdr");
     const test_data = {
         sdr: sdr_data(),
         sel: `
@@ -62,7 +63,47 @@
         ns.forEach((v, i) => {
             ua[i] = ns[i];
         });
-        return ab;
+        // return ab
+        return repeat_sdr(ab);
+    }
+    function repeat_sdr(bin) {
+        // there are 3 records in sdr_data above
+        // we need total 54=18*3
+        const ua1 = new Uint8Array(bin);
+        const len = bin.byteLength;
+        const ab = new ArrayBuffer(len * 18);
+        const ua2 = new Uint8Array(ab);
+        for (let i = 0; i < 18; i++) {
+            ua1.forEach((b, j) => {
+                ua2[i * len + j] = b;
+            });
+        }
+        const x = sdr_1.SdrRecord.from(ab);
+        x.forEach((sdr, idx) => {
+            sdr.record_id = idx + 1;
+            sdr.sensor_num = idx + 1;
+            sdr.m = 3;
+            sdr.b = 3;
+            sdr.bexp = 3;
+            sdr.rexp = 3;
+        });
+        let idx = 0;
+        // total 54= 2*3*3*3
+        for (let m of [1, 2]) {
+            x[idx].m = m;
+            for (let b of [0, 1, 2]) {
+                x[idx].b = m;
+                for (let bexp of [0, 1, 2]) {
+                    x[idx].bexp = bexp;
+                    for (let rexp of [0, 1, 2]) {
+                        x[idx].rexp = rexp;
+                        x[idx].reading_formula = sdr_1.SdrRecordType1.get_reading_formula_text(x[idx]);
+                        idx++;
+                    }
+                }
+            }
+        }
+        return x;
     }
 });
 //# sourceMappingURL=test_data.js.map

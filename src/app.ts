@@ -21,7 +21,7 @@ const app = new Vue({
             show: true,
             files: [] as string[],
             done_files: [] as string[],
-            bin: null as (ArrayBuffer | null),
+            bin: null as (ArrayBuffer | SdrRecord[] | null),
             sdrs: [] as SdrRecord[],
             raw_reading: [] as number[],
             default_raw_reading: 100, // default raw value of sensor reading
@@ -90,7 +90,14 @@ const app = new Vue({
         },
         "sdr.bin": function () {
             if (!this.sdr.bin) return
-            const x = SdrRecord.from(this.sdr.bin)
+            let x: SdrRecord[]
+            if (this.sdr.bin instanceof ArrayBuffer) {
+                x = SdrRecord.from(this.sdr.bin)
+            }
+            else {
+                x = this.sdr.bin
+            }
+
             if (x.length == 0) {
                 this.sdr.emsg = 'no sdr in file'
             } else {
@@ -100,6 +107,14 @@ const app = new Vue({
                 this.sdr.sdrs = x
                 this.sdr.sdrs.forEach((_) => {
                     this.sdr.raw_reading.push(this.sdr.default_raw_reading)
+                })
+
+                this.$nextTick(() => {
+                    // ReferenceError: "MathJax" is not defined
+                    // https://stackoverflow.com/questions/858181/how-to-check-a-not-defined-variable-in-javascript
+                    if (typeof MathJax !== "undefined") {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
+                    }
                 })
             }
         }
@@ -126,6 +141,14 @@ const app = new Vue({
         this.sdr.bin = test_data.sdr
         this.sel.raw = test_data.sel
         this.bind_uploader()
+
+        // the following code will not run, cause MathJax === "undefined" at this monent
+        // they are put here to let vscode/tsc intelisense options of MathJax.Hub.Config
+        // so we can copy the options from here to MathJax.Hub.Config in index.html
+        if (typeof MathJax !== "undefined") {
+            MathJax.Hub.Config({
+            })
+        }
 
         // // test slow loading
         // window.setTimeout(() => {

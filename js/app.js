@@ -92,21 +92,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return sdr_1.SdrRecord.record_type_of(sdr.record_type);
             },
             toHex: function (n) {
-                if (!n)
-                    return '';
                 if (Number.isNaN(n))
                     return n.toString();
                 return n.toString(16).padStart(2, '0') + 'h';
             },
             toDecHex: function (n) {
-                if (!n)
-                    return '';
                 if (Number.isNaN(n))
                     return n.toString();
                 return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`;
             }
         },
-        created: function () {
+        mounted: function () {
             this.sdr.bin = test_data_1.test_data.sdr;
             this.sel.raw = test_data_1.test_data.sel;
             new uploader_1.Uploader('sel_raw_file', (files) => {

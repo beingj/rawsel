@@ -74,17 +74,15 @@ const app = new Vue({
             return SdrRecord.record_type_of(sdr.record_type)
         },
         toHex: function (n: number) {
-            if (!n) return ''
             if (Number.isNaN(n)) return n.toString()
             return n.toString(16).padStart(2, '0') + 'h'
         },
         toDecHex: function (n: number) {
-            if (!n) return ''
             if (Number.isNaN(n)) return n.toString()
             return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`
         }
     },
-    created: function () {
+    mounted: function () {
         this.sdr.bin = test_data.sdr
         this.sel.raw = test_data.sel
 

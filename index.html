@@ -115,7 +115,7 @@
                     <button @click="update_sel_with_sdr">Update SEL with SDR</button>
                     <button @click="sdr.show=!sdr.show">show SDR</button>
                 </p>
-                <template v-if="sdr.show">
+                <div v-show="sdr.show">
                     <div class="subsect">
                         <b>Files: </b>
                         <span
@@ -135,30 +135,28 @@
                             <th>reading</th>
                             <th>unit</th>
                         </tr>
-                        <template v-for='(sdrr,idx) in sdr.sdrs'>
-                            <tr>
-                                <td>{{sdrr.record_id}}</td>
-                                <td>{{sdrr | record_type}}</td>
-                                <td class="number">{{sdrr.sensor_num | toHex}}</td>
-                                <td>{{sdrr.sensor_name}}</td>
-                                <template v-if="sdrr.reading">
-                                    <td>
-                                        <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
-                                    </td>
-                                    <td>{{sdrr.reading_formula}}</td>
-                                    <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
-                                    <td>{{sdrr.unit}}</td>
-                                </template>
-                                <template v-else>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </template>
-                            </tr>
-                        </template>
+                        <tr v-for='(sdrr,idx) in sdr.sdrs'>
+                            <td>{{sdrr.record_id}}</td>
+                            <td>{{sdrr | record_type}}</td>
+                            <td class="number">{{sdrr.sensor_num | toHex}}</td>
+                            <td>{{sdrr.sensor_name}}</td>
+                            <template v-if="sdrr.reading">
+                                <td>
+                                    <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
+                                </td>
+                                <td>{{sdrr.reading_formula}}</td>
+                                <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
+                                <td>{{sdrr.unit}}</td>
+                            </template>
+                            <template v-else>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </template>
+                        </tr>
                     </table>
-                </template>
+                </div>
             </div>
 
             <div class="sect">
@@ -171,7 +169,7 @@
                 <p v-if="sel.emsg" class="error">
                     {{ sel.emsg }}
                 </p>
-                <template v-if="sel.show">
+                <div v-show="sel.show">
                     <div class="subsect">
                         <p>
                             <b>Timezone:</b> <input type="text" class="small-text number" v-model='sel.timezone'>
@@ -228,7 +226,7 @@
                             </template>
                         </tr>
                     </table>
-                </template>
+                </div>
             </div>
         </template>
     </div>

@@ -72,6 +72,15 @@ const app = new Vue({
                     o.bin = data
                 }
             }, false)
+        },
+        update_mathjax: function () {
+            this.$nextTick(() => {
+                // ReferenceError: "MathJax" is not defined
+                // https://stackoverflow.com/questions/858181/how-to-check-a-not-defined-variable-in-javascript
+                if (typeof MathJax !== "undefined") {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
+                }
+            })
         }
     },
     watch: {
@@ -108,14 +117,7 @@ const app = new Vue({
                 this.sdr.sdrs.forEach((_) => {
                     this.sdr.raw_reading.push(this.sdr.default_raw_reading)
                 })
-
-                this.$nextTick(() => {
-                    // ReferenceError: "MathJax" is not defined
-                    // https://stackoverflow.com/questions/858181/how-to-check-a-not-defined-variable-in-javascript
-                    if (typeof MathJax !== "undefined") {
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
-                    }
-                })
+                this.update_mathjax()
             }
         }
     },

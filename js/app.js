@@ -95,7 +95,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     // ReferenceError: "MathJax" is not defined
                     // https://stackoverflow.com/questions/858181/how-to-check-a-not-defined-variable-in-javascript
                     if (typeof MathJax !== "undefined") {
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
+                        // if (typeof MathJax.Hub !== "undefined") {
+                        if (MathJax.Hub) {
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "math"]);
+                        }
                     }
                 });
             }
@@ -172,11 +175,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.sdr.bin = test_data_1.test_data.sdr;
             this.sel.raw = test_data_1.test_data.sel;
             this.bind_uploader();
-            // the following code will not run, cause MathJax === "undefined" at this monent
+            // the following code will not run
             // they are put here to let vscode/tsc intelisense options of MathJax.Hub.Config
-            // so we can copy the options from here to MathJax.Hub.Config in index.html
-            if (typeof MathJax !== "undefined") {
-                MathJax.Hub.Config({});
+            // so we can copy to the Mathjax object in index.html
+            if (false) {
+                MathJax.Hub.Config({
+                    // "displayAlign": "left",
+                    // "skipStartupTypeset": true,
+                    "showMathMenu": false,
+                    "styles": {
+                        "table#math td span.MJXc-display": {
+                            "margin": 0,
+                            "color": "blue",
+                        }
+                    }
+                });
             }
             // // test slow loading
             // window.setTimeout(() => {

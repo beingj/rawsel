@@ -76,13 +76,20 @@
             margin-bottom: 1em;
         }
     </style>
-    <script type="text/x-mathjax-config">
-        // http://docs.mathjax.org/en/v2.7-latest/configuration.html
-        MathJax.Hub.Config({
-            "displayAlign": "left",
-            // "skipStartupTypeset": true,
-            "showMathMenu": false
-        })
+    <script type="text/javascript">
+        // http://docs.mathjax.org/en/v2.7-latest/configuration.html#using-plain-javascript
+        // http://docs.mathjax.org/en/v2.7-latest/configuration.html#details-of-the-mathjax-configuration-process
+        window.MathJax = {
+            "displayAlign": "left", // html element in-line style
+            // "showMathMenu": false,
+            "styles": {
+                // special more details to force css select it
+                "table#math td span.MJXc-display": {
+                    "margin": "0.2em",
+                    // "color": "blue",
+                }
+            }
+        }
     </script>
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML"></script>
 </head>

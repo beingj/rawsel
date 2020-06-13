@@ -6,6 +6,7 @@ Todo:
   ✔ refresh sensor name and reading with sdr @done(20-06-11 17:42)
   ✘ modify uploader to let vue handle onchange => fixed by change created to mounted @cancelled(20-06-12 13:54)
   ✔ add MathJax @done(20-06-12 21:53)
+  ✔ fix bug by force td re-render to remove all children including mathjax elements: sdr record type change from 1 to != 1, formula will stay. sdr.formula is removed, why mathjax stay? @done(20-06-13 11:33)
   ☐ sel record_type change to enum
   ✔ check sdr bin file whether invalid @done(20-06-11 22:52)
   ✔ move refresh files code in on_data to app method? @done(20-06-11 22:43)

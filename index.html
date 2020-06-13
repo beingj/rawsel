@@ -144,7 +144,7 @@
                                 <td>
                                     <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
                                 </td>
-                                <td>{{sdrr.reading_formula}}</td>
+                                <td><span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td>
                                 <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
                                 <td>{{sdrr.unit}}</td>
                             </template>

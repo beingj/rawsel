@@ -38,7 +38,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 sdrs: [],
                 raw_reading: [],
                 default_raw_reading: 100,
-                emsg: ''
+                emsg: '',
+                show_formula: true
             }
         },
         methods: {
@@ -104,40 +105,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.sel.sels.forEach((i) => i.change_timezone(this.sel.timezone));
             },
             "sel.raw": function () {
-                if (this.sel.raw == '')
+                const o = this.sel;
+                if (o.raw == '')
                     return;
-                const x = sel_1.SelRecord.from_raw(this.sel.raw);
+                const x = sel_1.SelRecord.from_raw(o.raw);
                 if (x.length == 0) {
-                    this.sel.emsg = 'no raw sel in file';
+                    o.emsg = 'no raw sel in file';
                 }
                 else {
-                    this.sel.emsg = '';
-                    this.sel.sels = x;
+                    o.emsg = '';
+                    o.sels = x;
                 }
             },
             "sdr.bin": function () {
-                if (!this.sdr.bin)
+                const o = this.sdr;
+                if (!o.bin)
                     return;
                 let x;
-                if (this.sdr.bin instanceof ArrayBuffer) {
-                    x = sdr_1.SdrRecord.from(this.sdr.bin);
+                if (o.bin instanceof ArrayBuffer) {
+                    x = sdr_1.SdrRecord.from(o.bin);
                 }
                 else {
-                    x = this.sdr.bin;
+                    x = o.bin;
                 }
                 if (x.length == 0) {
-                    this.sdr.emsg = 'no sdr in file';
+                    o.emsg = 'no sdr in file';
                 }
                 else {
-                    this.sdr.emsg = '';
-                    const o = this.sdr;
+                    o.emsg = '';
+                    // force formula td re-render to remove the children mathjax elements
+                    this.sdr.show_formula = false;
+                    o.sdrs = x;
+                    this.sdr.show_formula = true;
+                    this.update_mathjax();
                     while (o.raw_reading.length > 0)
                         o.raw_reading.pop();
-                    this.sdr.sdrs = x;
-                    this.sdr.sdrs.forEach((_) => {
-                        this.sdr.raw_reading.push(this.sdr.default_raw_reading);
+                    x.forEach((i) => {
+                        o.raw_reading.push(o.default_raw_reading);
                     });
-                    this.update_mathjax();
                 }
             }
         },

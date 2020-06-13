@@ -121,12 +121,15 @@ const app = new Vue({
                 // force formula td re-render to remove the children mathjax elements
                 this.sdr.show_formula = false
                 o.sdrs = x
-                this.sdr.show_formula = true
-                this.update_mathjax()
 
                 while (o.raw_reading.length > 0) o.raw_reading.pop()
                 x.forEach((i) => {
                     o.raw_reading.push(o.default_raw_reading)
+                })
+
+                this.$nextTick(()=>{
+                    this.sdr.show_formula = true
+                    this.update_mathjax()
                 })
             }
         }
@@ -144,6 +147,9 @@ const app = new Vue({
             if ((n == undefined) || (n == null)) return ''
             if (Number.isNaN(n)) return n.toString()
             return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`
+        },
+        rmTex: function (s: string) {
+            return s.substring(2, s.length - 2)
         }
     },
     created: function () {

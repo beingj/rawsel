@@ -322,7 +322,13 @@
                 }
                 m_b_bexp_r_rexp = `${m_b_bexp} ${rexp}`;
             }
-            const f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`;
+            let f2;
+            if (f == 'linear') {
+                f2 = `$$${m_b_bexp_r_rexp}$$`;
+            }
+            else {
+                f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`;
+            }
             // return `${f1} \\(\\Rightarrow\\) ${f2}`
             // return `${f1} $$=$$ ${f2}`
             return f2;

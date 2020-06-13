@@ -85,7 +85,8 @@
             "styles": {
                 // special more details to force css select it
                 "table#math td span.MJXc-display": {
-                    "margin": "0.2em",
+                    // "margin": "0.2em",
+                    "margin": 0,
                     // "color": "blue",
                 }
             }
@@ -120,7 +121,7 @@
                 </p>
                 <p>
                     <button @click="update_sel_with_sdr">Update SEL with SDR</button>
-                    <button @click="sdr.show=!sdr.show">show SDR</button>
+                    <button @click="sdr.show=!sdr.show">show/hide SDR</button>
                 </p>
                 <div v-show="sdr.show">
                     <div class="subsect">
@@ -151,6 +152,7 @@
                                 <td>
                                     <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
                                 </td>
+                                <!-- <td>{{sdrr.reading_formula | rmTex}}<span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td> -->
                                 <td><span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td>
                                 <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
                                 <td>{{sdrr.unit}}</td>

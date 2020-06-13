@@ -13,7 +13,7 @@ export enum EventType {
     threshold = 1,
 }
 
-export function name_of(myEnum: any, n: number) {
+export function name_of(myEnum: any, n: number): string {
     // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
     let ns = n.toString(10)
     for (let enumMember in myEnum) {
@@ -316,7 +316,13 @@ export class SdrRecordType1 extends SdrRecord {
             }
             m_b_bexp_r_rexp = `${m_b_bexp} ${rexp}`
         }
-        const f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`
+
+        let f2: string
+        if (f == 'linear') {
+            f2 = `$$${m_b_bexp_r_rexp}$$`
+        } else {
+            f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`
+        }
         // return `${f1} \\(\\Rightarrow\\) ${f2}`
         // return `${f1} $$=$$ ${f2}`
         return f2

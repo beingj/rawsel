@@ -139,12 +139,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     // force formula td re-render to remove the children mathjax elements
                     this.sdr.show_formula = false;
                     o.sdrs = x;
-                    this.sdr.show_formula = true;
-                    this.update_mathjax();
                     while (o.raw_reading.length > 0)
                         o.raw_reading.pop();
                     x.forEach((i) => {
                         o.raw_reading.push(o.default_raw_reading);
+                    });
+                    this.$nextTick(() => {
+                        this.sdr.show_formula = true;
+                        this.update_mathjax();
                     });
                 }
             }
@@ -166,6 +168,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (Number.isNaN(n))
                     return n.toString();
                 return `${n.toString(10)} / ${n.toString(16).padStart(2, '0')}h`;
+            },
+            rmTex: function (s) {
+                return s.substring(2, s.length - 2);
             }
         },
         created: function () {

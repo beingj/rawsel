@@ -19,7 +19,6 @@
     let SelRecord = /** @class */ (() => {
         class SelRecord {
             constructor(raw) {
-                this.sdr = null;
                 this.timezone = SelRecord.timezone;
                 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
                 const a = raw.split('|').map(i => parseInt(i.trim(), 16));
@@ -39,7 +38,8 @@
                 this.event_data3 = a[11];
                 const st = a[6];
                 const et_offset = a[9] & 0xf;
-                if ((st in ipmi_spec_1.IPMI_Spec.event_data) &&
+                if ((this.event_type == 'sensor-specific') &&
+                    (st in ipmi_spec_1.IPMI_Spec.event_data) &&
                     (et_offset in ipmi_spec_1.IPMI_Spec.event_data[st])) {
                     const x = ipmi_spec_1.IPMI_Spec.event_data[st][et_offset](this);
                     this.event_data2_parsed = x.d2;

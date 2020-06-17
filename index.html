@@ -250,19 +250,21 @@
                             <td>{{selr.event_type}}</td>
                             <td>{{selr.event}}</td>
                             <td>{{selr.event_data23}}</td>
-                            <template v-if="selr.sdr">
+                            <template v-if="selr.event_type=='threshold' && selr.sdr && selr.sdr.reading">
                                 <td class="number">{{selr.sdr.reading(selr.event_data2)}}</td>
                                 <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>
                             </template>
                             <template v-else>
                                 <template v-if="selr.event_data2_parsed">
-                                    <td><span class="tooltip">{{selr.event_data2_parsed}}<span class="tooltiptext">{{selr.event_data2 | toDecHex}}</span></span</td>
+                                    <td><span class="tooltip">{{selr.event_data2_parsed}}<span
+                                                class="tooltiptext">{{selr.event_data2 | toDecHex}}</span></span< /td>
                                 </template>
                                 <template v-else>
                                     <td class="number">{{selr.event_data2 | toDecHex}}</td>
                                 </template>
                                 <template v-if="selr.event_data3_parsed">
-                                    <td><span class="tooltip">{{selr.event_data3_parsed}}<span class="tooltiptext">{{selr.event_data3 | toDecHex}}</span></span</td>
+                                    <td><span class="tooltip">{{selr.event_data3_parsed}}<span
+                                                class="tooltiptext">{{selr.event_data3 | toDecHex}}</span></span< /td>
                                 </template>
                                 <template v-else>
                                     <td class="number">{{selr.event_data3 | toDecHex}}</td>

@@ -44,13 +44,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         },
         methods: {
             update_sel_with_sdr: function () {
-                const type1s = this.sdr.sdrs.filter((i) => i instanceof sdr_1.SdrRecordType1);
+                // could be type1/2/3, but use type1 for short
+                const sdr_has_sensor_num = this.sdr.sdrs.filter((i) => Object.keys(i).indexOf('sensor_num') >= 0);
                 this.sel.sels.forEach((selr, idx) => {
-                    const sdrr = type1s.find((i) => i.sensor_num == selr.sensor_num);
-                    if (sdrr) {
-                        selr.sdr = sdrr;
-                    }
+                    const sdrr = sdr_has_sensor_num.find((i) => i.sensor_num == selr.sensor_num);
+                    selr.sdr = sdrr;
                 });
+                this.$forceUpdate();
             },
             bind_uploader: function () {
                 new uploader_1.Uploader('sel_raw_file', (files) => {

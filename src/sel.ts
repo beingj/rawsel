@@ -29,7 +29,7 @@ export class SelRecord {
     event_data3: number
     event_data2_parsed?: string
     event_data3_parsed?: string
-    sdr: SdrRecordType1 | null = null
+    sdr?: SdrRecordType1
 
     timezone = SelRecord.timezone
     constructor(raw: string) {
@@ -51,7 +51,8 @@ export class SelRecord {
         this.event_data3 = a[11]
         const st = a[6]
         const et_offset = a[9] & 0xf
-        if ((st in IPMI_Spec.event_data) &&
+        if ((this.event_type == 'sensor-specific') &&
+            (st in IPMI_Spec.event_data) &&
             (et_offset in IPMI_Spec.event_data[st])) {
             const x = IPMI_Spec.event_data[st][et_offset](this)
             this.event_data2_parsed = x.d2

@@ -13,5 +13,5 @@ Todo:
   ✔ extend Date format method: http://definitelytyped.org/guides/best-practices.html => Extending built-in types @done(20-06-11 21:34)
   ✔ event 2 & 3 in IPMI spec @done(20-06-17 11:34)
   ☐ sdr threshold and event
-  ☐ change ipmi_spec from class to namespace/type
+  ✔ change ipmi_spec from class to namespace/type @done(20-06-17 12:00)
   ☐ speed js load, or load js before body

@@ -31,13 +31,13 @@ const app = new Vue({
     },
     methods: {
         update_sel_with_sdr: function () {
-            const type1s = this.sdr.sdrs.filter((i: SdrRecord) => i instanceof SdrRecordType1) as SdrRecordType1[]
+            // could be type1/2/3, but use type1 for short
+            const sdr_has_sensor_num = this.sdr.sdrs.filter((i: SdrRecord) => Object.keys(i).indexOf('sensor_num') >= 0) as SdrRecordType1[]
             this.sel.sels.forEach((selr: SelRecord, idx: number) => {
-                const sdrr = type1s.find((i) => i.sensor_num == selr.sensor_num)
-                if (sdrr) {
-                    selr.sdr = sdrr
-                }
+                const sdrr = sdr_has_sensor_num.find((i) => i.sensor_num == selr.sensor_num)
+                selr.sdr = sdrr
             })
+            this.$forceUpdate()
         },
         bind_uploader: function () {
             new Uploader('sel_raw_file', (files) => {
@@ -127,7 +127,7 @@ const app = new Vue({
                     o.raw_reading.push(o.default_raw_reading)
                 })
 
-                this.$nextTick(()=>{
+                this.$nextTick(() => {
                     this.sdr.show_formula = true
                     this.update_mathjax()
                 })

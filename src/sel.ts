@@ -27,6 +27,8 @@ export class SelRecord {
     event: string
     event_data2: number
     event_data3: number
+    event_data2_parsed?: string
+    event_data3_parsed?: string
     sdr: SdrRecordType1 | null = null
 
     timezone = SelRecord.timezone
@@ -47,6 +49,15 @@ export class SelRecord {
         this.event = this.event_of(a[8], a[9], a[6])
         this.event_data2 = a[10]
         this.event_data3 = a[11]
+        const st = a[6]
+        const et_offset = a[9] & 0xf
+        if ((st in IPMI_Spec.event_data) &&
+            (et_offset in IPMI_Spec.event_data[st])) {
+            const x = IPMI_Spec.event_data[st][et_offset](this)
+            this.event_data2_parsed = x.d2
+            this.event_data3_parsed = x.d3
+        }
+        // console.log(this.event_data2_parsed)
     }
     int_to_hex(n: number) {
         return (n < 16 ? '0' : '') + n.toString(16) + 'h'

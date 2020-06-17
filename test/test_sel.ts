@@ -346,4 +346,29 @@ Generic event
         expect(srs[11].event_data23).to.equal('OEM code in byte 2, OEM code in byte 3')
         expect(srs[12].event_data23).to.equal('reserved, reserved')
     })
+    it('event data 2&3 parse', () => {
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  51h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  04h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  02h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  07h|  00h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  07h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  00h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   3bh|  00h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   2ah|  03h|  32h|  13h|
+ `
+        const srs = SelRecord.from_raw(raw)
+
+        expect(srs[0].event_data2_parsed).to.equal(undefined)
+        expect(srs[1].event_data2_parsed).to.equal('network controller #2')
+        expect(srs[2].event_data2_parsed).to.equal(undefined)
+        expect(srs[3].event_data2_parsed).to.equal('unspecified')
+        expect(srs[4].event_data2_parsed).to.equal('reserved')
+        expect(srs[5].event_data2_parsed).to.equal(undefined)
+        expect(srs[6].event_data2_parsed).to.equal(undefined)
+        expect(srs[7].event_data3_parsed).to.equal('Session deactivated by Close Session command, channel #3')
+    })
 })

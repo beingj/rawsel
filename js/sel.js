@@ -37,6 +37,15 @@
                 this.event = this.event_of(a[8], a[9], a[6]);
                 this.event_data2 = a[10];
                 this.event_data3 = a[11];
+                const st = a[6];
+                const et_offset = a[9] & 0xf;
+                if ((st in ipmi_spec_1.IPMI_Spec.event_data) &&
+                    (et_offset in ipmi_spec_1.IPMI_Spec.event_data[st])) {
+                    const x = ipmi_spec_1.IPMI_Spec.event_data[st][et_offset](this);
+                    this.event_data2_parsed = x.d2;
+                    this.event_data3_parsed = x.d3;
+                }
+                // console.log(this.event_data2_parsed)
             }
             static from_raw(raw) {
                 const x = [];

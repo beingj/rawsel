@@ -50,3 +50,38 @@ Date.prototype.format = function (fmt: string) {
     }
     return fmt;
 }
+
+interface Array<T> {
+    indexOfOr(n: number, def: T): T
+}
+Array.prototype.indexOfOr = function <T>(n: number, def: T) {
+    return indexOfOr<T>(this, n, def)
+}
+function indexOfOr<T>(x: T[], n: number, def: T) {
+    if ((n < 0) || (n >= x.length)) return def
+    return x[n]
+}
+
+interface Array<T> {
+    bitsOr(n: number, def: T): Array<T>
+}
+Array.prototype.bitsOr = function <T>(n: number, def: T) {
+    return bitsOr<T>(this, n, def)
+}
+function bitsOr<T>(x: T[], n: number, def: T) {
+    const len = x.length
+    let bit_n = 0
+    const bits: T[] = []
+    while (n > 0) {
+        if (bit_n < len) {
+            if ((n & 1) == 1) {
+                bits.push(x[bit_n])
+            }
+        } else {
+            bits.push(def)
+        }
+        n = n >> 1
+        bit_n++
+    }
+    return bits
+}

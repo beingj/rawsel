@@ -75,6 +75,31 @@
         .subsect {
             margin-bottom: 1em;
         }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            /* border-bottom: 1px dotted black; */
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 80px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            margin: 1.2em 0 0 0;
+            padding: 5px 0;
+
+            /* 定位 */
+            position: absolute;
+            z-index: 1;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
     </style>
     <script type="text/javascript">
         // http://docs.mathjax.org/en/v2.7-latest/configuration.html#using-plain-javascript
@@ -230,8 +255,18 @@
                                 <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>
                             </template>
                             <template v-else>
-                                <td class="number">{{selr.event_data2 | toDecHex}}</td>
-                                <td class="number">{{selr.event_data3 | toDecHex}}</td>
+                                <template v-if="selr.event_data2_parsed">
+                                    <td><span class="tooltip">{{selr.event_data2_parsed}}<span class="tooltiptext">{{selr.event_data2 | toDecHex}}</span></span</td>
+                                </template>
+                                <template v-else>
+                                    <td class="number">{{selr.event_data2 | toDecHex}}</td>
+                                </template>
+                                <template v-if="selr.event_data3_parsed">
+                                    <td><span class="tooltip">{{selr.event_data3_parsed}}<span class="tooltiptext">{{selr.event_data3 | toDecHex}}</span></span</td>
+                                </template>
+                                <template v-else>
+                                    <td class="number">{{selr.event_data3 | toDecHex}}</td>
+                                </template>
                             </template>
                         </tr>
                     </table>

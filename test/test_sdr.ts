@@ -124,6 +124,15 @@ describe('sdr', () => {
         sdr.linear = 0xff
         expect(sdr.reading(100)).to.equal('60')
     })
+    it('formula mathjax', () => {
+        // TODO: test mathjax
+    })
+    it('threshold', () => {
+        // TODO: test threshold
+    })
+    it('event offsets', () => {
+        // TODO: test event offset
+    })
     it('unit_of', () => {
         expect(SdrRecord.unit_of(0x01)).to.equal('degrees C');
         expect(SdrRecord.unit_of(0xff)).to.equal('ffh');

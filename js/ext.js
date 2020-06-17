@@ -37,4 +37,33 @@ Date.prototype.format = function (fmt) {
     }
     return fmt;
 };
+Array.prototype.indexOfOr = function (n, def) {
+    return indexOfOr(this, n, def);
+};
+function indexOfOr(x, n, def) {
+    if ((n < 0) || (n >= x.length))
+        return def;
+    return x[n];
+}
+Array.prototype.bitsOr = function (n, def) {
+    return bitsOr(this, n, def);
+};
+function bitsOr(x, n, def) {
+    const len = x.length;
+    let bit_n = 0;
+    const bits = [];
+    while (n > 0) {
+        if (bit_n < len) {
+            if ((n & 1) == 1) {
+                bits.push(x[bit_n]);
+            }
+        }
+        else {
+            bits.push(def);
+        }
+        n = n >> 1;
+        bit_n++;
+    }
+    return bits;
+}
 //# sourceMappingURL=ext.js.map

@@ -101,7 +101,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 });
-            }
+            },
+            event_type_of: function (n) {
+                return sel_1.SelRecord.event_type_of(n);
+            },
+            sorted_threshold: function (sdr) {
+                if (!sdr.threshold) {
+                    return;
+                }
+                const t = sdr.threshold;
+                const ts = [t.unr, t.uc, t.unc, t.lnc, t.lc, t.lnr];
+                const vs = [];
+                ts.forEach((i) => {
+                    vs.push(i ? i : { v: NaN, s: '-' });
+                });
+                return vs;
+            },
         },
         watch: {
             "sel.timezone": function () {

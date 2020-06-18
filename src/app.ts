@@ -85,7 +85,22 @@ const app = new Vue({
                     }
                 }
             })
-        }
+        },
+        event_type_of: function (n: number) {
+            return SelRecord.event_type_of(n)
+        },
+        sorted_threshold: function (sdr: SdrRecordType1) {
+            if (!sdr.threshold) {
+                return
+            }
+            const t = sdr.threshold
+            const ts = [t.unr, t.uc, t.unc, t.lnc, t.lc, t.lnr]
+            const vs: { v: number, s: string }[] = []
+            ts.forEach((i) => {
+                vs.push(i ? i : { v: NaN, s: '-' })
+            })
+            return vs
+        },
     },
     watch: {
         "sel.timezone": function () {

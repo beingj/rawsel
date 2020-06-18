@@ -10,8 +10,10 @@
 
     <style>
         body {
-            width: 1100px;
-            margin: auto;
+            /* width: 1100px; */
+            /* margin: auto; */
+            margin-left: 30px;
+            margin-right: 30px;
             margin-bottom: 3em;
         }
 
@@ -84,7 +86,7 @@
 
         .tooltip .tooltiptext {
             visibility: hidden;
-            width: 80px;
+            width: 20em;
             background-color: black;
             color: #fff;
             text-align: center;
@@ -163,16 +165,21 @@
                             <th>record_type</th>
                             <th>sensor_num</th>
                             <th>sensor_name</th>
+                            <th>sensor_type</th>
+                            <th>event_type</th>
                             <th>raw</th>
                             <th>formula</th>
                             <th>reading</th>
                             <th>unit</th>
+                            <th>thresholds / events</th>
                         </tr>
                         <tr v-for='(sdrr,idx) in sdr.sdrs'>
                             <td>{{sdrr.record_id}}</td>
                             <td>{{sdrr | record_type}}</td>
                             <td class="number">{{sdrr.sensor_num | toHex}}</td>
                             <td>{{sdrr.sensor_name}}</td>
+                            <td>{{sdrr.sensor_type?sdrr.sensor_type:''}}</td>
+                            <td>{{sdrr.event_type?event_type_of(sdrr.event_type):''}}</td>
                             <template v-if="sdrr.reading">
                                 <td>
                                     <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
@@ -181,12 +188,31 @@
                                 <td><span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td>
                                 <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
                                 <td>{{sdrr.unit}}</td>
+                                <template v-if="sdrr.threshold">
+                                    <td><span class="tooltip">{{sorted_threshold(sdrr).map(i => i.s).join(' | ')}}
+                                            <span
+                                                class="tooltiptext">{{sorted_threshold(sdrr).map(i => i.v).join(' | ')}}</span>
+                                        </span>
+                                    </td>
+                                </template>
+                                <template v-else>
+                                    <td></td>
+                                </template>
                             </template>
                             <template v-else>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <template v-if="sdrr.event">
+                                    <td><span class="tooltip">{{sdrr.event.map(i => i.s).join(' | ')}}
+                                            <span class="tooltiptext">{{sdrr.event.map(i => i.v).join(' | ')}}</span>
+                                        </span>
+                                    </td>
+                                </template>
+                                <template v-else>
+                                    <td></td>
+                                </template>
                             </template>
                         </tr>
                     </table>

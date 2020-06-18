@@ -223,7 +223,7 @@
                 'Presence detected',
                 'Power Supply Failure detected',
                 'Predictive Failure',
-                'Power Supply input lost (AC/DC) [2]',
+                'Power Supply input lost (AC/DC)',
                 'Power Supply input lost or out-of-range',
                 'Power Supply input out-of-range, but present',
                 'Configuration error',

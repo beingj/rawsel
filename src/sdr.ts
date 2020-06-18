@@ -1,4 +1,5 @@
 import './ext'
+import { SelRecord } from './sel'
 
 export enum SdrRecordType {
     Full = 1,
@@ -11,6 +12,7 @@ export enum SdrRecordType {
 
 export enum EventType {
     threshold = 1,
+    sensor_specific = 0x6f
 }
 
 export function name_of(myEnum: any, n: number): string {
@@ -205,10 +207,20 @@ export class SdrRecord {
         return `id: ${this.record_id}, offset: ${this.offset.toString(16)}h, length: ${this.record_length}h, rt: ${this.record_type}`
     }
 }
+interface Thresholds {
+    unr?: { v: number, s: string }
+    uc?: { v: number, s: string }
+    unc?: { v: number, s: string }
+    lnr?: { v: number, s: string }
+    lc?: { v: number, s: string }
+    lnc?: { v: number, s: string }
+}
 
 export class SdrRecordType1 extends SdrRecord {
     sensor_num: number
     sensor_name: string
+    sensor_type_n: number
+    sensor_type: string
     event_type: EventType
     unit1: number
     unit: string
@@ -219,11 +231,15 @@ export class SdrRecordType1 extends SdrRecord {
     bexp: number
     reading: (x: number | string) => string
     reading_formula: string
+    threshold?: Thresholds
+    event?: { v: number, s: string }[]
 
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.Full
         this.sensor_num = dv.getUint8(offset + 7)
+        this.sensor_type_n = dv.getUint8(offset + 12)
+        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3
         this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21))
@@ -234,6 +250,44 @@ export class SdrRecordType1 extends SdrRecord {
         this.bexp = this.two_complement(dv.getUint8(offset + 29) & 0xf, 4)
         this.reading = SdrRecordType1.get_reading_formula(this)
         this.reading_formula = SdrRecordType1.get_reading_formula_text(this)
+        if (this.event_type === EventType.threshold) {
+            this.threshold = {}
+            const threshold_mask = dv.getUint16(offset + 18, true)
+            if (((threshold_mask >> 13) & 1) === 1) {
+                const v = dv.getUint8(offset + 36)
+                this.threshold.unr = { v: v, s: this.reading(v) }
+            }
+            if (((threshold_mask >> 12) & 1) === 1) {
+                const v = dv.getUint8(offset + 37)
+                this.threshold.uc = { v: v, s: this.reading(v) }
+            }
+            if (((threshold_mask >> 11) & 1) === 1) {
+                const v = dv.getUint8(offset + 38)
+                this.threshold.unc = { v: v, s: this.reading(v) }
+            }
+            if (((threshold_mask >> 10) & 1) === 1) {
+                const v = dv.getUint8(offset + 39)
+                this.threshold.lnr = { v: v, s: this.reading(v) }
+            }
+            if (((threshold_mask >> 9) & 1) === 1) {
+                const v = dv.getUint8(offset + 40)
+                this.threshold.lc = { v: v, s: this.reading(v) }
+            }
+            if (((threshold_mask >> 8) & 1) === 1) {
+                const v = dv.getUint8(offset + 41)
+                this.threshold.lnc = { v: v, s: this.reading(v) }
+            }
+        } else {
+            const v: { v: number, s: string }[] = []
+            const x = dv.getUint16(offset + 14, true)
+            for (let i = 0; i < 16; i++) {
+                if (((x >> i) & 1) === 1) v.push({
+                    v: i,
+                    s: SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                })
+            }
+            this.event = v
+        }
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 47) // offset of 'id string type/length code'
     }
     two_complement(v: number, bits: number = 8) {
@@ -380,13 +434,30 @@ export class SdrRecordType1 extends SdrRecord {
 export class SdrRecordType2 extends SdrRecord {
     sensor_num: number
     sensor_name: string
+    sensor_type_n: number
+    sensor_type: string
     event_type: EventType
     unit: string
+    event?: { v: number, s: string }[]
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.Compact
         this.sensor_num = dv.getUint8(offset + 7)
+        this.sensor_type_n = dv.getUint8(offset + 12)
+        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
+        if (this.event_type !== EventType.threshold) {
+            const v: { v: number, s: string }[] = []
+            const x = dv.getUint16(offset + 14, true)
+            for (let i = 0; i < 16; i++) {
+                if (((x >> i) & 1) === 1) v.push({
+                    v: i,
+                    s: SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                })
+            }
+            this.event = v
+        }
+
         this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21))
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 31) // offset of 'id string type/length code'
     }
@@ -395,10 +466,14 @@ export class SdrRecordType2 extends SdrRecord {
 export class SdrRecordType3 extends SdrRecord {
     sensor_num: number
     sensor_name: string
+    sensor_type: string
+    event_type: EventType
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.EventOnly
         this.sensor_num = dv.getUint8(offset + 7)
+        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 10))
+        this.event_type = dv.getUint8(offset + 11)
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 16) // offset of 'id string type/length code'
     }
 }

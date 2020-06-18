@@ -4,13 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./ext"], factory);
+        define(["require", "exports", "./ext", "./sel"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SdrRecordTypeC0 = exports.SdrRecordType12 = exports.SdrRecordType11 = exports.SdrRecordType3 = exports.SdrRecordType2 = exports.SdrRecordType1 = exports.SdrRecord = exports.Linearization = exports.name_of = exports.EventType = exports.SdrRecordType = void 0;
     require("./ext");
+    const sel_1 = require("./sel");
     var SdrRecordType;
     (function (SdrRecordType) {
         SdrRecordType[SdrRecordType["Full"] = 1] = "Full";
@@ -23,6 +24,7 @@
     var EventType;
     (function (EventType) {
         EventType[EventType["threshold"] = 1] = "threshold";
+        EventType[EventType["sensor_specific"] = 111] = "sensor_specific";
     })(EventType = exports.EventType || (exports.EventType = {}));
     function name_of(myEnum, n) {
         // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
@@ -224,6 +226,8 @@
             super(dv, offset);
             this.record_type = SdrRecordType.Full;
             this.sensor_num = dv.getUint8(offset + 7);
+            this.sensor_type_n = dv.getUint8(offset + 12);
+            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
             this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3;
             this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
@@ -234,6 +238,46 @@
             this.bexp = this.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
             this.reading = SdrRecordType1.get_reading_formula(this);
             this.reading_formula = SdrRecordType1.get_reading_formula_text(this);
+            if (this.event_type === EventType.threshold) {
+                this.threshold = {};
+                const threshold_mask = dv.getUint16(offset + 18, true);
+                if (((threshold_mask >> 13) & 1) === 1) {
+                    const v = dv.getUint8(offset + 36);
+                    this.threshold.unr = { v: v, s: this.reading(v) };
+                }
+                if (((threshold_mask >> 12) & 1) === 1) {
+                    const v = dv.getUint8(offset + 37);
+                    this.threshold.uc = { v: v, s: this.reading(v) };
+                }
+                if (((threshold_mask >> 11) & 1) === 1) {
+                    const v = dv.getUint8(offset + 38);
+                    this.threshold.unc = { v: v, s: this.reading(v) };
+                }
+                if (((threshold_mask >> 10) & 1) === 1) {
+                    const v = dv.getUint8(offset + 39);
+                    this.threshold.lnr = { v: v, s: this.reading(v) };
+                }
+                if (((threshold_mask >> 9) & 1) === 1) {
+                    const v = dv.getUint8(offset + 40);
+                    this.threshold.lc = { v: v, s: this.reading(v) };
+                }
+                if (((threshold_mask >> 8) & 1) === 1) {
+                    const v = dv.getUint8(offset + 41);
+                    this.threshold.lnc = { v: v, s: this.reading(v) };
+                }
+            }
+            else {
+                const v = [];
+                const x = dv.getUint16(offset + 14, true);
+                for (let i = 0; i < 16; i++) {
+                    if (((x >> i) & 1) === 1)
+                        v.push({
+                            v: i,
+                            s: sel_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                        });
+                }
+                this.event = v;
+            }
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 47); // offset of 'id string type/length code'
         }
         two_complement(v, bits = 8) {
@@ -401,7 +445,21 @@
             super(dv, offset);
             this.record_type = SdrRecordType.Compact;
             this.sensor_num = dv.getUint8(offset + 7);
+            this.sensor_type_n = dv.getUint8(offset + 12);
+            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
+            if (this.event_type !== EventType.threshold) {
+                const v = [];
+                const x = dv.getUint16(offset + 14, true);
+                for (let i = 0; i < 16; i++) {
+                    if (((x >> i) & 1) === 1)
+                        v.push({
+                            v: i,
+                            s: sel_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                        });
+                }
+                this.event = v;
+            }
             this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 31); // offset of 'id string type/length code'
         }
@@ -412,6 +470,8 @@
             super(dv, offset);
             this.record_type = SdrRecordType.EventOnly;
             this.sensor_num = dv.getUint8(offset + 7);
+            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 10));
+            this.event_type = dv.getUint8(offset + 11);
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 16); // offset of 'id string type/length code'
         }
     }

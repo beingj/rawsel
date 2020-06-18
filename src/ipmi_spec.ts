@@ -215,10 +215,10 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Presence detected',
             'Power Supply Failure detected',
             'Predictive Failure',
-            'Power Supply input lost (AC/DC) [2]',
+            'Power Supply input lost (AC/DC)',
             'Power Supply input lost or out-of-range',
             'Power Supply input out-of-range, but present',
-            'Configuration error', // TODO: event data 3
+            'Configuration error',
             'Power Supply Inactive (in standby state)',
         ]
     },
@@ -254,7 +254,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Correctable ECC / other correctable memory error logging limit reached',
             'Presence detected',
             'Configuration error',
-            'Spare', // TODO: event data 3
+            'Spare',
             'Memory Automatically Throttled',
             'Critical Overtemperature',
         ]
@@ -279,9 +279,9 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
     },
     { // f
         'System Firmware Progress': [
-            'System Firmware Error (POST Error)', // TODO: event data 2
-            'System Firmware Hang', // TODO: event data 2
-            'System Firmware Progress', // TODO: event data 2
+            'System Firmware Error (POST Error)',
+            'System Firmware Hang',
+            'System Firmware Progress',
         ]
     },
     { // 0x10
@@ -312,9 +312,9 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'System Reconfigured',
             'OEM System Boot Event',
             'Undetermined system hardware failure',
-            'Entry added to Auxiliary Log', // TODO: event data 2
-            'PEF Action', // TODO: event data 2
-            'Timestamp Clock Synch.', // TODO: event data 2
+            'Entry added to Auxiliary Log',
+            'PEF Action',
+            'Timestamp Clock Synch.',
         ]
     },
     { // 0x13
@@ -364,7 +364,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
     },
     { // 0x19
         'Chip Set': [
-            'Soft Power Control Failure', // TODO: event data 2&3
+            'Soft Power Control Failure',
             'Thermal Trip',
         ]
     },
@@ -393,7 +393,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Automatic boot to diagnostic',
             'OS / run-time software initiated hard reset',
             'OS / run-time software initiated warm reset',
-            'System Restart', // TODO: event data 2&3
+            'System Restart',
         ]
     },
     { // 0x1e
@@ -441,7 +441,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Slot / Connector Device Removal Request',
             'Interlock asserted',
             'Slot is Disabled',
-            'Slot holds spare device', // TODO: event data 2&3
+            'Slot holds spare device',
         ]
     },
     { // 0x22
@@ -473,7 +473,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'reserved',
             'reserved',
             'reserved',
-            'Timer interrupt', // TODO: event data 2
+            'Timer interrupt',
         ]
     },
     { // 0x24
@@ -508,8 +508,8 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'controller access degraded or unavailable',
             'management controller off-line',
             'management controller unavailable',
-            'Sensor failure', // TODO: event data 2
-            'FRU failure', // TODO: event data 2 & 3
+            'Sensor failure',
+            'FRU failure',
         ]
     },
     { // 0x29
@@ -524,7 +524,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Session Activated',
             'Session Deactivated',
             'Invalid Username or Password',
-            'Invalid password disable', // TODO: event data 2 & 3
+            'Invalid password disable',
         ]
     },
     { // 0x2b
@@ -536,7 +536,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'Entity is of an invalid or unsupported hardware version',
             'Entity contains an invalid or unsupported firmware or software version',
             'Hardware Change detected with associated Entity was successful',
-            'Software or F/W Change detected with associated Entity was successful', // TODO: event data 2 & 3
+            'Software or F/W Change detected with associated Entity was successful',
         ]
     },
     { // 0x2c
@@ -548,7 +548,7 @@ const sensor_type_codes: { [key: string]: string[] }[] = [
             'FRU Active',
             'FRU Deactivation Requested',
             'FRU Deactivation In Progress',
-            'FRU Communication Lost', // TODO: event data 2
+            'FRU Communication Lost',
         ]
     },
 ]

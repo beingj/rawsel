@@ -9,7 +9,7 @@ Todo:
   ✔ fix bug by force td re-render to remove all children including mathjax elements: sdr record type change from 1 to != 1, formula will stay. sdr.formula is removed, why mathjax stay? @done(20-06-13 11:33)
   ☐ sel record_type change to enum
   ✔ reorg sdr/sel to ipmi @done(20-06-19 21:35)
-  ☐ update non-threshold event data2&3 with sdr
+  ✔ update non-threshold event data2&3 with sdr @done(20-06-19 21:57)
   ✔ check sdr bin file whether invalid @done(20-06-11 22:52)
   ✔ move refresh files code in on_data to app method? @done(20-06-11 22:43)
   ✔ extend Date format method: http://definitelytyped.org/guides/best-practices.html => Extending built-in types @done(20-06-11 21:34)

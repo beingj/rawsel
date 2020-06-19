@@ -51,7 +51,8 @@ export class SelRecord {
         this.event_data3 = a[11]
         const st = a[6]
         const et_offset = a[9] & 0xf
-        if ((this.event_type == 'sensor-specific') &&
+        const need_parse = this.event_data23.includes('sensor-specific event extension code')
+        if (need_parse &&
             (st in ipmi.event_data) &&
             (et_offset in ipmi.event_data[st])) {
             const x = ipmi.event_data[st][et_offset](this)

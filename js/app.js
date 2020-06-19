@@ -7,23 +7,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./sel", "./sdr", "./uploader", "vue", "./test_data"], factory);
+        define(["require", "exports", "./ipmi/index", "./ipmi/index", "./test_data", "./uploader", "vue"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    const sel_1 = require("./sel");
-    const sdr_1 = require("./sdr");
+    const index_1 = require("./ipmi/index");
+    const index_2 = require("./ipmi/index");
+    const test_data_1 = require("./test_data");
     const uploader_1 = require("./uploader");
     const vue_1 = __importDefault(require("vue"));
-    const test_data_1 = require("./test_data");
     const app = new vue_1.default({
         el: '#app',
         data: {
             loading: true,
             sel: {
                 show: true,
-                timezone: sel_1.SelRecord.timezone,
+                timezone: index_1.SelRecord.timezone,
                 raw: '',
                 sels: [],
                 files: [],
@@ -103,7 +103,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
             },
             event_type_of: function (n) {
-                return sel_1.SelRecord.event_type_of(n);
+                return index_1.SelRecord.event_type_of(n);
             },
             sorted_threshold: function (sdr) {
                 if (!sdr.threshold) {
@@ -126,7 +126,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 const o = this.sel;
                 if (o.raw == '')
                     return;
-                const x = sel_1.SelRecord.from_raw(o.raw);
+                const x = index_1.SelRecord.from_raw(o.raw);
                 if (x.length == 0) {
                     o.emsg = 'no raw sel in file';
                 }
@@ -141,7 +141,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return;
                 let x;
                 if (o.bin instanceof ArrayBuffer) {
-                    x = sdr_1.SdrRecord.from(o.bin);
+                    x = index_2.SdrRecord.from(o.bin);
                 }
                 else {
                     x = o.bin;
@@ -168,7 +168,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         },
         filters: {
             record_type: function (sdr) {
-                return sdr_1.SdrRecord.record_type_of(sdr.record_type);
+                return index_2.SdrRecord.record_type_of(sdr.record_type);
             },
             toHex: function (n) {
                 if ((n == undefined) || (n == null))

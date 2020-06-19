@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import { SdrRecord, SdrRecordType1, SdrRecordType2 } from '../src/sdr'
-import { SdrRecordType, Linearization, name_of } from '../src/sdr'
+import { SdrRecord, SdrRecordType1, SdrRecordType2 } from '../src/ipmi'
+import { SdrRecordType, Linearization, name_of } from '../src/ipmi'
 import fs from 'fs'
-import '../src/ext'
+import '../src/ipmi'
 
 const bin_file = 'test/sdr.bin'
 

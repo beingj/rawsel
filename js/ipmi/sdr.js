@@ -4,39 +4,18 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./ext", "./sel"], factory);
+        define(["require", "exports", "./index", "./index", "./index", "./index", "./index"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SdrRecordTypeC0 = exports.SdrRecordType12 = exports.SdrRecordType11 = exports.SdrRecordType3 = exports.SdrRecordType2 = exports.SdrRecordType1 = exports.SdrRecord = exports.Linearization = exports.name_of = exports.EventType = exports.SdrRecordType = void 0;
-    require("./ext");
-    const sel_1 = require("./sel");
-    var SdrRecordType;
-    (function (SdrRecordType) {
-        SdrRecordType[SdrRecordType["Full"] = 1] = "Full";
-        SdrRecordType[SdrRecordType["Compact"] = 2] = "Compact";
-        SdrRecordType[SdrRecordType["EventOnly"] = 3] = "EventOnly";
-        SdrRecordType[SdrRecordType["FruDeviceLocator"] = 17] = "FruDeviceLocator";
-        SdrRecordType[SdrRecordType["ManagementControllerDeviceLocator"] = 18] = "ManagementControllerDeviceLocator";
-        SdrRecordType[SdrRecordType["OEM"] = 192] = "OEM";
-    })(SdrRecordType = exports.SdrRecordType || (exports.SdrRecordType = {}));
-    var EventType;
-    (function (EventType) {
-        EventType[EventType["threshold"] = 1] = "threshold";
-        EventType[EventType["sensor_specific"] = 111] = "sensor_specific";
-    })(EventType = exports.EventType || (exports.EventType = {}));
-    function name_of(myEnum, n) {
-        // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
-        let ns = n.toString(10);
-        for (let enumMember in myEnum) {
-            if (enumMember == ns) {
-                return myEnum[enumMember];
-            }
-        }
-        return `${n.toString(16).padStart(2, '0')}h`;
-    }
-    exports.name_of = name_of;
+    exports.SdrRecordTypeC0 = exports.SdrRecordType12 = exports.SdrRecordType11 = exports.SdrRecordType3 = exports.SdrRecordType2 = exports.SdrRecordType1 = exports.SdrRecord = void 0;
+    // import './index'
+    const index_1 = require("./index");
+    const index_2 = require("./index");
+    const index_3 = require("./index");
+    const index_4 = require("./index");
+    const index_5 = require("./index");
     const SensorUnitTypeCodes = [
         "unspecified",
         "degrees C",
@@ -132,21 +111,6 @@
         "fatal error",
         "grams"
     ];
-    var Linearization;
-    (function (Linearization) {
-        Linearization[Linearization["linear"] = 0] = "linear";
-        Linearization[Linearization["ln"] = 1] = "ln";
-        Linearization[Linearization["log10"] = 2] = "log10";
-        Linearization[Linearization["log2"] = 3] = "log2";
-        Linearization[Linearization["e"] = 4] = "e";
-        Linearization[Linearization["exp10"] = 5] = "exp10";
-        Linearization[Linearization["exp2"] = 6] = "exp2";
-        Linearization[Linearization["reciprocal"] = 7] = "reciprocal";
-        Linearization[Linearization["sqr"] = 8] = "sqr";
-        Linearization[Linearization["cube"] = 9] = "cube";
-        Linearization[Linearization["sqrt"] = 10] = "sqrt";
-        Linearization[Linearization["cubeByNegOne"] = 11] = "cubeByNegOne";
-    })(Linearization = exports.Linearization || (exports.Linearization = {}));
     class SdrRecord {
         constructor(dv, offset = 0) {
             this.dv = dv;
@@ -170,22 +134,22 @@
                 }
                 let sdr;
                 let rt = dv.getUint8(offset + 3);
-                if (rt == SdrRecordType.Full) {
+                if (rt == index_3.SdrRecordType.Full) {
                     sdr = new SdrRecordType1(dv, offset);
                 }
-                else if (rt == SdrRecordType.Compact) {
+                else if (rt == index_3.SdrRecordType.Compact) {
                     sdr = new SdrRecordType2(dv, offset);
                 }
-                else if (rt == SdrRecordType.EventOnly) {
+                else if (rt == index_3.SdrRecordType.EventOnly) {
                     sdr = new SdrRecordType3(dv, offset);
                 }
-                else if (rt == SdrRecordType.FruDeviceLocator) {
+                else if (rt == index_3.SdrRecordType.FruDeviceLocator) {
                     sdr = new SdrRecordType11(dv, offset);
                 }
-                else if (rt == SdrRecordType.ManagementControllerDeviceLocator) {
+                else if (rt == index_3.SdrRecordType.ManagementControllerDeviceLocator) {
                     sdr = new SdrRecordType12(dv, offset);
                 }
-                else if (rt == SdrRecordType.OEM) {
+                else if (rt == index_3.SdrRecordType.OEM) {
                     sdr = new SdrRecordTypeC0(dv, offset);
                 }
                 else {
@@ -203,10 +167,10 @@
             return SensorUnitTypeCodes[n];
         }
         static record_type_of(n) {
-            return name_of(SdrRecordType, n);
+            return index_5.name_of(index_3.SdrRecordType, n);
         }
         static linear_of(n) {
-            return name_of(Linearization, n);
+            return index_5.name_of(index_4.Linearization, n);
         }
         static get_id_string(dv, offset) {
             let len = dv.getUint8(offset) & 0x1f;
@@ -224,10 +188,10 @@
     class SdrRecordType1 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.Full;
+            this.record_type = index_3.SdrRecordType.Full;
             this.sensor_num = dv.getUint8(offset + 7);
             this.sensor_type_n = dv.getUint8(offset + 12);
-            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
+            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
             this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3;
             this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
@@ -238,7 +202,7 @@
             this.bexp = this.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
             this.reading = SdrRecordType1.get_reading_formula(this);
             this.reading_formula = SdrRecordType1.get_reading_formula_text(this);
-            if (this.event_type === EventType.threshold) {
+            if (this.event_type === index_2.EventType.threshold) {
                 this.threshold = {};
                 const threshold_mask = dv.getUint16(offset + 18, true);
                 if (((threshold_mask >> 13) & 1) === 1) {
@@ -273,7 +237,7 @@
                     if (((x >> i) & 1) === 1)
                         v.push({
                             v: i,
-                            s: sel_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                            s: index_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
                         });
                 }
                 this.event = v;
@@ -393,43 +357,43 @@
                 let y = x;
                 x = (sdr.m * x + (sdr.b * Math.pow(10, sdr.bexp))) * Math.pow(10, sdr.rexp);
                 // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
-                if (sdr.linear == Linearization.linear) {
+                if (sdr.linear == index_4.Linearization.linear) {
                     y = x;
                 }
-                else if (sdr.linear == Linearization.ln) {
+                else if (sdr.linear == index_4.Linearization.ln) {
                     y = Math.log(x);
                 }
-                else if (sdr.linear == Linearization.log10) {
+                else if (sdr.linear == index_4.Linearization.log10) {
                     y = Math.log10(x);
                 }
-                else if (sdr.linear == Linearization.log2) {
+                else if (sdr.linear == index_4.Linearization.log2) {
                     y = Math.log2(x);
                 }
-                else if (sdr.linear == Linearization.e) {
+                else if (sdr.linear == index_4.Linearization.e) {
                     y = Math.exp(x);
                 }
-                else if (sdr.linear == Linearization.exp10) {
+                else if (sdr.linear == index_4.Linearization.exp10) {
                     y = Math.pow(10, x);
                 }
-                else if (sdr.linear == Linearization.exp2) {
+                else if (sdr.linear == index_4.Linearization.exp2) {
                     y = Math.pow(2, x);
                 }
-                else if (sdr.linear == Linearization.reciprocal) {
+                else if (sdr.linear == index_4.Linearization.reciprocal) {
                     y = Math.pow(x, -1);
                 }
-                else if (sdr.linear == Linearization.sqr) {
+                else if (sdr.linear == index_4.Linearization.sqr) {
                     // sqrt = square root.
                     // sqr = square.
                     // sqrt(9) = 3, while sqr(9) = 81.
                     y = Math.pow(x, 2);
                 }
-                else if (sdr.linear == Linearization.cube) {
+                else if (sdr.linear == index_4.Linearization.cube) {
                     y = Math.pow(x, 3);
                 }
-                else if (sdr.linear == Linearization.sqrt) {
+                else if (sdr.linear == index_4.Linearization.sqrt) {
                     y = Math.sqrt(x);
                 }
-                else if (sdr.linear == Linearization.cubeByNegOne) {
+                else if (sdr.linear == index_4.Linearization.cubeByNegOne) {
                     y = Math.pow(Math.pow(x, 3), -1);
                 }
                 else {
@@ -443,19 +407,19 @@
     class SdrRecordType2 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.Compact;
+            this.record_type = index_3.SdrRecordType.Compact;
             this.sensor_num = dv.getUint8(offset + 7);
             this.sensor_type_n = dv.getUint8(offset + 12);
-            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
+            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
-            if (this.event_type !== EventType.threshold) {
+            if (this.event_type !== index_2.EventType.threshold) {
                 const v = [];
                 const x = dv.getUint16(offset + 14, true);
                 for (let i = 0; i < 16; i++) {
                     if (((x >> i) & 1) === 1)
                         v.push({
                             v: i,
-                            s: sel_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                            s: index_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
                         });
                 }
                 this.event = v;
@@ -468,9 +432,9 @@
     class SdrRecordType3 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.EventOnly;
+            this.record_type = index_3.SdrRecordType.EventOnly;
             this.sensor_num = dv.getUint8(offset + 7);
-            this.sensor_type = sel_1.SelRecord.sensor_type_of(dv.getUint8(offset + 10));
+            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 10));
             this.event_type = dv.getUint8(offset + 11);
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 16); // offset of 'id string type/length code'
         }
@@ -479,7 +443,7 @@
     class SdrRecordType11 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.FruDeviceLocator;
+            this.record_type = index_3.SdrRecordType.FruDeviceLocator;
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 15); // offset of 'id string type/length code'
         }
     }
@@ -487,7 +451,7 @@
     class SdrRecordType12 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.ManagementControllerDeviceLocator;
+            this.record_type = index_3.SdrRecordType.ManagementControllerDeviceLocator;
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 15); // offset of 'id string type/length code'
         }
     }
@@ -495,7 +459,7 @@
     class SdrRecordTypeC0 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = SdrRecordType.OEM;
+            this.record_type = index_3.SdrRecordType.OEM;
             // const a = new Uint8Array(dv.buffer, offset + 5, 3)
             const a = new Uint8Array(dv.buffer, offset + 5, this.next_record - offset - 5);
             const h = [];

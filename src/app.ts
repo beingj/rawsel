@@ -1,8 +1,8 @@
-import { SelRecord } from './sel'
-import { SdrRecord, SdrRecordType1 } from './sdr'
+import { SelRecord } from './ipmi/index'
+import { SdrRecord, SdrRecordType1 } from './ipmi/index'
+import { test_data } from './test_data'
 import { Uploader } from './uploader'
 import Vue from 'vue'
-import { test_data } from './test_data'
 
 const app = new Vue({
     el: '#app',

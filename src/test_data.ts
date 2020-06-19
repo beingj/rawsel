@@ -1,4 +1,4 @@
-import { SdrRecord, SdrRecordType1 } from "./sdr"
+import { SdrRecord, SdrRecordType1 } from "./ipmi/index"
 
 export { test_data }
 

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { SelRecord } from '../src/sel'
+import { SelRecord } from '../src/ipmi'
 
 describe('sel', () => {
     it('id', () => {
@@ -352,13 +352,13 @@ Generic event
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  51h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  04h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  04h|  02h|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  02h|  02h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  07h|  00h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  07h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   2bh|  00h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   3bh|  00h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   2ah|  03h|  32h|  13h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  07h|  00h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  07h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  00h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   6fh|  00h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  03h|  32h|  13h|
  `
         const srs = SelRecord.from_raw(raw)
 

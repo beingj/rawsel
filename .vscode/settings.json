@@ -16,7 +16,7 @@
         "node_modules": true,
         ".nyc_output": true,
         "coverage": true,
-        "js": true
+        // "js": true
     },
     "search.exclude": {
         "**/node_modules": true,

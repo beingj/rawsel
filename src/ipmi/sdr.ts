@@ -1,30 +1,9 @@
-import './ext'
-import { SelRecord } from './sel'
-
-export enum SdrRecordType {
-    Full = 1,
-    Compact = 2,
-    EventOnly = 3,
-    FruDeviceLocator = 0x11,
-    ManagementControllerDeviceLocator = 0x12,
-    OEM = 0xc0
-}
-
-export enum EventType {
-    threshold = 1,
-    sensor_specific = 0x6f
-}
-
-export function name_of(myEnum: any, n: number): string {
-    // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
-    let ns = n.toString(10)
-    for (let enumMember in myEnum) {
-        if (enumMember == ns) {
-            return myEnum[enumMember]
-        }
-    }
-    return `${n.toString(16).padStart(2, '0')}h`
-}
+// import './index'
+import { SelRecord } from './index'
+import { EventType } from './index'
+import { SdrRecordType } from './index'
+import { Linearization } from './index'
+import { name_of } from './index'
 
 const SensorUnitTypeCodes = [
     "unspecified",
@@ -122,9 +101,6 @@ const SensorUnitTypeCodes = [
     "grams"
 ]
 
-export enum Linearization {
-    linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
-}
 
 export class SdrRecord {
     dv: DataView

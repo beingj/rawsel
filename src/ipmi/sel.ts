@@ -2,9 +2,9 @@
 //   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
 //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
-import { IPMI_Spec } from './ipmi_spec'
-import { SdrRecordType1 } from './sdr'
-import './ext'
+import { ipmi } from './index'
+import { SdrRecordType1 } from './index'
+
 export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
     static from_raw(raw: string) {
@@ -52,9 +52,9 @@ export class SelRecord {
         const st = a[6]
         const et_offset = a[9] & 0xf
         if ((this.event_type == 'sensor-specific') &&
-            (st in IPMI_Spec.event_data) &&
-            (et_offset in IPMI_Spec.event_data[st])) {
-            const x = IPMI_Spec.event_data[st][et_offset](this)
+            (st in ipmi.event_data) &&
+            (et_offset in ipmi.event_data[st])) {
+            const x = ipmi.event_data[st][et_offset](this)
             this.event_data2_parsed = x.d2
             this.event_data3_parsed = x.d3
         }
@@ -70,8 +70,8 @@ export class SelRecord {
         return 'unspecified'
     }
     static sensor_type_of(n: number) {
-        if (n < IPMI_Spec.sensor_type_codes.length) {
-            return Object.keys(IPMI_Spec.sensor_type_codes[n])[0]
+        if (n < ipmi.sensor_type_codes.length) {
+            return Object.keys(ipmi.sensor_type_codes[n])[0]
         }
         if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
         return 'reserved'
@@ -80,7 +80,7 @@ export class SelRecord {
         n = n & 0x7f
         if (n == 0) { return 'unspecified' }
         if (n == 1) { return 'threshold' }
-        if ((n >= 0x2) && (n <= 0xc)) { return Object.keys(IPMI_Spec.generic_event_type_codes[n])[0] }
+        if ((n >= 0x2) && (n <= 0xc)) { return Object.keys(ipmi.generic_event_type_codes[n])[0] }
         if (n == 0x6f) { return 'sensor-specific' }
         if ((n >= 0x70) && (n <= 0x7f)) { return 'OEM' }
         // 0dh-6eh
@@ -101,7 +101,7 @@ export class SelRecord {
         const b76 = (n >> 6) & 0x3
         const b54 = (n >> 4) & 0x3
         // console.log('n ' + (n >> 4) + ', k ' + k + ', b76 ' + b76 + ', b54 ' + b54)
-        return IPMI_Spec.event_data23[k]['b76'][b76] + ', ' + IPMI_Spec.event_data23[k]['b54'][b54]
+        return ipmi.event_data23[k]['b76'][b76] + ', ' + ipmi.event_data23[k]['b54'][b54]
     }
     static event_of(n: number, offset: number, sensor_type: number) {
         n = n & 0x7f
@@ -125,7 +125,7 @@ export class SelRecord {
         }
     }
     static generic_event_of(n: number, offset: number) {
-        const x = IPMI_Spec.generic_event_type_codes[n]
+        const x = ipmi.generic_event_type_codes[n]
         const name = Object.keys(x)[0]
         const values = Object.values(x)[0]
         if (offset >= values.length) { return 'unspecified' }
@@ -133,11 +133,11 @@ export class SelRecord {
     }
     static sensor_event_of(n: number, offset: number) {
         if (n == 0) { return 'reserved' }
-        if ((n >= IPMI_Spec.sensor_type_codes.length) && (n <= 0xc0)) { return 'reserved' }
+        if ((n >= ipmi.sensor_type_codes.length) && (n <= 0xc0)) { return 'reserved' }
         if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
 
         // [01h, IPMI_Spec.sensor_type_codes.length)
-        const x = IPMI_Spec.sensor_type_codes[n]
+        const x = ipmi.sensor_type_codes[n]
         const name = Object.keys(x)[0]
         const values = Object.values(x)[0]
         if ((n >= 1) && (n <= 4)) { return name }

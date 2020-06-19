@@ -4,13 +4,13 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./sdr"], factory);
+        define(["require", "exports", "./ipmi/index"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.test_data = void 0;
-    const sdr_1 = require("./sdr");
+    const index_1 = require("./ipmi/index");
     const test_data = {
         sdr: sdr_data(),
         sel: `
@@ -78,7 +78,7 @@
                 ua2[i * len + j] = b;
             });
         }
-        const x = sdr_1.SdrRecord.from(ab);
+        const x = index_1.SdrRecord.from(ab);
         x.forEach((sdr, idx) => {
             sdr.record_id = idx + 1;
             sdr.sensor_num = idx + 1;
@@ -97,7 +97,7 @@
                     x[idx].bexp = bexp;
                     for (let rexp of [0, 1, 2]) {
                         x[idx].rexp = rexp;
-                        x[idx].reading_formula = sdr_1.SdrRecordType1.get_reading_formula_text(x[idx]);
+                        x[idx].reading_formula = index_1.SdrRecordType1.get_reading_formula_text(x[idx]);
                         idx++;
                     }
                 }

@@ -1,5 +1,3 @@
-export { IPMI_Spec }
-
 const event_data23: { [key: string]: { [key: string]: string[] } } = {
     'threshold': {
         b76: [
@@ -893,9 +891,32 @@ for (let i = 1; i <= 3; i++) {
 }
 event_data[0x23][8] = event_data[0x23][0x00]
 
-const IPMI_Spec = {
-    event_data23: event_data23,
-    generic_event_type_codes: generic_event_type_codes,
-    sensor_type_codes: sensor_type_codes,
-    event_data: event_data
+const ipmi = {
+    event_data23,
+    generic_event_type_codes,
+    sensor_type_codes,
+    event_data,
 }
+
+enum EventType {
+    threshold = 1,
+    sensor_specific = 0x6f
+}
+
+enum SdrRecordType {
+    Full = 1,
+    Compact = 2,
+    EventOnly = 3,
+    FruDeviceLocator = 0x11,
+    ManagementControllerDeviceLocator = 0x12,
+    OEM = 0xc0
+}
+
+enum Linearization {
+    linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
+}
+
+export { ipmi }
+export { EventType }
+export { SdrRecordType }
+export { Linearization }

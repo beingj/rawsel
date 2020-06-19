@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.IPMI_Spec = void 0;
+    exports.Linearization = exports.SdrRecordType = exports.EventType = exports.ipmi = void 0;
     const event_data23 = {
         'threshold': {
             b76: [
@@ -872,12 +872,44 @@
         event_data[0x23][i] = event_data[0x23][0x00];
     }
     event_data[0x23][8] = event_data[0x23][0x00];
-    const IPMI_Spec = {
-        event_data23: event_data23,
-        generic_event_type_codes: generic_event_type_codes,
-        sensor_type_codes: sensor_type_codes,
-        event_data: event_data
+    const ipmi = {
+        event_data23,
+        generic_event_type_codes,
+        sensor_type_codes,
+        event_data,
     };
-    exports.IPMI_Spec = IPMI_Spec;
+    exports.ipmi = ipmi;
+    var EventType;
+    (function (EventType) {
+        EventType[EventType["threshold"] = 1] = "threshold";
+        EventType[EventType["sensor_specific"] = 111] = "sensor_specific";
+    })(EventType || (EventType = {}));
+    exports.EventType = EventType;
+    var SdrRecordType;
+    (function (SdrRecordType) {
+        SdrRecordType[SdrRecordType["Full"] = 1] = "Full";
+        SdrRecordType[SdrRecordType["Compact"] = 2] = "Compact";
+        SdrRecordType[SdrRecordType["EventOnly"] = 3] = "EventOnly";
+        SdrRecordType[SdrRecordType["FruDeviceLocator"] = 17] = "FruDeviceLocator";
+        SdrRecordType[SdrRecordType["ManagementControllerDeviceLocator"] = 18] = "ManagementControllerDeviceLocator";
+        SdrRecordType[SdrRecordType["OEM"] = 192] = "OEM";
+    })(SdrRecordType || (SdrRecordType = {}));
+    exports.SdrRecordType = SdrRecordType;
+    var Linearization;
+    (function (Linearization) {
+        Linearization[Linearization["linear"] = 0] = "linear";
+        Linearization[Linearization["ln"] = 1] = "ln";
+        Linearization[Linearization["log10"] = 2] = "log10";
+        Linearization[Linearization["log2"] = 3] = "log2";
+        Linearization[Linearization["e"] = 4] = "e";
+        Linearization[Linearization["exp10"] = 5] = "exp10";
+        Linearization[Linearization["exp2"] = 6] = "exp2";
+        Linearization[Linearization["reciprocal"] = 7] = "reciprocal";
+        Linearization[Linearization["sqr"] = 8] = "sqr";
+        Linearization[Linearization["cube"] = 9] = "cube";
+        Linearization[Linearization["sqrt"] = 10] = "sqrt";
+        Linearization[Linearization["cubeByNegOne"] = 11] = "cubeByNegOne";
+    })(Linearization || (Linearization = {}));
+    exports.Linearization = Linearization;
 });
-//# sourceMappingURL=ipmi_spec.js.map
+//# sourceMappingURL=ipmi.js.map

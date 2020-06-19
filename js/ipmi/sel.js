@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./ipmi_spec", "./ext"], factory);
+        define(["require", "exports", "./index"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -14,8 +14,7 @@
     //   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
     //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
     //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
-    const ipmi_spec_1 = require("./ipmi_spec");
-    require("./ext");
+    const index_1 = require("./index");
     let SelRecord = /** @class */ (() => {
         class SelRecord {
             constructor(raw) {
@@ -39,9 +38,9 @@
                 const st = a[6];
                 const et_offset = a[9] & 0xf;
                 if ((this.event_type == 'sensor-specific') &&
-                    (st in ipmi_spec_1.IPMI_Spec.event_data) &&
-                    (et_offset in ipmi_spec_1.IPMI_Spec.event_data[st])) {
-                    const x = ipmi_spec_1.IPMI_Spec.event_data[st][et_offset](this);
+                    (st in index_1.ipmi.event_data) &&
+                    (et_offset in index_1.ipmi.event_data[st])) {
+                    const x = index_1.ipmi.event_data[st][et_offset](this);
                     this.event_data2_parsed = x.d2;
                     this.event_data3_parsed = x.d3;
                 }
@@ -68,8 +67,8 @@
                 return 'unspecified';
             }
             static sensor_type_of(n) {
-                if (n < ipmi_spec_1.IPMI_Spec.sensor_type_codes.length) {
-                    return Object.keys(ipmi_spec_1.IPMI_Spec.sensor_type_codes[n])[0];
+                if (n < index_1.ipmi.sensor_type_codes.length) {
+                    return Object.keys(index_1.ipmi.sensor_type_codes[n])[0];
                 }
                 if ((n >= 0xc0) && (n <= 0xff)) {
                     return 'OEM';
@@ -85,7 +84,7 @@
                     return 'threshold';
                 }
                 if ((n >= 0x2) && (n <= 0xc)) {
-                    return Object.keys(ipmi_spec_1.IPMI_Spec.generic_event_type_codes[n])[0];
+                    return Object.keys(index_1.ipmi.generic_event_type_codes[n])[0];
                 }
                 if (n == 0x6f) {
                     return 'sensor-specific';
@@ -114,7 +113,7 @@
                 const b76 = (n >> 6) & 0x3;
                 const b54 = (n >> 4) & 0x3;
                 // console.log('n ' + (n >> 4) + ', k ' + k + ', b76 ' + b76 + ', b54 ' + b54)
-                return ipmi_spec_1.IPMI_Spec.event_data23[k]['b76'][b76] + ', ' + ipmi_spec_1.IPMI_Spec.event_data23[k]['b54'][b54];
+                return index_1.ipmi.event_data23[k]['b76'][b76] + ', ' + index_1.ipmi.event_data23[k]['b54'][b54];
             }
             static event_of(n, offset, sensor_type) {
                 n = n & 0x7f;
@@ -137,7 +136,7 @@
                 }
             }
             static generic_event_of(n, offset) {
-                const x = ipmi_spec_1.IPMI_Spec.generic_event_type_codes[n];
+                const x = index_1.ipmi.generic_event_type_codes[n];
                 const name = Object.keys(x)[0];
                 const values = Object.values(x)[0];
                 if (offset >= values.length) {
@@ -149,14 +148,14 @@
                 if (n == 0) {
                     return 'reserved';
                 }
-                if ((n >= ipmi_spec_1.IPMI_Spec.sensor_type_codes.length) && (n <= 0xc0)) {
+                if ((n >= index_1.ipmi.sensor_type_codes.length) && (n <= 0xc0)) {
                     return 'reserved';
                 }
                 if ((n >= 0xc0) && (n <= 0xff)) {
                     return 'OEM';
                 }
                 // [01h, IPMI_Spec.sensor_type_codes.length)
-                const x = ipmi_spec_1.IPMI_Spec.sensor_type_codes[n];
+                const x = index_1.ipmi.sensor_type_codes[n];
                 const name = Object.keys(x)[0];
                 const values = Object.values(x)[0];
                 if ((n >= 1) && (n <= 4)) {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import '../src/ext'
+import '../src/ipmi'
 
 describe('ext', () => {
     it('number.toFixed2', () => {

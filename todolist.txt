@@ -1,7 +1,7 @@
 
 Todo:
   ✔ change generic codes to DMI-based “Usage State” STATES... @done(20-06-04 11:36)
-  ✔ add more test @done(20-06-04 15:18)
+  ☐ add more test
   ✔ check all undefined => reserved @done(20-06-04 16:44)
   ✔ refresh sensor name and reading with sdr @done(20-06-11 17:42)
   ✘ modify uploader to let vue handle onchange => fixed by change created to mounted @cancelled(20-06-12 13:54)

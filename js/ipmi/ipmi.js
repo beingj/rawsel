@@ -789,7 +789,7 @@
             // management subsystem health
             0x04: (selr) => {
                 // sensor failure
-                return { d2: `sensor number ${selr.event_data2.toString(16)}h` };
+                return { d2: `sensor number ${selr.event_data2.toHexh()}` };
             },
             0x05: (selr) => {
                 // FRU failure
@@ -803,7 +803,7 @@
                 else {
                     d3 = '7-bit I2C Slave Address of FRU device';
                 }
-                d3 += `: ${selr.event_data3.toString(16)}h`;
+                d3 += `: ${selr.event_data3.toHexh()}h`;
                 return { d2: d2, d3: d3 };
             },
         },

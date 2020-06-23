@@ -9,6 +9,20 @@ Number.prototype.toFixed2 = function (n) {
     // float
     return this.toFixed(n);
 };
+Number.prototype.toHex = function (width) {
+    if (Math.floor(this) == this) {
+        // int
+        if (width === undefined) {
+            width = 2;
+        }
+        return this.toString(16).padStart(width, '0');
+    }
+    // float
+    return this.toString();
+};
+Number.prototype.toHexh = function (width) {
+    return this.toHex(width) + 'h';
+};
 Date.today = function () {
     let date = new Date;
     date.setHours(0, 0, 0, 0);

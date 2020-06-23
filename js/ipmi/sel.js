@@ -25,7 +25,7 @@
                 this.record_type = SelRecord.record_type_of(a[1]);
                 this.time_seconds = a[2];
                 this.timestamp = SelRecord.timestamp_with_timezone(this.time_seconds, this.timezone);
-                this.generator = SelRecord.int_to_hex(a[3] + a[4] * 0x100);
+                this.generator = (a[3] + a[4] * 0x100).toHex(4) + 'h';
                 this.event_receiver = a[5];
                 this.sensor_type = SelRecord.sensor_type_of(a[6]);
                 this.sensor_num = a[7];
@@ -51,9 +51,6 @@
                 const x = [];
                 raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null);
                 return x;
-            }
-            static int_to_hex(n) {
-                return (n < 16 ? '0' : '') + n.toString(16) + 'h';
             }
             static record_type_of(n) {
                 if (n == 2) {
@@ -174,7 +171,7 @@
             }
             static timestamp_with_timezone(t, tz) {
                 if (t == 0xffffffff) {
-                    return t.toString(16) + 'h';
+                    return t.toHexh();
                 } // invalid
                 if (t <= 0x20000000) {
                     return t + 's';

@@ -3,6 +3,8 @@
 
 interface Number {
     toFixed2(n: number): string
+    toHex(width?: number): string
+    toHexh(width?: number): string
 }
 
 Number.prototype.toFixed2 = function (n: number) {
@@ -12,6 +14,22 @@ Number.prototype.toFixed2 = function (n: number) {
     }
     // float
     return this.toFixed(n)
+}
+
+Number.prototype.toHex = function (width?: number) {
+    if (Math.floor(this as number) == (this as number)) {
+        // int
+        if (width === undefined) {
+            width = 2
+        }
+        return this.toString(16).padStart(width, '0')
+    }
+    // float
+    return this.toString()
+}
+
+Number.prototype.toHexh = function (width?: number) {
+    return this.toHex(width) + 'h'
 }
 
 interface DateConstructor {

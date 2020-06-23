@@ -162,7 +162,7 @@
         }
         static unit_of(n) {
             if (n >= SensorUnitTypeCodes.length) {
-                return n.toString(16).padStart(2, '0') + 'h';
+                return n.toHexh();
             }
             return SensorUnitTypeCodes[n];
         }
@@ -181,7 +181,7 @@
             return String.fromCharCode.apply(null, ns);
         }
         toString() {
-            return `id: ${this.record_id}, offset: ${this.offset.toString(16)}h, length: ${this.record_length}h, rt: ${this.record_type}`;
+            return `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length}h, rt: ${this.record_type}`;
         }
     }
     exports.SdrRecord = SdrRecord;
@@ -254,11 +254,17 @@
                 return v - (1 << bits);
             }
         }
+        static get_reading_formula_text_full(sdr) {
+            const f = SdrRecord.linear_of(sdr.linear);
+            // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
+            // return `(${sdr.m} \\times x + (${sdr.b} \\times 10 ^ (${sdr.bexp}))) \\times 10 ^ (${sdr.rexp})`
+            return `(${sdr.m}x + (${sdr.b} \\\\times 10 ^ {${sdr.bexp}})) \\\\times 10 ^ {${sdr.rexp}}`;
+        }
         static get_reading_formula_text(sdr) {
             const f = SdrRecord.linear_of(sdr.linear);
             // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
             // return `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
-            const f1 = `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`;
+            const f1 = `$$${f}[(${sdr.m} x + (${sdr.b} \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`;
             let m = '';
             // m=1
             if (sdr.m == 1) {
@@ -267,46 +273,60 @@
             else {
                 m = `${sdr.m}x`;
             }
-            let b = `${sdr.b}`;
-            let bexp = '';
             let b_bexp = '';
-            // bexp=0,1
             // b=0,1
+            // bexp=0,1
             if (sdr.b == 0) {
                 b_bexp = '';
             }
             else {
                 if (sdr.bexp == 0) {
-                    bexp = '';
+                    // b x 1
+                    if (sdr.b < 0) {
+                        b_bexp = `(${sdr.b})`;
+                    }
+                    else {
+                        b_bexp = `${sdr.b}`;
+                    }
                 }
                 else if (sdr.bexp == 1) {
-                    bexp = `\\times 10`;
-                }
-                else {
-                    bexp = `\\times 10 ^ {${sdr.bexp}}`;
-                }
-                if (sdr.b == 1) {
-                    if (sdr.bexp == 0) {
-                        // 1 x 1
-                        b_bexp = `+ 1`;
+                    // b x 10
+                    if (sdr.b == 1) {
+                        b_bexp = `10`;
                     }
                     else {
-                        // 1 x ?
-                        b_bexp = `+ ${bexp}`;
+                        if (sdr.b < 0) {
+                            b_bexp = `((${sdr.b}) \\times 10)`;
+                        }
+                        else {
+                            // b can't be float
+                            // it's safe to transfer: b x 10 => b0
+                            // but I don't do it this time
+                            b_bexp = `(${sdr.b} \\times 10)`;
+                        }
                     }
                 }
                 else {
-                    if (sdr.bexp == 0) {
-                        b_bexp = `+ ${b}`;
-                    }
-                    else if (sdr.bexp == 1) {
-                        // ? x 10 = ?0
-                        b_bexp = `+ ${b}0`;
+                    if (sdr.b == 1) {
+                        // 1 x 10 x ?
+                        b_bexp = `10 ^ {${sdr.bexp}}`;
                     }
                     else {
-                        b_bexp = `+ (${b} ${bexp})`;
+                        if (sdr.b < 0) {
+                            b_bexp = `((${sdr.b}) \\times 10 ^ {${sdr.bexp}})`;
+                        }
+                        else {
+                            b_bexp = `(${sdr.b} \\times 10 ^ {${sdr.bexp}})`;
+                        }
                     }
                 }
+            }
+            let m_b_bexp;
+            if (sdr.b == 0) {
+                m_b_bexp = m;
+            }
+            else {
+                m_b_bexp = `${m} + ${b_bexp}`;
             }
             let rexp = '';
             // rexp=0,1
@@ -314,21 +334,22 @@
                 rexp = '';
             }
             else if (sdr.rexp == 1) {
-                rexp = `\\times 10`;
+                rexp = `10`;
             }
             else {
-                rexp = `\\times 10 ^ {${sdr.rexp}}`;
+                rexp = `10 ^ {${sdr.rexp}}`;
             }
-            let m_b_bexp = `${m} ${b_bexp}`;
             let m_b_bexp_r_rexp = '';
             if (sdr.rexp == 0) {
                 m_b_bexp_r_rexp = m_b_bexp;
             }
             else {
-                if (sdr.m != 1) {
-                    m_b_bexp = `(${m_b_bexp})`;
+                if (sdr.b == 0 && sdr.m === 1) {
+                    m_b_bexp_r_rexp = `${m_b_bexp} \\times ${rexp}`;
                 }
-                m_b_bexp_r_rexp = `${m_b_bexp} ${rexp}`;
+                else {
+                    m_b_bexp_r_rexp = `(${m_b_bexp}) \\times ${rexp}`;
+                }
             }
             let f2;
             if (f == 'linear') {
@@ -463,7 +484,7 @@
             // const a = new Uint8Array(dv.buffer, offset + 5, 3)
             const a = new Uint8Array(dv.buffer, offset + 5, this.next_record - offset - 5);
             const h = [];
-            a.forEach(i => h.push(i.toString(16).padStart(2, '0')));
+            a.forEach(i => h.push(i.toHex()));
             // this.sensor_name = h.join(' ')
             this.sensor_name = `${h.slice(0, 3).join(' ')} / ${h.slice(3).join(' ')}`;
         }

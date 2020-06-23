@@ -81,10 +81,12 @@ Generic event
 Generic event
  0001h|   00h| 00000000h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
  0001h|   02h| 00000001h |  30h|   10h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0001h|   02h| 00000001h |  02h|   01h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
  `
         const srs = SelRecord.from_raw(raw)
-        expect(srs[0].generator).to.equal('20h')
+        expect(srs[0].generator).to.equal('0020h')
         expect(srs[1].generator).to.equal('1030h')
+        expect(srs[2].generator).to.equal('0102h')
     })
     it('sensor type', () => {
         const raw = `
@@ -351,13 +353,15 @@ Generic event
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  51h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  04h|  02h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  02h|  02h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  07h|  00h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  07h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  00h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   6fh|  00h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  f1h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  f4h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  f2h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  00h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f0h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   6fh|  f0h|  32h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  f3h|  32h|  13h|
+ // no sensor-specified in data23
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  03h|  32h|  13h|
  `
         const srs = SelRecord.from_raw(raw)
@@ -370,5 +374,8 @@ Generic event
         expect(srs[5].event_data2_parsed).to.equal(undefined)
         expect(srs[6].event_data2_parsed).to.equal(undefined)
         expect(srs[7].event_data3_parsed).to.equal('Session deactivated by Close Session command, channel #3')
+        // no need to parse
+        expect(srs[8].event_data2_parsed).to.equal(undefined)
+        expect(srs[8].event_data3_parsed).to.equal(undefined)
     })
 })

@@ -6,7 +6,7 @@ function name_of(myEnum: any, n: number): string {
             return myEnum[enumMember]
         }
     }
-    return `${n.toString(16).padStart(2, '0')}h`
+    return n.toHexh()
 }
 
 export { name_of }

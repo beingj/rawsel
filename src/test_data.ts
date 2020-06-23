@@ -62,12 +62,13 @@ function sdr_data() {
 
 function repeat_sdr(bin: ArrayBuffer) {
     // there are 3 records in sdr_data above
-    // we need total 54=18*3
+    // we need total 72(2*4*3*3), so repeat=72/3=24
+    const repeat = 24
     const ua1 = new Uint8Array(bin)
     const len = bin.byteLength
-    const ab = new ArrayBuffer(len * 18)
+    const ab = new ArrayBuffer(len * repeat)
     const ua2 = new Uint8Array(ab)
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < repeat; i++) {
         ua1.forEach((b, j) => {
             ua2[i * len + j] = b
         })
@@ -77,24 +78,26 @@ function repeat_sdr(bin: ArrayBuffer) {
     x.forEach((sdr, idx) => {
         sdr.record_id = idx + 1
         sdr.sensor_num = idx + 1
-        sdr.m = 3
-        sdr.b = 3
-        sdr.bexp = 3
-        sdr.rexp = 3
+        sdr.m = 6
+        sdr.b = 7
+        sdr.bexp = 8
+        sdr.rexp = 9
     })
 
     let idx = 0
-    // total 54= 2*3*3*3
+    // total 72= 2*4*3*3
+    let sdr = x[idx]
     for (let m of [1, 2]) {
-        x[idx].m = m
-        for (let b of [0, 1, 2]) {
-            x[idx].b = m
-            for (let bexp of [0, 1, 2]) {
-                x[idx].bexp = bexp
-                for (let rexp of [0, 1, 2]) {
-                    x[idx].rexp = rexp
-                    x[idx].reading_formula = SdrRecordType1.get_reading_formula_text(x[idx])
+        for (let b of [0, 1, 3.4, -3.5]) {
+            for (let bexp of [0, 1, 4]) {
+                for (let rexp of [0, 1, 5]) {
+                    sdr.m = m
+                    sdr.b = b
+                    sdr.bexp = bexp
+                    sdr.rexp = rexp
+                    sdr.reading_formula = SdrRecordType1.get_reading_formula_text(sdr)
                     idx++
+                    sdr = x[idx]
                 }
             }
         }

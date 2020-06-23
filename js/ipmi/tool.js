@@ -18,7 +18,7 @@
                 return myEnum[enumMember];
             }
         }
-        return `${n.toString(16).padStart(2, '0')}h`;
+        return n.toHexh();
     }
     exports.name_of = name_of;
 });

@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "test": "mocha --require ts-node/register test/**/*.ts"
+        "test": "mocha --require ts-node/register test/**/*.ts",
+        "nyc": "nyc --all --reporter=html --reporter=text --reporter=lcov node_modules/mocha/bin/_mocha --require ts-node/register test/**/*.ts --exit"
     },
     "devDependencies": {
         "@types/chai": "^4.2.11",

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SdrRecord, SdrRecordType1, SdrRecordType2 } from '../src/ipmi'
+import { SdrRecord, SdrRecordType1 } from '../src/ipmi'
 import { SdrRecordType, Linearization, name_of } from '../src/ipmi'
 import fs from 'fs'
 import '../src/ipmi'
@@ -24,6 +24,7 @@ describe('sdr', () => {
         expect(sdr.sdr_version).to.equal(0x51);
         expect(sdr.record_type).to.equal(SdrRecordType.Full);
         expect(sdr.record_length).to.equal(0x35);
+        expect(sdr.toString()).to.equal('id: 1, offset: 00h, length: 35h, rt: 1');
 
         sdr = new SdrRecord(dv, 5 + 0x35)
         // '02 00 51 01 36'
@@ -31,18 +32,26 @@ describe('sdr', () => {
         expect(sdr.sdr_version).to.equal(0x51);
         expect(sdr.record_type).to.equal(SdrRecordType.Full);
         expect(sdr.record_length).to.equal(0x36);
-    })
-    it('show sdr', () => {
-        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
-        const sdrs = SdrRecord.from(buf)
 
-        sdrs.forEach(sdr => {
-            console.log(sdr.toString())
-            if ((sdr instanceof SdrRecordType1) || (sdr instanceof SdrRecordType2)) {
-                console.log(`id: ${sdr.record_id}, offset: ${sdr.offset.toHexh}, rt: ${sdr.record_type}, num: ${sdr.sensor_num.toHexh}, name(${sdr.sensor_name.length}): ${sdr.sensor_name}`)
-            }
-        })
+        let offset = sdr.next_record
+        dv.setUint8(offset + 13, 0x6f) // sensor-specific
+        dv.setUint8(offset + 12, 0x23) // watchdog2
+        dv.setUint16(offset + 14, 0x06, true) // event offset 1, 2
+        const sdr2 = new SdrRecordType1(dv, offset)
+        expect(sdr2.event?.map(i => i.v).join(',')).to.equal('1,2')
+        expect(sdr2.event?.map(i => i.s).join(',')).to.equal('Hard Reset,Power Down')
     })
+    // it('show sdr', () => {
+    //     const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
+    //     const sdrs = SdrRecord.from(buf)
+
+    //     sdrs.forEach(sdr => {
+    //         console.log(sdr.toString())
+    //         if ((sdr instanceof SdrRecordType1) || (sdr instanceof SdrRecordType2)) {
+    //             console.log(`id: ${sdr.record_id}, offset: ${sdr.offset.toHexh}, rt: ${sdr.record_type}, num: ${sdr.sensor_num.toHexh}, name(${sdr.sensor_name.length}): ${sdr.sensor_name}`)
+    //         }
+    //     })
+    // })
     it('from', () => {
         const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
         const a = new Uint8Array(buf)
@@ -132,6 +141,15 @@ describe('sdr', () => {
 
         sdr.linear = 0xff
         expect(sdr.reading(100)).to.equal('60')
+    })
+    it('formula text full', () => {
+        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
+        const sdr = SdrRecord.from(buf).find((i) => i instanceof SdrRecordType1) as SdrRecordType1
+        const fm = SdrRecordType1.get_reading_formula_text_full
+
+        sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 0
+        // (1x + (0 \\times 10 ^ {0})) \\times 10 ^ {0}
+        expect(fm(sdr)).to.equal(`(1x + (0 \\\\times 10 ^ {0})) \\\\times 10 ^ {0}`)
     })
     it('formula mathjax', () => {
         const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
@@ -330,6 +348,13 @@ describe('sdr', () => {
         sdr.m = 2; sdr.b = -2; sdr.bexp = 0; sdr.rexp = 2
         // (2x + ((-2) \\times 10 ^ {0})) \\times 10 ^ {2}
         expect(fm(sdr)).to.equal(`$$(2x + (-2)) \\times 10 ^ {2}$$`)
+
+        // non-linear
+        sdr.m = 2; sdr.b = -2; sdr.bexp = 0; sdr.rexp = 2
+        sdr.linear = Linearization.cube
+        // (2x + ((-2) \\times 10 ^ {0})) \\times 10 ^ {2}
+        expect(fm(sdr)).to.equal(`$$${SdrRecord.linear_of(sdr.linear)}[(2x + (-2)) \\times 10 ^ {2}]$$`)
+
     })
     it('threshold', () => {
         // TODO: test threshold

@@ -180,7 +180,7 @@ export class SdrRecord {
         return String.fromCharCode.apply(null, ns)
     }
     public toString() {
-        return `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length}h, rt: ${this.record_type}`
+        return `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length.toHexh()}, rt: ${this.record_type}`
     }
 }
 interface Thresholds {
@@ -277,9 +277,8 @@ export class SdrRecordType1 extends SdrRecord {
         }
     }
     static get_reading_formula_text_full(sdr: SdrRecordType1) {
-        const f = SdrRecord.linear_of(sdr.linear)
+        // const f = SdrRecord.linear_of(sdr.linear)
         // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
-        // return `(${sdr.m} \\times x + (${sdr.b} \\times 10 ^ (${sdr.bexp}))) \\times 10 ^ (${sdr.rexp})`
         return `(${sdr.m}x + (${sdr.b} \\\\times 10 ^ {${sdr.bexp}})) \\\\times 10 ^ {${sdr.rexp}}`
     }
     static get_reading_formula_text(sdr: SdrRecordType1) {

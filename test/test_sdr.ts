@@ -1,8 +1,11 @@
 import { expect } from 'chai';
-import { SdrRecord, SdrRecordType1 } from '../src/ipmi'
+import { SdrRecord, SdrRecordType1, SdrRecordType2, SdrRecordType3, SdrRecordType11, SdrRecordTypeC0, SdrRecordType12, EventType } from '../src/ipmi'
 import { SdrRecordType, Linearization, name_of } from '../src/ipmi'
-import fs from 'fs'
+import { hex2ArrayBuffer } from '../src/ipmi'
+
 import '../src/ipmi'
+
+import fs from 'fs'
 
 const bin_file = 'test/sdr.bin'
 
@@ -16,42 +19,110 @@ function to_ArrayBuffer(buf: Buffer) {
 }
 
 describe('sdr', () => {
-    it('new', () => {
-        const dv = new DataView(to_ArrayBuffer(fs.readFileSync(bin_file)))
+    it('show sdr', () => {
+        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
+        const sdrs = SdrRecord.from(buf)
+        sdrs.forEach(sdr => {
+            console.log(sdr.toString())
+        })
+    })
+    it('new SdrRecordType1', () => {
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
         let sdr = new SdrRecord(dv)
-        // '01 00 51 01 35'
         expect(sdr.record_id).to.equal(1);
         expect(sdr.sdr_version).to.equal(0x51);
         expect(sdr.record_type).to.equal(SdrRecordType.Full);
         expect(sdr.record_length).to.equal(0x35);
-        expect(sdr.toString()).to.equal('id: 1, offset: 00h, length: 35h, rt: 1');
+        let s = 'id: 1, offset: 00h, length: 35h, rt: 01h'
+        expect(sdr.toString()).to.equal(s);
 
-        sdr = new SdrRecord(dv, 5 + 0x35)
-        // '02 00 51 01 36'
-        expect(sdr.record_id).to.equal(2);
-        expect(sdr.sdr_version).to.equal(0x51);
-        expect(sdr.record_type).to.equal(SdrRecordType.Full);
-        expect(sdr.record_length).to.equal(0x36);
-
-        let offset = sdr.next_record
-        dv.setUint8(offset + 13, 0x6f) // sensor-specific
-        dv.setUint8(offset + 12, 0x23) // watchdog2
-        dv.setUint16(offset + 14, 0x06, true) // event offset 1, 2
-        const sdr2 = new SdrRecordType1(dv, offset)
-        expect(sdr2.event?.map(i => i.v).join(',')).to.equal('1,2')
-        expect(sdr2.event?.map(i => i.s).join(',')).to.equal('Hard Reset,Power Down')
+        s += ', et: 01h, st: 01h, num: 01h, name(10): Inlet_Temp'
+        sdr = new SdrRecordType1(dv)
+        expect(sdr.toString()).to.equal(s);
+        sdr = new SdrRecordType1(dv, 0)
+        expect(sdr.toString()).to.equal(s);
     })
-    // it('show sdr', () => {
-    //     const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
-    //     const sdrs = SdrRecord.from(buf)
-
-    //     sdrs.forEach(sdr => {
-    //         console.log(sdr.toString())
-    //         if ((sdr instanceof SdrRecordType1) || (sdr instanceof SdrRecordType2)) {
-    //             console.log(`id: ${sdr.record_id}, offset: ${sdr.offset.toHexh}, rt: ${sdr.record_type}, num: ${sdr.sensor_num.toHexh}, name(${sdr.sensor_name.length}): ${sdr.sensor_name}`)
-    //         }
-    //     })
-    // })
+    it('new SdrRecordType2', () => {
+        const hex = `
+00000508:	6f77	6572	1700	5102
+00000510:	2620	0070	0600	6740
+00000518:	076f	ab08	0000	ab08
+00000520:	c000	0000	0000	0000
+00000528:	0000	00cb	4350	5530
+00000530:	5f53	7461	7475	7318
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 4))
+        const sdr = new SdrRecordType2(dv)
+        expect(sdr.record_id).to.equal(0x17);
+        expect(sdr.sdr_version).to.equal(0x51);
+        expect(sdr.record_type).to.equal(SdrRecordType.Compact);
+        expect(sdr.record_length).to.equal(0x26);
+    })
+    it('new SdrRecordType3', () => {
+        const hex = `
+00000b38:	723b	0051	0316	2000
+00000b40:	fe31	0013	6f00	0000
+00000b48:	00ca	5043	4945	5f41
+00000b50:	6c65	7274
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 1))
+        const sdr = new SdrRecordType3(dv)
+        expect(sdr.record_id).to.equal(0x3b);
+        expect(sdr.sdr_version).to.equal(0x51);
+        expect(sdr.record_type).to.equal(SdrRecordType.EventOnly);
+        expect(sdr.record_length).to.equal(0x16);
+    })
+    it('new SdrRecordType11', () => {
+        const hex = `
+00000b78:	0000	0002	4e4d	3e00
+00000b80:	5111	1220	0087	0000
+00000b88:	0802	0700	00c7	4d42
+00000b90:	5f46	5255	30
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 6))
+        const sdr = new SdrRecordType11(dv)
+        expect(sdr.record_id).to.equal(0x3e);
+        expect(sdr.sdr_version).to.equal(0x51);
+        expect(sdr.record_type).to.equal(SdrRecordType.FruDeviceLocator);
+        expect(sdr.record_length).to.equal(0x12);
+    })
+    it('new SdrRecordType12', () => {
+        const hex = `
+00000b50:	6c65	7274	3c00	5112
+00000b58:	1220	0000	ff00	0000
+00000b60:	0000	00c7	4153	5432
+00000b68:	3530	303d	0051	c00e
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 4))
+        const sdr = new SdrRecordType12(dv)
+        expect(sdr.record_id).to.equal(0x3c);
+        expect(sdr.sdr_version).to.equal(0x51);
+        expect(sdr.record_type).to.equal(SdrRecordType.ManagementControllerDeviceLocator);
+        expect(sdr.record_length).to.equal(0x12);
+    })
+    it('new SdrRecordTypeC0', () => {
+        const hex = `
+00000b68:	3530	303d	0051	c00e
+00000b70:	5701	000d	012c	6000
+00000b78:	0000	0002	4e4d	3e00
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 3))
+        const sdr = new SdrRecordTypeC0(dv)
+        expect(sdr.record_id).to.equal(0x3d);
+        expect(sdr.sdr_version).to.equal(0x51);
+        expect(sdr.record_type).to.equal(SdrRecordType.OEM);
+        expect(sdr.record_length).to.equal(0x0e);
+    })
     it('from', () => {
         const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
         const a = new Uint8Array(buf)
@@ -92,11 +163,18 @@ describe('sdr', () => {
         expect(sdrs3.length).to.equal(2)
     })
     it('reading formula', () => {
-        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
-        const sdrs = SdrRecord.from(buf)
-            .filter(i => i instanceof SdrRecordType1) as SdrRecordType1[]
-
-        let sdr = sdrs[0]
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
+        const sdr = new SdrRecordType1(dv)
         // 20 21 22 / 23 24 25 26 27 28 29 30 31
         // 00 01 00 / 00 06 00 00 00 00 f0 07 97
         expect(sdr.unit1).to.equal(0);
@@ -143,8 +221,18 @@ describe('sdr', () => {
         expect(sdr.reading(100)).to.equal('60')
     })
     it('formula text full', () => {
-        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
-        const sdr = SdrRecord.from(buf).find((i) => i instanceof SdrRecordType1) as SdrRecordType1
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
+        let sdr = new SdrRecordType1(dv)
         const fm = SdrRecordType1.get_reading_formula_text_full
 
         sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 0
@@ -152,8 +240,18 @@ describe('sdr', () => {
         expect(fm(sdr)).to.equal(`(1x + (0 \\\\times 10 ^ {0})) \\\\times 10 ^ {0}`)
     })
     it('formula mathjax', () => {
-        const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
-        const sdr = SdrRecord.from(buf).find((i) => i instanceof SdrRecordType1) as SdrRecordType1
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
+        const sdr = new SdrRecordType1(dv)
 
         // const ms = [1, 2]
         // const bs = [0, 1, 2]
@@ -359,8 +457,55 @@ describe('sdr', () => {
     it('threshold', () => {
         // TODO: test threshold
     })
-    it('event offsets', () => {
-        // TODO: test event offset
+    it('event offsets SdrRecordType1', () => {
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
+        dv.setUint8(13, EventType.sensor_specific)
+        dv.setUint8(12, 0x23) // watchdog2
+        dv.setUint16(14, 0x06, true) // event offset 1, 2
+        const sdr = new SdrRecordType1(dv)
+        expect(sdr.event?.map(i => i.v).join(',')).to.equal('1,2')
+        expect(sdr.event?.map(i => i.s).join(',')).to.equal('Hard Reset,Power Down')
+    })
+    it('event offsets SdrRecordType2', () => {
+        const hex = `
+00000508:	6f77	6572	1700	5102
+00000510:	2620	0070	0600	6740
+00000518:	076f	ab08	0000	ab08
+00000520:	c000	0000	0000	0000
+00000528:	0000	00cb	4350	5530
+00000530:	5f53	7461	7475	7318
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 4))
+        dv.setUint8(13, EventType.sensor_specific)
+        dv.setUint8(12, 0x23) // watchdog2
+        dv.setUint16(14, 0x06, true) // event offset 1, 2
+        const sdr = new SdrRecordType2(dv)
+        expect(sdr.event?.map(i => i.v).join(',')).to.equal('1,2')
+        expect(sdr.event?.map(i => i.s).join(',')).to.equal('Hard Reset,Power Down')
+    })
+    it('event_type threshold SdrRecordType2', () => {
+        const hex = `
+00000508:	6f77	6572	1700	5102
+00000510:	2620	0070	0600	6740
+00000518:	076f	ab08	0000	ab08
+00000520:	c000	0000	0000	0000
+00000528:	0000	00cb	4350	5530
+00000530:	5f53	7461	7475	7318
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 4))
+        dv.setUint8(13, EventType.threshold)
+        // https://stackoverflow.com/questions/21587122/mocha-chai-expect-to-throw-not-catching-thrown-errors/22340179#22340179
+        expect(() => new SdrRecordType2(dv)).to.throw('event_type of SdrRecordType2 should not be threshold')
     })
     it('unit_of', () => {
         expect(SdrRecord.unit_of(0x01)).to.equal('degrees C');

@@ -9,4 +9,25 @@ function name_of(myEnum: any, n: number): string {
     return n.toHexh()
 }
 
-export { name_of }
+function hex2ArrayBuffer(hex: string, offset: number = 0) {
+    let ns: number[] = []
+    hex.split('\n')
+        .filter(i => i.startsWith('0000'))
+        .forEach(j => j.split(/\s+/).slice(1)
+            .forEach(k => {
+                ns.push(parseInt(k.substr(0, 2), 16))
+                ns.push(parseInt(k.substr(2, 2), 16))
+            })
+        )
+    if (offset != 0) {
+        ns = ns.slice(offset)
+    }
+    const ab = new ArrayBuffer(ns.length)
+    const ua = new Uint8Array(ab)
+    ns.forEach((_, i) => {
+        ua[i] = ns[i]
+    })
+    return ab
+}
+
+export { name_of, hex2ArrayBuffer }

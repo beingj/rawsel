@@ -181,7 +181,11 @@
             return String.fromCharCode.apply(null, ns);
         }
         toString() {
-            return `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length}h, rt: ${this.record_type}`;
+            let s = `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length.toHexh()}, rt: ${this.record_type.toHexh()}`;
+            if ((this instanceof SdrRecordType1) || (this instanceof SdrRecordType2)) {
+                s += `, et: ${this.event_type.toHexh()}, st: ${this.sensor_type_n.toHexh()}, num: ${this.sensor_num.toHexh()}, name(${this.sensor_name.length}): ${this.sensor_name}`;
+            }
+            return s;
         }
     }
     exports.SdrRecord = SdrRecord;
@@ -255,9 +259,8 @@
             }
         }
         static get_reading_formula_text_full(sdr) {
-            const f = SdrRecord.linear_of(sdr.linear);
+            // const f = SdrRecord.linear_of(sdr.linear)
             // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
-            // return `(${sdr.m} \\times x + (${sdr.b} \\times 10 ^ (${sdr.bexp}))) \\times 10 ^ (${sdr.rexp})`
             return `(${sdr.m}x + (${sdr.b} \\\\times 10 ^ {${sdr.bexp}})) \\\\times 10 ^ {${sdr.rexp}}`;
         }
         static get_reading_formula_text(sdr) {
@@ -444,6 +447,9 @@
                         });
                 }
                 this.event = v;
+            }
+            else {
+                throw new Error('event_type of SdrRecordType2 should not be threshold');
             }
             this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 31); // offset of 'id string type/length code'

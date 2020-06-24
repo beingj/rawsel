@@ -1,0 +1,97 @@
+id: 01, offset: 000h, length: 35h, rt: 01h, et: 01h, st: 01h, num: 01h, name(10): Inlet_Temp
+id: 02, offset: 03ah, length: 36h, rt: 01h, et: 01h, st: 01h, num: 02h, name(11): Outlet_Temp
+id: 03, offset: 075h, length: 34h, rt: 01h, et: 01h, st: 01h, num: 03h, name(9): CPU0_Temp
+id: 04, offset: 0aeh, length: 34h, rt: 01h, et: 01h, st: 01h, num: 04h, name(9): CPU1_Temp
+id: 05, offset: 0e7h, length: 37h, rt: 01h, et: 01h, st: 01h, num: 07h, name(12): CPU0_VR_Temp
+id: 06, offset: 123h, length: 37h, rt: 01h, et: 01h, st: 01h, num: 08h, name(12): CPU1_VR_Temp
+id: 07, offset: 15fh, length: 36h, rt: 01h, et: 01h, st: 01h, num: 0bh, name(11): DIMMG0_Temp
+id: 08, offset: 19ah, length: 36h, rt: 01h, et: 01h, st: 01h, num: 0ch, name(11): DIMMG1_Temp
+id: 09, offset: 1d5h, length: 33h, rt: 01h, et: 01h, st: 01h, num: 0fh, name(8): PCH_Temp
+id: 10, offset: 20dh, length: 33h, rt: 01h, et: 01h, st: 02h, num: 30h, name(8): SYS_3.3V
+id: 11, offset: 245h, length: 3bh, rt: 01h, et: 01h, st: 02h, num: 31h, name(16): SYS_3.3V_Standby
+id: 12, offset: 285h, length: 31h, rt: 01h, et: 01h, st: 02h, num: 32h, name(6): SYS_5V
+id: 13, offset: 2bbh, length: 39h, rt: 01h, et: 01h, st: 02h, num: 33h, name(14): SYS_5V_Standby
+id: 14, offset: 2f9h, length: 32h, rt: 01h, et: 01h, st: 02h, num: 34h, name(7): SYS_12V
+id: 15, offset: 330h, length: 35h, rt: 01h, et: 01h, st: 02h, num: 36h, name(10): CPU0_VCORE
+id: 16, offset: 36ah, length: 35h, rt: 01h, et: 01h, st: 02h, num: 37h, name(10): CPU1_VCORE
+id: 17, offset: 3a4h, length: 37h, rt: 01h, et: 01h, st: 02h, num: 3ah, name(12): CPU0_DDR_VDD
+id: 18, offset: 3e0h, length: 37h, rt: 01h, et: 01h, st: 02h, num: 3bh, name(12): CPU1_DDR_VDD
+id: 19, offset: 41ch, length: 36h, rt: 01h, et: 01h, st: 02h, num: 3eh, name(11): SYS_3.3VBAT
+id: 20, offset: 457h, length: 3ah, rt: 01h, et: 01h, st: 0bh, num: 40h, name(15): Node_Main_Power
+id: 21, offset: 496h, length: 38h, rt: 01h, et: 01h, st: 0bh, num: 41h, name(13): Node_SB_Power
+id: 22, offset: 4d3h, length: 34h, rt: 01h, et: 01h, st: 0bh, num: 42h, name(9): PDB_Power
+id: 23, offset: 50ch, length: 26h, rt: 02h, et: 6fh, st: 07h, num: 70h, name(11): CPU0_Status
+id: 24, offset: 537h, length: 26h, rt: 02h, et: 6fh, st: 07h, num: 71h, name(11): CPU1_Status
+id: 25, offset: 562h, length: 27h, rt: 02h, et: 03h, st: 07h, num: 74h, name(12): CPU0_Prochot
+id: 26, offset: 58eh, length: 27h, rt: 02h, et: 03h, st: 07h, num: 75h, name(12): CPU1_Prochot
+id: 27, offset: 5bah, length: 3ah, rt: 01h, et: 01h, st: 0bh, num: 81h, name(15): CPU_Total_Power
+id: 28, offset: 5f9h, length: 3ah, rt: 01h, et: 01h, st: 0bh, num: 82h, name(15): MEM_Total_Power
+id: 29, offset: 638h, length: 36h, rt: 01h, et: 01h, st: 0bh, num: 84h, name(11): Total_Power
+id: 30, offset: 673h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 90h, name(7): CPU0_A0
+id: 31, offset: 69ah, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 91h, name(7): CPU0_A1
+id: 32, offset: 6c1h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 92h, name(7): CPU0_B0
+id: 33, offset: 6e8h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 94h, name(7): CPU0_C0
+id: 34, offset: 70fh, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 96h, name(7): CPU0_D0
+id: 35, offset: 736h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 97h, name(7): CPU0_D1
+id: 36, offset: 75dh, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 98h, name(7): CPU0_E0
+id: 37, offset: 784h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 9ah, name(7): CPU0_F0
+id: 38, offset: 7abh, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 9ch, name(7): CPU1_A0
+id: 39, offset: 7d2h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 9dh, name(7): CPU1_A1
+id: 40, offset: 7f9h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: 9eh, name(7): CPU1_B0
+id: 41, offset: 820h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: a0h, name(7): CPU1_C0
+id: 42, offset: 847h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: a2h, name(7): CPU1_D0
+id: 43, offset: 86eh, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: a3h, name(7): CPU1_D1
+id: 44, offset: 895h, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: a4h, name(7): CPU1_E0
+id: 45, offset: 8bch, length: 22h, rt: 02h, et: 6fh, st: 0ch, num: a6h, name(7): CPU1_F0
+id: 46, offset: 8e3h, length: 26h, rt: 02h, et: 08h, st: 17h, num: e0h, name(11): MEZZ_0_PRES
+id: 47, offset: 90eh, length: 26h, rt: 02h, et: 08h, st: 17h, num: e1h, name(11): MEZZ_1_PRES
+id: 48, offset: 939h, length: 28h, rt: 02h, et: 08h, st: 17h, num: e2h, name(13): Add-In_0_PRES
+id: 49, offset: 966h, length: 28h, rt: 02h, et: 08h, st: 17h, num: e3h, name(13): Add-In_1_PRES
+id: 50, offset: 993h, length: 26h, rt: 02h, et: 07h, st: 15h, num: f0h, name(11): MotherBoard
+id: 51, offset: 9beh, length: 25h, rt: 02h, et: 6fh, st: 22h, num: f1h, name(10): ACPI_State
+id: 52, offset: 9e8h, length: 27h, rt: 02h, et: 6fh, st: 14h, num: f2h, name(12): Power_Button
+id: 53, offset: a14h, length: 2ah, rt: 02h, et: 6fh, st: 0fh, num: f3h, name(15): SYS_FW_Progress
+id: 54, offset: a43h, length: 2bh, rt: 02h, et: 6fh, st: 1dh, num: f4h, name(16): Restart_Initiate
+id: 55, offset: a73h, length: 24h, rt: 02h, et: 6fh, st: 23h, num: f5h, name(9): Watchdog2
+id: 56, offset: a9ch, length: 24h, rt: 02h, et: 6fh, st: 10h, num: f6h, name(9): Event_Log
+id: 57, offset: ac5h, length: 35h, rt: 01h, et: 01h, st: 0bh, num: f7h, name(10): CPU0_Power
+id: 58, offset: affh, length: 35h, rt: 01h, et: 01h, st: 0bh, num: f8h, name(10): CPU1_Power
+id: 59, offset: b39h, length: 16h, rt: 03h
+id: 60, offset: b54h, length: 12h, rt: 12h
+id: 61, offset: b6bh, length: 0eh, rt: c0h
+id: 62, offset: b7eh, length: 12h, rt: 11h
+id: 63, offset: b95h, length: 13h, rt: 11h
+id: 64, offset: badh, length: 13h, rt: 11h
+id: 65, offset: bc5h, length: 14h, rt: 11h
+id: 66, offset: bdeh, length: 14h, rt: 11h
+id: 67, offset: bf7h, length: 14h, rt: 11h
+id: 68, offset: c10h, length: 14h, rt: 11h
+id: 69, offset: c29h, length: 14h, rt: 11h
+id: 70, offset: c42h, length: 14h, rt: 11h
+id: 71, offset: c5bh, length: 14h, rt: 11h
+id: 72, offset: c74h, length: 15h, rt: 11h
+id: 73, offset: c8eh, length: 15h, rt: 11h
+id: 74, offset: ca8h, length: 15h, rt: 11h
+id: 75, offset: cc2h, length: 15h, rt: 11h
+id: 76, offset: cdch, length: 15h, rt: 11h
+id: 77, offset: cf6h, length: 15h, rt: 11h
+id: 78, offset: d10h, length: 15h, rt: 11h
+id: 79, offset: d2ah, length: 15h, rt: 11h
+id: 80, offset: d44h, length: 15h, rt: 11h
+id: 81, offset: d5eh, length: 1ah, rt: 11h
+id: 82, offset: d7dh, length: 1ah, rt: 11h
+id: 83, offset: d9ch, length: 19h, rt: 11h
+id: 84, offset: dbah, length: 19h, rt: 11h
+id: 85, offset: dd8h, length: 14h, rt: 11h
+id: 86, offset: df1h, length: 14h, rt: 11h
+id: 87, offset: e0ah, length: 14h, rt: 11h
+id: 88, offset: e23h, length: 14h, rt: 11h
+id: 89, offset: e3ch, length: 14h, rt: 11h
+id: 90, offset: e55h, length: 14h, rt: 11h
+id: 91, offset: e6eh, length: 14h, rt: 11h
+id: 92, offset: e87h, length: 14h, rt: 11h
+id: 93, offset: ea0h, length: 15h, rt: 11h
+id: 94, offset: ebah, length: 15h, rt: 11h
+id: 95, offset: ed4h, length: 17h, rt: 11h
+id: 96, offset: ef0h, length: 17h, rt: 11h
+id: 97, offset: f0ch, length: 15h, rt: 11h

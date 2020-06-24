@@ -1,4 +1,4 @@
-import { SdrRecord, SdrRecordType1 } from "./ipmi/index"
+import { SdrRecord, SdrRecordType1, hex2ArrayBuffer } from "./ipmi/index"
 
 export { test_data }
 
@@ -41,21 +41,7 @@ function sdr_data() {
 000000a0:	0000	0000	c943	5055
 000000a8:	305f	5465	6d70
 `
-    const ns: number[] = []
-    hex.split('\n')
-        .filter(i => i.startsWith('0000'))
-        .forEach(j => j.split(/\s+/).slice(1)
-            .forEach(k => {
-                ns.push(parseInt(k.substr(0, 2), 16))
-                ns.push(parseInt(k.substr(2, 2), 16))
-            })
-        )
-    const ab = new ArrayBuffer(ns.length)
-    const ua = new Uint8Array(ab)
-    ns.forEach((v, i) => {
-        ua[i] = ns[i]
-    })
-
+    const ab = hex2ArrayBuffer(hex)
     return ab
     // return repeat_sdr(ab)
 }

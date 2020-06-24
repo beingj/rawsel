@@ -180,7 +180,11 @@ export class SdrRecord {
         return String.fromCharCode.apply(null, ns)
     }
     public toString() {
-        return `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length.toHexh()}, rt: ${this.record_type}`
+        let s = `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length.toHexh()}, rt: ${this.record_type.toHexh()}`
+        if ((this instanceof SdrRecordType1) || (this instanceof SdrRecordType2)) {
+            s += `, et: ${this.event_type.toHexh()}, st: ${this.sensor_type_n.toHexh()}, num: ${this.sensor_num.toHexh()}, name(${this.sensor_name.length}): ${this.sensor_name}`
+        }
+        return s
     }
 }
 interface Thresholds {
@@ -448,6 +452,8 @@ export class SdrRecordType2 extends SdrRecord {
                 })
             }
             this.event = v
+        } else {
+            throw new Error('event_type of SdrRecordType2 should not be threshold');
         }
 
         this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21))

@@ -1,7 +1,7 @@
 
 Todo:
   ✔ change generic codes to DMI-based “Usage State” STATES... @done(20-06-04 11:36)
-  ☐ add more test
+  ✔ add more test @done(20-06-28 19:28)
   ✔ check all undefined => reserved @done(20-06-04 16:44)
   ✔ refresh sensor name and reading with sdr @done(20-06-11 17:42)
   ✘ modify uploader to let vue handle onchange => fixed by change created to mounted @cancelled(20-06-12 13:54)
@@ -16,4 +16,4 @@ Todo:
   ✔ event 2 & 3 in IPMI spec @done(20-06-17 11:34)
   ✔ sdr threshold and event @done(20-06-18 15:06)
   ✔ change ipmi_spec from class to namespace/type @done(20-06-17 12:00)
-  ☐ speed js load, or load js before body
+  ✘ speed js load, or load js before body @cancelled(20-06-28 19:28)

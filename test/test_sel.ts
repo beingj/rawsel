@@ -88,6 +88,21 @@ Generic event
         expect(srs[1].generator).to.equal('1030h')
         expect(srs[2].generator).to.equal('0102h')
     })
+    it('event_receiver', () => {
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+Generic event
+ 0001h|   00h| 00000000h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0001h|   02h| 00000001h |  30h|   10h|   05h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0001h|   02h| 00000001h |  02h|   01h|   ffh|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ `
+        const srs = SelRecord.from_raw(raw)
+        expect(srs[0].event_receiver).to.equal('04h')
+        expect(srs[1].event_receiver).to.equal('05h')
+        expect(srs[2].event_receiver).to.equal('ffh')
+    })
     it('sensor type', () => {
         const raw = `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
@@ -348,47 +363,160 @@ Generic event
         expect(srs[11].event_data_field).to.equal('OEM code in byte 2, OEM code in byte 3')
         expect(srs[12].event_data_field).to.equal('reserved, reserved')
     })
-    it('event data 2&3 parse', () => {
+    it('ed23 out of range', () => {
         const raw = `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  f1h|  ffh|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  f4h|  02h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  f2h|  02h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  00h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f0h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   6fh|  f0h|  32h|  ffh|
- 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  f3h|  32h|  13h|
- // no sensor-specified in data23
+// ed1 fxh: sensor-specific data in ed2&3
+// unspecified data2&3
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  03h|  32h|  13h|
-//  event disable
+// sensor type 1(undefined)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   01h|     33h|   01h|  f1h|  ffh|  ffh|
+// sensor type 5, offset 2(undefined)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   05h|  f2h|  02h|  ffh|
+// sensor type 2bh, offset 7, ed2 0(unspecified)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  00h|  ffh|
+// sensor type 2bh, offset 7, ed2 32h(reserved)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  32h|  ffh|
+// sensor type 2bh, offset 0(undefined)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f0h|  32h|  ffh|
+// sensor type 3bh(undefined)
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   3bh|     ffh|   6fh|  f0h|  32h|  ffh|
+`
+        const srs = SelRecord.from_raw(raw)
+
+        expect(srs[0].event_data2_parsed).to.equal(undefined)
+        expect(srs[0].event_data3_parsed).to.equal(undefined)
+
+        expect(srs[1].event_data2_parsed).to.equal(undefined)
+        expect(srs[2].event_data2_parsed).to.equal(undefined)
+
+        expect(srs[3].event_data2_parsed).to.equal('unspecified')
+        expect(srs[4].event_data2_parsed).to.equal('reserved')
+        expect(srs[5].event_data2_parsed).to.equal(undefined)
+
+        expect(srs[6].event_data2_parsed).to.equal(undefined)
+    })
+    it('ed23 valid', () => {
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+// ed1 fxh: sensor-specific data in ed2&3
+// sensor type 5, offset 4
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   05h|     ffh|   6fh|  f4h|  02h|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   08h|     ffh|   6fh|  f6h|  00h|  02h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   0ch|     ffh|   6fh|  f3h|  00h|  05h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   0fh|     ffh|   6fh|  f0h|  04h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   0fh|     ffh|   6fh|  f2h|  06h|  00h|
+// 5: sensor type 10h, offset 0
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f0h|  09h|  00h|
+// sensor type 10h, offset 1 has its test case, so skip it here
+// 6: sensor type 10h, offset 5
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f5h|  00h|  10h|
+// 7: sensor type 10h, offset 6
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f6h|  03h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f6h|  04h|  80h|
+// 9: sensor type 12h, offset 3
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   12h|     ffh|   6fh|  f3h|  40h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   12h|     ffh|   6fh|  f3h|  63h|  00h|
+// 11: sensor type 12h, offset 4
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   12h|     ffh|   6fh|  f4h|  03h|  00h|
+// 12: sensor type 12h, offset 5
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   12h|     ffh|   6fh|  f5h|  00h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   12h|     ffh|   6fh|  f5h|  81h|  00h|
+`
+        const srs = SelRecord.from_raw(raw)
+
+        expect(srs[0].event_data2_parsed).to.equal('network controller #2')
+        expect(srs[1].event_data3_parsed).to.equal('Processor missing')
+        expect(srs[2].event_data3_parsed).to.equal('Memory #5')
+        expect(srs[3].event_data2_parsed).to.equal('Unrecoverable system-board failure')
+        expect(srs[4].event_data2_parsed).to.equal('USB resource configuration')
+
+        expect(srs[5].event_data2_parsed).to.equal('Memory #9')
+        expect(srs[6].event_data3_parsed).to.equal('16% full')
+
+        expect(srs[7].event_data2_parsed).to.equal('#3')
+        expect(srs[7].event_data3_parsed).to.equal('Entity Instance number')
+
+        expect(srs[8].event_data2_parsed).to.equal('#4')
+        expect(srs[8].event_data3_parsed).to.equal('Vendor-specific processor number')
+
+        expect(srs[9].event_data2_parsed).to.equal('MCA Log, log disabled')
+        expect(srs[10].event_data2_parsed).to.equal('reserved, reserved')
+
+        expect(srs[11].event_data2_parsed).to.equal('Alert, power off')
+
+        expect(srs[12].event_data2_parsed).to.equal('SEL Timestamp Clock updated, first of pair')
+        expect(srs[13].event_data2_parsed).to.equal('SDR Timestamp Clock updated, second of pair')
+    })
+    it('ed23 valid 2', () => {
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+// ed1 fxh: sensor-specific data in ed2&3
+// 0: sensor type 19h, offset 0
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   19h|     ffh|   6fh|  f0h|  01h|  02h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   19h|     ffh|   6fh|  f0h|  03h|  01h|
+// 2: sensor type 1dh, offset 7
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   1dh|     ffh|   6fh|  f7h|  03h|  01h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   21h|     ffh|   6fh|  f0h|  03h|  02h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   23h|     ffh|   6fh|  f0h|  32h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   28h|     ffh|   6fh|  f4h|  32h|  00h|
+// 6: sensor type 28h, offset 5
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   28h|     ffh|   6fh|  f5h|  82h|  00h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   28h|     ffh|   6fh|  f5h|  0ah|  03h|
+// 8: sensor type 2ah, offset 3
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  f3h|  02h|  13h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2bh|     ffh|   6fh|  f7h|  04h|  00h|
+`
+        const srs = SelRecord.from_raw(raw)
+
+        expect(srs[0].event_data2_parsed).to.equal('Requested power state: S1 sleeping with system h/w & processor context maintained')
+        expect(srs[0].event_data3_parsed).to.equal('Power state at time of request: S2 sleeping, processor context lost')
+
+        expect(srs[1].event_data2_parsed).to.equal('Requested power state: S3 sleeping, processor & h/w context lost, memory retained')
+        expect(srs[1].event_data3_parsed).to.equal('Power state at time of request: S1 sleeping with system h/w & processor context maintained')
+
+        expect(srs[2].event_data2_parsed).to.equal('power-up via power pushbutton')
+        expect(srs[2].event_data3_parsed).to.equal('from channel #1')
+
+        expect(srs[3].event_data2_parsed).to.equal('Docking')
+        expect(srs[3].event_data3_parsed).to.equal('Slot/Connector #2')
+
+        expect(srs[4].event_data2_parsed).to.equal('interrupt type: Messaging Interrupt, timer use: BIOS/POST')
+        expect(srs[5].event_data2_parsed).to.equal('sensor number 32h')
+
+        expect(srs[6].event_data2_parsed).to.equal('device is a logical FRU Device, LUN 0, bus ID 2')
+        expect(srs[6].event_data3_parsed).to.equal('FRU Device ID: 00h')
+
+        expect(srs[7].event_data2_parsed).to.equal('device is not a logical FRU Device, LUN 1, bus ID 2')
+        expect(srs[7].event_data3_parsed).to.equal('7-bit I2C Slave Address of FRU device: 03h')
+
+        expect(srs[8].event_data2_parsed).to.equal('user ID: #2')
+        expect(srs[8].event_data3_parsed).to.equal('Session deactivated by Close Session command, channel #3')
+
+        expect(srs[9].event_data2_parsed).to.equal('management controller manufacturer ID')
+    })
+    it('ed23 Event Type Logging Disabled', () => {
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  23h|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  11h|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  02h|
  `
         const srs = SelRecord.from_raw(raw)
 
-        expect(srs[0].event_data2_parsed).to.equal(undefined)
-        expect(srs[1].event_data2_parsed).to.equal('network controller #2')
-        expect(srs[2].event_data2_parsed).to.equal(undefined)
-        expect(srs[3].event_data2_parsed).to.equal('unspecified')
-        expect(srs[4].event_data2_parsed).to.equal('reserved')
-        expect(srs[5].event_data2_parsed).to.equal(undefined)
-        expect(srs[6].event_data2_parsed).to.equal(undefined)
-        expect(srs[7].event_data3_parsed).to.equal('Session deactivated by Close Session command, channel #3')
-
-        // no need to parse
-        expect(srs[8].event_data2_parsed).to.equal(undefined)
-        expect(srs[8].event_data3_parsed).to.equal(undefined)
-
-        //  event disable
-        expect(srs[9].event_data2_parsed).to.equal('DMI-based Usage State')
-        expect(srs[9].event_data3_parsed).to.equal('logging has been disabled for all events of given type')
-        expect(srs[10].event_data2_parsed).to.equal('DMI-based Usage State')
-        expect(srs[10].event_data3_parsed).to.equal('logging is disabled for assert: Transition to Active')
-        expect(srs[11].event_data2_parsed).to.equal('DMI-based Usage State')
-        expect(srs[11].event_data3_parsed).to.equal('logging is disabled for deassert: Transition to Busy')
+        expect(srs[0].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[0].event_data3_parsed).to.equal('logging has been disabled for all events of given type')
+        expect(srs[1].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[1].event_data3_parsed).to.equal('logging is disabled for assert: Transition to Active')
+        expect(srs[2].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[2].event_data3_parsed).to.equal('logging is disabled for deassert: Transition to Busy')
     })
 })

@@ -75,4 +75,5 @@ describe('ipmi', () => {
         expect(p_edf(...et_ed1[11])).to.equal('OEM code in byte 2, OEM code in byte 3')
         expect(p_edf(...et_ed1[12])).to.equal('reserved, reserved')
     })
+    // other parts of ipmi.ts are covered by test_sel.ts
 })

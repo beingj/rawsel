@@ -19,7 +19,7 @@ export class SelRecord {
     time_seconds: number
     timestamp: string
     generator: string
-    event_receiver: number
+    event_receiver: string
     sensor_type: string
     sensor_num: number
     event_direction: string
@@ -40,8 +40,8 @@ export class SelRecord {
         this.record_type = name_of_sel_rt(a[1])
         this.time_seconds = a[2]
         this.timestamp = SelRecord.timestamp_with_timezone(this.time_seconds, this.timezone)
-        this.generator = (a[3] + a[4] * 0x100).toHex(4) + 'h'
-        this.event_receiver = a[5]
+        this.generator = (a[3] + a[4] * 0x100).toHexh(4)
+        this.event_receiver = a[5].toHexh()
         this.sensor_type = name_of_st(a[6])
         this.sensor_num = a[7]
         this.event_direction = ((a[8] >> 7) & 1) == 0 ? 'Assert' : 'Deassert'

@@ -580,8 +580,7 @@ const event_data:
                 "Power Supply rating mismatch",
                 "Voltage rating mismatch",
             ]
-            const error_type = selr.event_data3 & 0xf
-            return { d3: error_type < error_types.length ? error_types[error_type] : 'reserved' }
+            return { d3: error_types.indexOfOr(selr.event_data3 & 0xf, 'reserved') }
         }
     },
     0x0c: {
@@ -611,11 +610,10 @@ const event_data:
                 "CPU voltage mismatch (processors that share same supply",
                 "CPU speed matching failure"
             ]
-            const error_type = selr.event_data2
-            return { d2: error_type < error_types.length ? error_types[error_type] : 'reserved' }
+            return { d2: error_types.indexOfOr(selr.event_data2, 'reserved') }
         },
         // System Firmware Hang
-        // 0x01: IPMI_Spec.event_data[0x0f][0x00]
+        // 0x01: same as event_data[0x0f][0x00], will set later
         0x02: (selr) => {
             // System Firmware Progress
             const error_types = [
@@ -646,8 +644,7 @@ const event_data:
                 "Pointing device test",
                 "Primary processor initialization",
             ]
-            const error_type = selr.event_data2
-            return { d2: error_type < error_types.length ? error_types[error_type] : 'reserved' }
+            return { d2: error_types.indexOfOr(selr.event_data2, 'reserved') }
         },
     },
     0x10: {
@@ -700,7 +697,7 @@ const event_data:
             ]
             const a = actions.indexOfOr((selr.event_data2 >> 4) & 0xf, 'reserved')
             const t = types.indexOfOr(selr.event_data2 & 0xf, 'reserved')
-            return { d2: `${t} ${a}` }
+            return { d2: `${t}, ${a}` }
         },
         0x04: (selr) => {
             // PEF Action
@@ -764,7 +761,7 @@ const event_data:
                 "soft reset (e.g. CTRL-ALT-DEL)",
                 "power-up via RTC",
             ]
-            return { d2: causes.indexOfOr(selr.event_data2, 'reserved'), d3: `from channel ${selr.event_data3}` }
+            return { d2: causes.indexOfOr(selr.event_data2, 'reserved'), d3: `from channel #${selr.event_data3}` }
         }
     },
     0x21: {
@@ -806,10 +803,9 @@ const event_data:
                 "SMS/OS",
                 "OEM",
             ]
-            return {
-                d2: `interrupt type ${types.indexOfOr((selr.event_data2 >> 4) & 0xf, 'unspecified')}`,
-                d3: `timer use ${types.indexOfOr(selr.event_data2 & 0xf, 'unspecified')}`
-            }
+            const t = types.indexOfOr((selr.event_data2 >> 4) & 0xf, 'unspecified')
+            const u = uses.indexOfOr(selr.event_data2 & 0xf, 'unspecified')
+            return { d2: `interrupt type: ${t}, timer use: ${u}` }
         }
     },
     0x28: {
@@ -822,14 +818,14 @@ const event_data:
             // FRU failure
             const ed2 = selr.event_data2
             const isLogic = ((ed2 >> 7) & 1) == 1
-            const d2 = `device is ${isLogic ? '' : 'not'} a logical FRU Device: LUN ${(ed2 >> 3) & 0x3}, bus ID ${ed2 & 3}`
+            const d2 = `device is${isLogic ? '' : ' not'} a logical FRU Device, LUN ${(ed2 >> 3) & 0x3}, bus ID ${ed2 & 3}`
             let d3: string
             if (isLogic) {
-                d3 = 'FRU Device ID:'
+                d3 = 'FRU Device ID'
             } else {
                 d3 = '7-bit I2C Slave Address of FRU device'
             }
-            d3 += `: ${selr.event_data3.toHexh()}h`
+            d3 += `: ${selr.event_data3.toHexh()}`
             return { d2: d2, d3: d3 }
         },
     },
@@ -846,7 +842,7 @@ const event_data:
             ]
             const cause = causes.indexOfOr((selr.event_data3 >> 4) & 3, 'reserved')
             const ch = selr.event_data3 & 0xf
-            return { d2: `user ID: ${user}`, d3: `${cause}, channel #${ch}` }
+            return { d2: `user ID: #${user}`, d3: `${cause}, channel #${ch}` }
         }
     },
     0x2b: {
@@ -1095,7 +1091,6 @@ function p_event(n: number, offset: number, sensor_type: number) {
 }
 function p_generic_event(n: number, offset: number) {
     const x = ipmi.generic_event_type_codes[n]
-    const name = Object.keys(x)[0]
     const values = Object.values(x)[0]
     if (offset >= values.length) { return 'unspecified' }
     return values[offset]
@@ -1105,12 +1100,12 @@ function p_sensor_event(n: number, offset: number) {
     if ((n >= ipmi.sensor_type_codes.length) && (n <= 0xc0)) { return 'reserved' }
     if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
 
-    // [01h, IPMI_Spec.sensor_type_codes.length)
+    // n in range: [01h, ipmi.sensor_type_codes.length)
     const x = ipmi.sensor_type_codes[n]
     const name = Object.keys(x)[0]
     const values = Object.values(x)[0]
     if ((n >= 1) && (n <= 4)) { return name }
-    // [05h, IPMI_Spec.sensor_type_codes.length)
+    // n in range: [05h, ipmi.sensor_type_codes.length)
     if (offset >= values.length) { return 'unspecified' }
     return values[offset]
 }

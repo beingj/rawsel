@@ -742,7 +742,7 @@
                     "soft reset (e.g. CTRL-ALT-DEL)",
                     "power-up via RTC",
                 ];
-                return { d2: causes.indexOfOr(selr.event_data2, 'reserved'), d3: `from channel ${selr.event_data3}` };
+                return { d2: causes.indexOfOr(selr.event_data2, 'reserved'), d3: `from channel #${selr.event_data3}` };
             }
         },
         0x21: {
@@ -784,10 +784,9 @@
                     "SMS/OS",
                     "OEM",
                 ];
-                return {
-                    d2: `interrupt type ${types.indexOfOr((selr.event_data2 >> 4) & 0xf, 'unspecified')}`,
-                    d3: `timer use ${types.indexOfOr(selr.event_data2 & 0xf, 'unspecified')}`
-                };
+                const t = types.indexOfOr((selr.event_data2 >> 4) & 0xf, 'unspecified');
+                const u = uses.indexOfOr(selr.event_data2 & 0xf, 'unspecified');
+                return { d2: `interrupt type: ${t}, timer use: ${u}` };
             }
         },
         0x28: {
@@ -800,15 +799,15 @@
                 // FRU failure
                 const ed2 = selr.event_data2;
                 const isLogic = ((ed2 >> 7) & 1) == 1;
-                const d2 = `device is ${isLogic ? '' : 'not'} a logical FRU Device: LUN ${(ed2 >> 3) & 0x3}, bus ID ${ed2 & 3}`;
+                const d2 = `device is${isLogic ? '' : ' not'} a logical FRU Device, LUN ${(ed2 >> 3) & 0x3}, bus ID ${ed2 & 3}`;
                 let d3;
                 if (isLogic) {
-                    d3 = 'FRU Device ID:';
+                    d3 = 'FRU Device ID';
                 }
                 else {
                     d3 = '7-bit I2C Slave Address of FRU device';
                 }
-                d3 += `: ${selr.event_data3.toHexh()}h`;
+                d3 += `: ${selr.event_data3.toHexh()}`;
                 return { d2: d2, d3: d3 };
             },
         },
@@ -825,7 +824,7 @@
                 ];
                 const cause = causes.indexOfOr((selr.event_data3 >> 4) & 3, 'reserved');
                 const ch = selr.event_data3 & 0xf;
-                return { d2: `user ID: ${user}`, d3: `${cause}, channel #${ch}` };
+                return { d2: `user ID: #${user}`, d3: `${cause}, channel #${ch}` };
             }
         },
         0x2b: {

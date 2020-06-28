@@ -4,12 +4,13 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./index"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Linearization = exports.SdrRecordType = exports.EventType = exports.ipmi = void 0;
+    const index_1 = require("./index");
     const event_data23 = {
         'threshold': {
             b76: [
@@ -637,10 +638,16 @@
             },
             0x01: (selr) => {
                 // Event Type Logging Disabled
-                // TODO:
-                const et = selr.event_data2.toString();
-                const os = (selr.event_data3 & 0xf).toString();
-                const s = `${os}`;
+                const et = index_1.SelRecord.event_type_of(selr.event_data2);
+                let s;
+                if ((selr.event_data3 >> 5) == 1) {
+                    s = 'logging has been disabled for all events of given type';
+                }
+                else {
+                    const dir = (selr.event_data3 >> 4) == 1 ? 'assert' : 'deassert';
+                    const os = index_1.SelRecord.event_of(selr.event_data2, selr.event_data3 & 0xf, 0xff);
+                    s = `logging is disabled for ${dir}: ${os}`;
+                }
                 return { d2: et, d3: s };
             },
             0x05: (selr) => {

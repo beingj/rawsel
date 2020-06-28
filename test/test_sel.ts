@@ -363,6 +363,10 @@ Generic event
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  f3h|  32h|  13h|
  // no sensor-specified in data23
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   2ah|     ffh|   6fh|  03h|  32h|  13h|
+//  event disable
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  23h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  11h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  02h|
  `
         const srs = SelRecord.from_raw(raw)
 
@@ -374,8 +378,17 @@ Generic event
         expect(srs[5].event_data2_parsed).to.equal(undefined)
         expect(srs[6].event_data2_parsed).to.equal(undefined)
         expect(srs[7].event_data3_parsed).to.equal('Session deactivated by Close Session command, channel #3')
+
         // no need to parse
         expect(srs[8].event_data2_parsed).to.equal(undefined)
         expect(srs[8].event_data3_parsed).to.equal(undefined)
+
+        //  event disable
+        expect(srs[9].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[9].event_data3_parsed).to.equal('logging has been disabled for all events of given type')
+        expect(srs[10].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[10].event_data3_parsed).to.equal('logging is disabled for assert: Transition to Active')
+        expect(srs[11].event_data2_parsed).to.equal('DMI-based Usage State')
+        expect(srs[11].event_data3_parsed).to.equal('logging is disabled for deassert: Transition to Busy')
     })
 })

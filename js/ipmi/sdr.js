@@ -200,38 +200,36 @@
             this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3;
             this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
             this.linear = dv.getUint8(offset + 23);
-            this.m = this.two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8));
-            this.b = this.two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8);
-            this.rexp = this.two_complement((dv.getUint8(offset + 29) >> 4) & 0xf, 4);
-            this.bexp = this.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
-            this.reading = SdrRecordType1.get_reading_formula(this);
-            this.reading_formula = SdrRecordType1.get_reading_formula_text(this);
+            this.m = index_5.two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8));
+            this.b = index_5.two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8);
+            this.rexp = index_5.two_complement((dv.getUint8(offset + 29) >> 4) & 0xf, 4);
+            this.bexp = index_5.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
             if (this.event_type === index_2.EventType.threshold) {
                 this.threshold = {};
                 const threshold_mask = dv.getUint16(offset + 18, true);
                 if (((threshold_mask >> 13) & 1) === 1) {
                     const v = dv.getUint8(offset + 36);
-                    this.threshold.unr = { v: v, s: this.reading(v) };
+                    this.threshold.unr = { v: v, s: '' };
                 }
                 if (((threshold_mask >> 12) & 1) === 1) {
                     const v = dv.getUint8(offset + 37);
-                    this.threshold.uc = { v: v, s: this.reading(v) };
+                    this.threshold.uc = { v: v, s: '' };
                 }
                 if (((threshold_mask >> 11) & 1) === 1) {
                     const v = dv.getUint8(offset + 38);
-                    this.threshold.unc = { v: v, s: this.reading(v) };
+                    this.threshold.unc = { v: v, s: '' };
                 }
                 if (((threshold_mask >> 10) & 1) === 1) {
                     const v = dv.getUint8(offset + 39);
-                    this.threshold.lnr = { v: v, s: this.reading(v) };
+                    this.threshold.lnr = { v: v, s: '' };
                 }
                 if (((threshold_mask >> 9) & 1) === 1) {
                     const v = dv.getUint8(offset + 40);
-                    this.threshold.lc = { v: v, s: this.reading(v) };
+                    this.threshold.lc = { v: v, s: '' };
                 }
                 if (((threshold_mask >> 8) & 1) === 1) {
                     const v = dv.getUint8(offset + 41);
-                    this.threshold.lnc = { v: v, s: this.reading(v) };
+                    this.threshold.lnc = { v: v, s: '' };
                 }
             }
             else {
@@ -246,24 +244,36 @@
                 }
                 this.event = v;
             }
+            this.reading = this.get_reading_formula();
+            this.reading_formula = this.get_reading_formula_text();
+            this.update_threshold();
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 47); // offset of 'id string type/length code'
         }
-        two_complement(v, bits = 8) {
-            if ((v >> (bits - 1)) == 0) {
-                // positive
-                return v;
-            }
-            else {
-                // negative
-                return v - (1 << bits);
-            }
+        update_formula() {
+            // change m/b/bexp/rexp after init, then call this method to update reading formula
+            this.reading = this.get_reading_formula();
+            this.reading_formula = this.get_reading_formula_text();
+            this.update_threshold();
         }
-        static get_reading_formula_text_full(sdr) {
+        update_threshold() {
+            const t = this.threshold;
+            if (t === undefined)
+                return;
+            const thresholds = [t.unr, t.uc, t.unc, t.lnr, t.lc, t.lnc];
+            thresholds.forEach((i) => {
+                if (i !== undefined) {
+                    i.s = this.reading(i.v);
+                }
+            });
+        }
+        get_reading_formula_text_full() {
+            const sdr = this;
             // const f = SdrRecord.linear_of(sdr.linear)
             // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
             return `(${sdr.m}x + (${sdr.b} \\\\times 10 ^ {${sdr.bexp}})) \\\\times 10 ^ {${sdr.rexp}}`;
         }
-        static get_reading_formula_text(sdr) {
+        get_reading_formula_text() {
+            const sdr = this;
             const f = SdrRecord.linear_of(sdr.linear);
             // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
             // return `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
@@ -365,7 +375,8 @@
             // return `${f1} $$=$$ ${f2}`
             return f2;
         }
-        static get_reading_formula(sdr) {
+        get_reading_formula() {
+            const sdr = this;
             return (raw) => {
                 let x;
                 if (typeof raw == 'string') {
@@ -375,7 +386,7 @@
                     x = raw;
                 }
                 if (sdr.unit1 == 2) {
-                    x = sdr.two_complement(x);
+                    x = index_5.two_complement(x);
                 }
                 // y=L((m*x+(b*power(10,bexp))*power(10,r))
                 let y = x;

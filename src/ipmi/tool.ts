@@ -9,6 +9,17 @@ function name_of(myEnum: any, n: number): string {
     return n.toHexh()
 }
 
+function two_complement(v: number, bits: number = 8) {
+    if ((v >> (bits - 1)) == 0) {
+        // positive
+        return v
+    }
+    else {
+        // negative
+        return v - (1 << bits)
+    }
+}
+
 function hex2ArrayBuffer(hex: string, offset: number = 0) {
     let ns: number[] = []
     hex.split('\n')
@@ -30,4 +41,4 @@ function hex2ArrayBuffer(hex: string, offset: number = 0) {
     return ab
 }
 
-export { name_of, hex2ArrayBuffer }
+export { name_of, hex2ArrayBuffer, two_complement }

@@ -5,14 +5,17 @@ export { test_data }
 const test_data = {
     sdr: sdr_data(),
     sel: `
-       | Record |           | GenID | GenID  |        | Sensor |          | EvtDir | Event | Event | Event |
-    ID | Type   | TimeStamp | (Low) | (High) | EvMRev | Type   | Sensor # | Type   | Data1 | Data2 | Data3 |
-     0 |      1 |         2 |     3 |      4 |      5 | 6      | 7        |      8 |     9 |    10 |    11 |
- 0109h | 02h    | 5ed08d86h | 20h   | 00h    | 04h    | 01h    | 33h      | 81h    | 57h   | 27h   | 28h   |
- 0e35h | 02h    | 00000001h | 20h   | 00h    | 04h    | 07h    | 92h      | 83h    | 01h   | ffh   | ffh   |
- 0e35h | 02h    | 5ecd80f5h | 20h   | 00h    | 04h    | 07h    | 94h      | 02h    | a1h   | ffh   | ffh   |
- 0e35h | 02h    | 5ecd80f5h | 20h   | 00h    | 04h    | 21h    | 62h      | 6fh    | 09h   | 08h   | 04h   |
- 0e35h | 02h    | 5ecd80f5h | 20h   | 00h    | 04h    | 04h    | 64h      | 6fh    | 01h   | ffh   | ffh   |
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+------|------|-----------|-----|------|------|------|--------|------|-----|-----|-----| 
+     0|    1 |         2 |   3 |    4 |    5 |    6 |      7 |    8 |   9 |  10 |  11 |
+ 0109h|   02h| 5ed08d86h |  20h|   00h|   04h|   01h|     33h|   81h|  57h|  27h|  28h|
+ 0e35h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     94h|   02h|  a1h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   21h|     62h|   6fh|  09h|  08h|  04h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     64h|   6fh|  01h|  ffh|  ffh|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  23h|
+ 0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  11h|
 `
 }
 
@@ -81,7 +84,7 @@ function repeat_sdr(bin: ArrayBuffer) {
                     sdr.b = b
                     sdr.bexp = bexp
                     sdr.rexp = rexp
-                    sdr.reading_formula = SdrRecordType1.get_reading_formula_text(sdr)
+                    sdr.update_formula()
                     idx++
                     sdr = x[idx]
                 }

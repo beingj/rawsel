@@ -22,9 +22,9 @@ describe('sdr', () => {
     it('show sdr', () => {
         const buf = to_ArrayBuffer(fs.readFileSync(bin_file))
         const sdrs = SdrRecord.from(buf)
-        sdrs.forEach(sdr => {
-            console.log(sdr.toString())
-        })
+        // sdrs.forEach(sdr => {
+        //     console.log(sdr.toString())
+        // })
     })
     it('new SdrRecordType1', () => {
         const hex = `
@@ -233,11 +233,10 @@ describe('sdr', () => {
 `
         const dv = new DataView(hex2ArrayBuffer(hex, 0))
         let sdr = new SdrRecordType1(dv)
-        const fm = SdrRecordType1.get_reading_formula_text_full
 
         sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 0
         // (1x + (0 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`(1x + (0 \\\\times 10 ^ {0})) \\\\times 10 ^ {0}`)
+        expect(sdr.get_reading_formula_text_full()).to.equal(`(1x + (0 \\\\times 10 ^ {0})) \\\\times 10 ^ {0}`)
     })
     it('formula mathjax', () => {
         const hex = `
@@ -265,197 +264,235 @@ describe('sdr', () => {
         //                 const ff = SdrRecordType1.get_reading_formula_text_full(sdr)
         //                 console.log(`sdr.m=${m};sdr.b=${b};sdr.bexp=${be};sdr.rexp=${re}`);
         //                 console.log(`// ${ff}`);
-        //                 console.log(`expect(fm(sdr)).to.equal(\`$$${ff}$$\`)`);
+        //                 console.log(`expect(sdr.get_reading_formula_text()).to.equal(\`$$${ff}$$\`)`);
         //             })
         //         })
         //     })
         // });
 
-        const fm = SdrRecordType1.get_reading_formula_text
-
         sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 0
         // (1x + (0 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 1
         // (1x + (0 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$x \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 2
         // (1x + (0 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$x \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 0
         // (1x + (0 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 1
         // (1x + (0 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$x \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 2
         // (1x + (0 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$x \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 0
         // (1x + (0 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 1
         // (1x + (0 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$x \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10$$`)
         sdr.m = 1; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 2
         // (1x + (0 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$x \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 0
         // (1x + (1 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + 1$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + 1$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 1
         // (1x + (1 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + 1) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 1) \\times 10$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 2
         // (1x + (1 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + 1) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 1) \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 0
         // (1x + (1 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + 10$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 1
         // (1x + (1 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + 10) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 10) \\times 10$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 2
         // (1x + (1 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + 10) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 10) \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 0
         // (1x + (1 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 1
         // (1x + (1 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + 10 ^ {2}) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 10 ^ {2}) \\times 10$$`)
         sdr.m = 1; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 2
         // (1x + (1 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + 10 ^ {2}) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 10 ^ {2}) \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 0
         // (1x + (2 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + 2$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + 2$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 1
         // (1x + (2 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + 2) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 2) \\times 10$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 2
         // (1x + (2 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + 2) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + 2) \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 0
         // (1x + (2 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + (2 \\times 10)$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + (2 \\times 10)$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 1
         // (1x + (2 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + (2 \\times 10)) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + (2 \\times 10)) \\times 10$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 2
         // (1x + (2 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + (2 \\times 10)) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + (2 \\times 10)) \\times 10 ^ {2}$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 0
         // (1x + (2 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$x + (2 \\times 10 ^ {2})$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$x + (2 \\times 10 ^ {2})$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 1
         // (1x + (2 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(x + (2 \\times 10 ^ {2})) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + (2 \\times 10 ^ {2})) \\times 10$$`)
         sdr.m = 1; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 2
         // (1x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 0
         // (2x + (0 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 1
         // (2x + (0 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 0; sdr.rexp = 2
         // (2x + (0 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 0
         // (2x + (0 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 1
         // (2x + (0 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 1; sdr.rexp = 2
         // (2x + (0 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 0
         // (2x + (0 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 1
         // (2x + (0 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10$$`)
         sdr.m = 2; sdr.b = 0; sdr.bexp = 2; sdr.rexp = 2
         // (2x + (0 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 0
         // (2x + (1 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + 1$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + 1$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 1
         // (2x + (1 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + 1) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 1) \\times 10$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 0; sdr.rexp = 2
         // (2x + (1 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + 1) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 1) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 0
         // (2x + (1 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + 10$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 1
         // (2x + (1 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + 10) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 10) \\times 10$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 1; sdr.rexp = 2
         // (2x + (1 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + 10) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 10) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 0
         // (2x + (1 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 1
         // (2x + (1 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + 10 ^ {2}) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 10 ^ {2}) \\times 10$$`)
         sdr.m = 2; sdr.b = 1; sdr.bexp = 2; sdr.rexp = 2
         // (2x + (1 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + 10 ^ {2}) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 10 ^ {2}) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 0
         // (2x + (2 \\times 10 ^ {0})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + 2$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + 2$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 1
         // (2x + (2 \\times 10 ^ {0})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + 2) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 2) \\times 10$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 0; sdr.rexp = 2
         // (2x + (2 \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + 2) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + 2) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 0
         // (2x + (2 \\times 10 ^ {1})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + (2 \\times 10)$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + (2 \\times 10)$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 1
         // (2x + (2 \\times 10 ^ {1})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + (2 \\times 10)) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + (2 \\times 10)) \\times 10$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 1; sdr.rexp = 2
         // (2x + (2 \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + (2 \\times 10)) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + (2 \\times 10)) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 0
         // (2x + (2 \\times 10 ^ {2})) \\times 10 ^ {0}
-        expect(fm(sdr)).to.equal(`$$2x + (2 \\times 10 ^ {2})$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$2x + (2 \\times 10 ^ {2})$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 1
         // (2x + (2 \\times 10 ^ {2})) \\times 10 ^ {1}
-        expect(fm(sdr)).to.equal(`$$(2x + (2 \\times 10 ^ {2})) \\times 10$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + (2 \\times 10 ^ {2})) \\times 10$$`)
         sdr.m = 2; sdr.b = 2; sdr.bexp = 2; sdr.rexp = 2
         // (2x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + (2 \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
 
         // b <0
         sdr.m = 2; sdr.b = -2; sdr.bexp = 2; sdr.rexp = 2
         // (2x + ((-2) \\times 10 ^ {2})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + ((-2) \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + ((-2) \\times 10 ^ {2})) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = -2; sdr.bexp = 1; sdr.rexp = 2
         // (2x + ((-2) \\times 10 ^ {1})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + ((-2) \\times 10)) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + ((-2) \\times 10)) \\times 10 ^ {2}$$`)
         sdr.m = 2; sdr.b = -2; sdr.bexp = 0; sdr.rexp = 2
         // (2x + ((-2) \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$(2x + (-2)) \\times 10 ^ {2}$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$(2x + (-2)) \\times 10 ^ {2}$$`)
 
         // non-linear
         sdr.m = 2; sdr.b = -2; sdr.bexp = 0; sdr.rexp = 2
         sdr.linear = Linearization.cube
         // (2x + ((-2) \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(fm(sdr)).to.equal(`$$${SdrRecord.linear_of(sdr.linear)}[(2x + (-2)) \\times 10 ^ {2}]$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$${SdrRecord.linear_of(sdr.linear)}[(2x + (-2)) \\times 10 ^ {2}]$$`)
 
     })
     it('threshold', () => {
-        // TODO: test threshold
+        const hex = `
+00000000:	0100	5101	3520	0001
+00000008:	0300	7f68	0101	800a
+00000010:	807a	3838	0001	0000
+00000018:	0600	0000	00f0	0797
+00000020:	ff00	ff00	4d4b	4200
+00000028:	8388	0000	0000	00ca
+00000030:	496e	6c65	745f	5465
+00000038:	6d70	0200	5101	3620
+`
+        const dv = new DataView(hex2ArrayBuffer(hex, 0))
+        dv.setUint8(13, EventType.threshold)
+        dv.setUint16(18, 0x3f00, true) // bits: 13~8
+        dv.setUint8(36, 0x66) // unr
+        dv.setUint8(37, 0x55) // uc
+        dv.setUint8(38, 0x44) // unc
+        dv.setUint8(39, 0x33) // lnr
+        dv.setUint8(40, 0x22) // lc
+        dv.setUint8(41, 0x11) // lnc
+
+        const sdr = new SdrRecordType1(dv)
+        sdr.linear = Linearization.linear
+        sdr.m = 1
+        sdr.b = 0
+        sdr.bexp = 0
+        sdr.rexp = 0
+        // y=x
+        sdr.update_formula()
+
+        expect(sdr.threshold!.unr!.v).to.equal(0x66)
+        expect(sdr.threshold!.unr!.s).to.equal('102')
+        expect(sdr.threshold!.uc!.v).to.equal(0x55)
+        expect(sdr.threshold!.uc!.s).to.equal('85')
+        expect(sdr.threshold!.unc!.v).to.equal(0x44)
+        expect(sdr.threshold!.unc!.s).to.equal('68')
+        expect(sdr.threshold!.lnr!.v).to.equal(0x33)
+        expect(sdr.threshold!.lnr!.s).to.equal('51')
+        expect(sdr.threshold!.lc!.v).to.equal(0x22)
+        expect(sdr.threshold!.lc!.s).to.equal('34')
+        expect(sdr.threshold!.lnc!.v).to.equal(0x11)
+        expect(sdr.threshold!.lnc!.s).to.equal('17')
     })
     it('event offsets SdrRecordType1', () => {
         const hex = `

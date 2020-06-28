@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.hex2ArrayBuffer = exports.name_of = void 0;
+    exports.two_complement = exports.hex2ArrayBuffer = exports.name_of = void 0;
     function name_of(myEnum, n) {
         // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
         let ns = n.toString(10);
@@ -21,6 +21,17 @@
         return n.toHexh();
     }
     exports.name_of = name_of;
+    function two_complement(v, bits = 8) {
+        if ((v >> (bits - 1)) == 0) {
+            // positive
+            return v;
+        }
+        else {
+            // negative
+            return v - (1 << bits);
+        }
+    }
+    exports.two_complement = two_complement;
     function hex2ArrayBuffer(hex, offset = 0) {
         let ns = [];
         hex.split('\n')

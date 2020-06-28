@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { hex2ArrayBuffer, name_of, EventType } from '../src/ipmi';
+import { hex2ArrayBuffer, name_of, EventType, two_complement } from '../src/ipmi';
 
 describe('tool', () => {
     it('name_of', () => {
@@ -21,5 +21,11 @@ describe('tool', () => {
         dv = new DataView(hex2ArrayBuffer(hex))
         expect(dv.getUint16(4, true)).to.equal(0x17)
         expect(dv.getUint8(2)).to.equal(0x65)
+    })
+    it('two_complement', () => {
+        expect(two_complement(0x00)).to.equal(0)
+        expect(two_complement(0x80)).to.equal(-128)
+        expect(two_complement(0x80, 16)).to.equal(0x80)
+        expect(two_complement(0x8000, 16)).to.equal(-32768)
     })
 })

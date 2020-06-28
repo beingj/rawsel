@@ -1,3 +1,5 @@
+import { SelRecord } from "./index"
+
 const event_data23: { [key: string]: { [key: string]: string[] } } = {
     'threshold': {
         b76: [
@@ -655,10 +657,16 @@ const event_data:
         },
         0x01: (selr) => {
             // Event Type Logging Disabled
-            // TODO:
-            const et = selr.event_data2.toString()
-            const os = (selr.event_data3 & 0xf).toString()
-            const s = `${os}`
+            const et = SelRecord.event_type_of(selr.event_data2)
+            let s: string
+            if ((selr.event_data3 >> 5) == 1) {
+                s = 'logging has been disabled for all events of given type'
+            }
+            else {
+                const dir = (selr.event_data3 >> 4) == 1 ? 'assert' : 'deassert'
+                const os = SelRecord.event_of(selr.event_data2, selr.event_data3 & 0xf, 0xff)
+                s = `logging is disabled for ${dir}: ${os}`
+            }
             return { d2: et, d3: s }
         },
         0x05: (selr) => {

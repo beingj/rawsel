@@ -331,22 +331,22 @@ Generic event
  `
         const srs = SelRecord.from_raw(raw)
         // threshold
-        expect(srs[0].event_data23).to.equal('trigger reading in byte 2, trigger threshold value in byte 3')
+        expect(srs[0].event_data_field).to.equal('trigger reading in byte 2, trigger threshold value in byte 3')
         // discrete: 0, 4, ah, fh
-        expect(srs[1].event_data23).to.equal('unspecified byte 2, unspecified byte 3')
-        expect(srs[2].event_data23).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
-        expect(srs[3].event_data23).to.equal('OEM code in byte 2, OEM code in byte 3')
-        expect(srs[4].event_data23).to.equal('sensor-specific event extension code in byte 2, sensor-specific event extension code in byte 3')
+        expect(srs[1].event_data_field).to.equal('unspecified byte 2, unspecified byte 3')
+        expect(srs[2].event_data_field).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
+        expect(srs[3].event_data_field).to.equal('OEM code in byte 2, OEM code in byte 3')
+        expect(srs[4].event_data_field).to.equal('sensor-specific event extension code in byte 2, sensor-specific event extension code in byte 3')
         // sensor-specific: 0, 4, ah, fh
-        expect(srs[5].event_data23).to.equal('unspecified byte 2, unspecified byte 3')
-        expect(srs[6].event_data23).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
-        expect(srs[7].event_data23).to.equal('OEM code in byte 2, OEM code in byte 3')
-        expect(srs[8].event_data23).to.equal('sensor-specific event extension code in byte 2, sensor-specific event extension code in byte 3')
+        expect(srs[5].event_data_field).to.equal('unspecified byte 2, unspecified byte 3')
+        expect(srs[6].event_data_field).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
+        expect(srs[7].event_data_field).to.equal('OEM code in byte 2, OEM code in byte 3')
+        expect(srs[8].event_data_field).to.equal('sensor-specific event extension code in byte 2, sensor-specific event extension code in byte 3')
         // OEM: 0, 4, ah, fh
-        expect(srs[9].event_data23).to.equal('unspecified byte 2, unspecified byte 3')
-        expect(srs[10].event_data23).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
-        expect(srs[11].event_data23).to.equal('OEM code in byte 2, OEM code in byte 3')
-        expect(srs[12].event_data23).to.equal('reserved, reserved')
+        expect(srs[9].event_data_field).to.equal('unspecified byte 2, unspecified byte 3')
+        expect(srs[10].event_data_field).to.equal('previous state and/or severity in byte 2, unspecified byte 3')
+        expect(srs[11].event_data_field).to.equal('OEM code in byte 2, OEM code in byte 3')
+        expect(srs[12].event_data_field).to.equal('reserved, reserved')
     })
     it('event data 2&3 parse', () => {
         const raw = `

@@ -3,104 +3,8 @@ import { SelRecord } from './index'
 import { EventType } from './index'
 import { SdrRecordType } from './index'
 import { Linearization } from './index'
-import { name_of, two_complement } from './index'
-
-const SensorUnitTypeCodes = [
-    "unspecified",
-    "degrees C",
-    "degrees F",
-    "degrees K",
-    "Volts",
-    "Amps",
-    "Watts",
-    "Joules",
-    "Coulombs",
-    "VA",
-    "Nits",
-    "lumen",
-    "lux",
-    "Candela",
-    "kPa",
-    "PSI",
-    "Newton",
-    "CFM",
-    "RPM",
-    "Hz",
-    "microsecond",
-    "millisecond",
-    "second",
-    "minute",
-    "hour",
-    "day",
-    "week",
-    "mil",
-    "inches",
-    "feet",
-    "cu in",
-    "cu feet",
-    "mm",
-    "cm",
-    "m",
-    "cu cm",
-    "cu m",
-    "liters",
-    "fluid ounce",
-    "radians",
-    "steradians",
-    "revolutions",
-    "cycles",
-    "gravities",
-    "ounce",
-    "pound",
-    "ft-lb",
-    "oz-in",
-    "gauss",
-    "gilberts",
-    "henry",
-    "millihenry",
-    "farad",
-    "microfarad",
-    "ohms",
-    "siemens",
-    "mole",
-    "becquerel",
-    "PPM",
-    "reserved",
-    "Decibels",
-    "DbA",
-    "DbC",
-    "gray",
-    "sievert",
-    "color temp deg K",
-    "bit",
-    "kilobit",
-    "megabit",
-    "gigabit",
-    "byte",
-    "kilobyte",
-    "megabyte",
-    "gigabyte",
-    "word",
-    "dword",
-    "qword",
-    "line",
-    "hit",
-    "miss",
-    "retry",
-    "reset",
-    "overrun / overflow",
-    "underrun",
-    "collision",
-    "packets",
-    "messages",
-    "characters",
-    "error",
-    "correctable error",
-    "uncorrectable error",
-    "fatal error",
-    "grams"
-]
-
+import { two_complement } from './index'
+import { name_of_unit, name_of_linear, name_of_st, p_event } from './index'
 
 export class SdrRecord {
     dv: DataView
@@ -159,18 +63,6 @@ export class SdrRecord {
         this.record_length = dv.getUint8(offset + 4)
         this.next_record = offset + 5 + this.record_length
     }
-    static unit_of(n: number) {
-        if (n >= SensorUnitTypeCodes.length) {
-            return n.toHexh()
-        }
-        return SensorUnitTypeCodes[n]
-    }
-    static record_type_of(n: number) {
-        return name_of(SdrRecordType, n)
-    }
-    static linear_of(n: number) {
-        return name_of(Linearization, n)
-    }
     static get_id_string(dv: DataView, offset: number) {
         let len = dv.getUint8(offset) & 0x1f
         let ns: number[] = []
@@ -219,10 +111,10 @@ export class SdrRecordType1 extends SdrRecord {
         this.record_type = SdrRecordType.Full
         this.sensor_num = dv.getUint8(offset + 7)
         this.sensor_type_n = dv.getUint8(offset + 12)
-        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 12))
+        this.sensor_type = name_of_st(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3
-        this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21))
+        this.unit = name_of_unit(dv.getUint8(offset + 21))
         this.linear = dv.getUint8(offset + 23)
         this.m = two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8))
         this.b = two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8)
@@ -261,7 +153,7 @@ export class SdrRecordType1 extends SdrRecord {
             for (let i = 0; i < 16; i++) {
                 if (((x >> i) & 1) === 1) v.push({
                     v: i,
-                    s: SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                    s: p_event(this.event_type, i, this.sensor_type_n)
                 })
             }
             this.event = v
@@ -296,7 +188,7 @@ export class SdrRecordType1 extends SdrRecord {
     }
     get_reading_formula_text() {
         const sdr = this
-        const f = SdrRecord.linear_of(sdr.linear)
+        const f = name_of_linear(sdr.linear)
         // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
         // return `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
         const f1 = `$$${f}[(${sdr.m} x + (${sdr.b} \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
@@ -451,7 +343,7 @@ export class SdrRecordType2 extends SdrRecord {
         this.record_type = SdrRecordType.Compact
         this.sensor_num = dv.getUint8(offset + 7)
         this.sensor_type_n = dv.getUint8(offset + 12)
-        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 12))
+        this.sensor_type = name_of_st(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         if (this.event_type !== EventType.threshold) {
             const v: { v: number, s: string }[] = []
@@ -459,7 +351,7 @@ export class SdrRecordType2 extends SdrRecord {
             for (let i = 0; i < 16; i++) {
                 if (((x >> i) & 1) === 1) v.push({
                     v: i,
-                    s: SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                    s: p_event(this.event_type, i, this.sensor_type_n)
                 })
             }
             this.event = v
@@ -467,7 +359,7 @@ export class SdrRecordType2 extends SdrRecord {
             throw new Error('event_type of SdrRecordType2 should not be threshold');
         }
 
-        this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21))
+        this.unit = name_of_unit(dv.getUint8(offset + 21))
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 31) // offset of 'id string type/length code'
     }
 }
@@ -481,7 +373,7 @@ export class SdrRecordType3 extends SdrRecord {
         super(dv, offset)
         this.record_type = SdrRecordType.EventOnly
         this.sensor_num = dv.getUint8(offset + 7)
-        this.sensor_type = SelRecord.sensor_type_of(dv.getUint8(offset + 10))
+        this.sensor_type = name_of_st(dv.getUint8(offset + 10))
         this.event_type = dv.getUint8(offset + 11)
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 16) // offset of 'id string type/length code'
     }

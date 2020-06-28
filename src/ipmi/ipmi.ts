@@ -1,6 +1,7 @@
-import { SelRecord } from "./index"
+import { SelRecord, name_of } from "./index"
 
-const event_data23: { [key: string]: { [key: string]: string[] } } = {
+const event_data_field: { [key: string]: { [key: string]: string[] } } = {
+    // table 29-6 event data field
     'threshold': {
         b76: [
             'unspecified byte 2',
@@ -657,14 +658,14 @@ const event_data:
         },
         0x01: (selr) => {
             // Event Type Logging Disabled
-            const et = SelRecord.event_type_of(selr.event_data2)
+            const et = name_of_et(selr.event_data2)
             let s: string
             if ((selr.event_data3 >> 5) == 1) {
                 s = 'logging has been disabled for all events of given type'
             }
             else {
                 const dir = (selr.event_data3 >> 4) == 1 ? 'assert' : 'deassert'
-                const os = SelRecord.event_of(selr.event_data2, selr.event_data3 & 0xf, 0xff)
+                const os = p_event(selr.event_data2, selr.event_data3 & 0xf, 0xff)
                 s = `logging is disabled for ${dir}: ${os}`
             }
             return { d2: et, d3: s }
@@ -900,7 +901,7 @@ for (let i = 1; i <= 3; i++) {
 event_data[0x23][8] = event_data[0x23][0x00]
 
 const ipmi = {
-    event_data23,
+    event_data_field,
     generic_event_type_codes,
     sensor_type_codes,
     event_data,
@@ -924,7 +925,197 @@ enum Linearization {
     linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
 }
 
+enum SensorUnitTypeCodes {
+    "unspecified",
+    "degrees C",
+    "degrees F",
+    "degrees K",
+    "Volts",
+    "Amps",
+    "Watts",
+    "Joules",
+    "Coulombs",
+    "VA",
+    "Nits",
+    "lumen",
+    "lux",
+    "Candela",
+    "kPa",
+    "PSI",
+    "Newton",
+    "CFM",
+    "RPM",
+    "Hz",
+    "microsecond",
+    "millisecond",
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "week",
+    "mil",
+    "inches",
+    "feet",
+    "cu in",
+    "cu feet",
+    "mm",
+    "cm",
+    "m",
+    "cu cm",
+    "cu m",
+    "liters",
+    "fluid ounce",
+    "radians",
+    "steradians",
+    "revolutions",
+    "cycles",
+    "gravities",
+    "ounce",
+    "pound",
+    "ft-lb",
+    "oz-in",
+    "gauss",
+    "gilberts",
+    "henry",
+    "millihenry",
+    "farad",
+    "microfarad",
+    "ohms",
+    "siemens",
+    "mole",
+    "becquerel",
+    "PPM",
+    "reserved",
+    "Decibels",
+    "DbA",
+    "DbC",
+    "gray",
+    "sievert",
+    "color temp deg K",
+    "bit",
+    "kilobit",
+    "megabit",
+    "gigabit",
+    "byte",
+    "kilobyte",
+    "megabyte",
+    "gigabyte",
+    "word",
+    "dword",
+    "qword",
+    "line",
+    "hit",
+    "miss",
+    "retry",
+    "reset",
+    "overrun / overflow",
+    "underrun",
+    "collision",
+    "packets",
+    "messages",
+    "characters",
+    "error",
+    "correctable error",
+    "uncorrectable error",
+    "fatal error",
+    "grams"
+}
+
+function name_of_sdr_rt(n: number) {
+    return name_of(SdrRecordType, n)
+}
+function name_of_linear(n: number) {
+    return name_of(Linearization, n)
+}
+function name_of_unit(n: number) {
+    return name_of(SensorUnitTypeCodes, n)
+}
+
+function name_of_sel_rt(n: number) {
+    if (n == 2) { return 'system event' }
+    if ((n >= 0xc0) && (n <= 0xdf)) { return 'OEM timestamped' }
+    if ((n >= 0xe0) && (n <= 0xff)) { return 'OEM non-timestamped' }
+    return 'unspecified'
+}
+function name_of_et(n: number) {
+    n = n & 0x7f
+    if (n == 0) { return 'unspecified' }
+    if (n == 1) { return 'threshold' }
+    if ((n >= 0x2) && (n <= 0xc)) { return Object.keys(ipmi.generic_event_type_codes[n])[0] }
+    if (n == 0x6f) { return 'sensor-specific' }
+    if ((n >= 0x70) && (n <= 0x7f)) { return 'OEM' }
+    // 0dh-6eh
+    return 'reserved'
+}
+function name_of_st(n: number) {
+    if (n < ipmi.sensor_type_codes.length) {
+        return Object.keys(ipmi.sensor_type_codes[n])[0]
+    }
+    if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
+    return 'reserved'
+}
+function p_edf(et: number, n: number) {
+    // table 29-6 event data field
+    et = et & 0x7f
+    let k: string
+    if (et == 1) {
+        k = 'threshold'
+    } else if ((et >= 0x2) && (et <= 0xc)) {
+        k = 'discrete'
+    } else if (et == 0x6f) {
+        k = 'discrete'
+    } else {
+        k = 'OEM'
+    }
+    const b76 = (n >> 6) & 0x3
+    const b54 = (n >> 4) & 0x3
+    // console.log('n ' + (n >> 4) + ', k ' + k + ', b76 ' + b76 + ', b54 ' + b54)
+    return ipmi.event_data_field[k]['b76'][b76] + ', ' + ipmi.event_data_field[k]['b54'][b54]
+}
+function p_event(n: number, offset: number, sensor_type: number) {
+    n = n & 0x7f
+    offset = offset & 0xf
+
+    if (n == 0) {
+        return "unspecified"
+    }
+    if ((n >= 0x1) && (n <= 0xc)) {
+        return p_generic_event(n, offset)
+    }
+    if (n == 0x6f) {
+        return p_sensor_event(sensor_type, offset)
+    }
+
+    if ((n >= 0x70) && (n <= 0x7f)) {
+        return 'OEM'
+    } else {
+        // [0xd, 0x6e]
+        return 'reserved'
+    }
+}
+function p_generic_event(n: number, offset: number) {
+    const x = ipmi.generic_event_type_codes[n]
+    const name = Object.keys(x)[0]
+    const values = Object.values(x)[0]
+    if (offset >= values.length) { return 'unspecified' }
+    return values[offset]
+}
+function p_sensor_event(n: number, offset: number) {
+    if (n == 0) { return 'reserved' }
+    if ((n >= ipmi.sensor_type_codes.length) && (n <= 0xc0)) { return 'reserved' }
+    if ((n >= 0xc0) && (n <= 0xff)) { return 'OEM' }
+
+    // [01h, IPMI_Spec.sensor_type_codes.length)
+    const x = ipmi.sensor_type_codes[n]
+    const name = Object.keys(x)[0]
+    const values = Object.values(x)[0]
+    if ((n >= 1) && (n <= 4)) { return name }
+    // [05h, IPMI_Spec.sensor_type_codes.length)
+    if (offset >= values.length) { return 'unspecified' }
+    return values[offset]
+}
+
 export { ipmi }
-export { EventType }
-export { SdrRecordType }
-export { Linearization }
+export { EventType, SdrRecordType, Linearization, SensorUnitTypeCodes }
+export { name_of_sdr_rt, name_of_linear, name_of_unit, name_of_sel_rt, name_of_et, name_of_st }
+export { p_event, p_edf }

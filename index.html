@@ -176,11 +176,11 @@
                         </tr>
                         <tr v-for='(sdrr,idx) in sdr.sdrs'>
                             <td>{{sdrr.record_id}}</td>
-                            <td>{{sdrr | record_type}}</td>
+                            <td>{{sdrr | sdr_rt}}</td>
                             <td class="number">{{sdrr.sensor_num | toHex}}</td>
                             <td>{{sdrr.sensor_name}}</td>
                             <td>{{sdrr.sensor_type?sdrr.sensor_type:''}}</td>
-                            <td>{{sdrr.event_type?event_type_of(sdrr.event_type):''}}</td>
+                            <td>{{sdrr.event_type?et(sdrr.event_type):''}}</td>
                             <template v-if="sdrr.reading">
                                 <td>
                                     <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
@@ -255,7 +255,7 @@
                             <th>event_dir</th>
                             <th>event_type</th>
                             <th>event</th>
-                            <th>event_data23</th>
+                            <th>event_data_field</th>
                             <th>event_data2</th>
                             <th>event_data3</th>
                         </tr>
@@ -276,7 +276,7 @@
                             <td>{{selr.event_direction}}</td>
                             <td>{{selr.event_type}}</td>
                             <td>{{selr.event}}</td>
-                            <td>{{selr.event_data23}}</td>
+                            <td>{{selr.event_data_field}}</td>
                             <template v-if="selr.event_type=='threshold' && selr.sdr && selr.sdr.reading">
                                 <td class="number">{{selr.sdr.reading(selr.event_data2)}}</td>
                                 <td class="number">{{selr.sdr.reading(selr.event_data3)}}</td>

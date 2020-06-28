@@ -1,4 +1,4 @@
-import { SelRecord } from './ipmi/index'
+import { SelRecord, name_of_sdr_rt, name_of_et } from './ipmi/index'
 import { SdrRecord, SdrRecordType1 } from './ipmi/index'
 import { test_data } from './test_data'
 import { Uploader } from './uploader'
@@ -86,8 +86,8 @@ const app = new Vue({
                 }
             })
         },
-        event_type_of: function (n: number) {
-            return SelRecord.event_type_of(n)
+        et: function (n: number) {
+            return name_of_et(n)
         },
         sorted_threshold: function (sdr: SdrRecordType1) {
             if (!sdr.threshold) {
@@ -150,8 +150,8 @@ const app = new Vue({
         }
     },
     filters: {
-        record_type: function (sdr: SdrRecord) {
-            return SdrRecord.record_type_of(sdr.record_type)
+        sdr_rt: function (sdr: SdrRecord) {
+            return name_of_sdr_rt(sdr.record_type)
         },
         toHex: function (n: number) {
             if ((n == undefined) || (n == null)) return ''

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { SdrRecord, SdrRecordType1, SdrRecordType2, SdrRecordType3, SdrRecordType11, SdrRecordTypeC0, SdrRecordType12, EventType } from '../src/ipmi'
-import { SdrRecordType, Linearization, name_of } from '../src/ipmi'
+import { SdrRecordType, Linearization, name_of_linear } from '../src/ipmi'
 import { hex2ArrayBuffer } from '../src/ipmi'
 
 import '../src/ipmi'
@@ -448,7 +448,7 @@ describe('sdr', () => {
         sdr.m = 2; sdr.b = -2; sdr.bexp = 0; sdr.rexp = 2
         sdr.linear = Linearization.cube
         // (2x + ((-2) \\times 10 ^ {0})) \\times 10 ^ {2}
-        expect(sdr.get_reading_formula_text()).to.equal(`$$${SdrRecord.linear_of(sdr.linear)}[(2x + (-2)) \\times 10 ^ {2}]$$`)
+        expect(sdr.get_reading_formula_text()).to.equal(`$$${name_of_linear(sdr.linear)}[(2x + (-2)) \\times 10 ^ {2}]$$`)
 
     })
     it('threshold', () => {
@@ -543,45 +543,5 @@ describe('sdr', () => {
         dv.setUint8(13, EventType.threshold)
         // https://stackoverflow.com/questions/21587122/mocha-chai-expect-to-throw-not-catching-thrown-errors/22340179#22340179
         expect(() => new SdrRecordType2(dv)).to.throw('event_type of SdrRecordType2 should not be threshold')
-    })
-    it('unit_of', () => {
-        expect(SdrRecord.unit_of(0x01)).to.equal('degrees C');
-        expect(SdrRecord.unit_of(0xff)).to.equal('ffh');
-    })
-    it('name_of', () => {
-        expect(name_of(SdrRecordType, SdrRecordType.Full)).to.equal('Full')
-        expect(name_of(SdrRecordType, 0xff)).to.equal('ffh')
-    })
-    it('record_type_of', () => {
-        expect(SdrRecord.record_type_of(SdrRecordType.Full)).to.equal('Full')
-        expect(SdrRecord.record_type_of(0xff)).to.equal('ffh')
-    })
-    it('linear_of', () => {
-        expect(SdrRecord.linear_of(Linearization.linear)).to.equal('linear')
-        expect(SdrRecord.linear_of(0xff)).to.equal('ffh')
-    })
-
-    it("test hex to bin", () => {
-        const test_data = `
-00000000:	0100	5101	3520	0001
-00000008:	0300	7f68	0101	800a
-00000010:	807a	3838	0001	0000
-`
-        const ns: number[] = []
-        const hex = test_data.split('\n')
-            .filter(i => i.startsWith('0000'))
-            .forEach(j => j.split(/\s+/).slice(1)
-                .forEach(k => {
-                    ns.push(parseInt(k.substr(0, 2), 16))
-                    ns.push(parseInt(k.substr(2, 2), 16))
-                })
-            )
-        const bin = String.fromCharCode.apply(null, ns)
-        // console.log(bin)
-        expect(bin[0]).to.equal('\x01')
-        expect(bin[8]).to.equal('\x03')
-        expect(bin[11]).to.equal('\x68')
-        expect(bin[16]).to.equal('\x80')
-        expect(bin[23]).to.equal('\x00')
     })
 })

@@ -9,9 +9,10 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Linearization = exports.SdrRecordType = exports.EventType = exports.ipmi = void 0;
+    exports.p_edf = exports.p_event = exports.name_of_st = exports.name_of_et = exports.name_of_sel_rt = exports.name_of_unit = exports.name_of_linear = exports.name_of_sdr_rt = exports.SensorUnitTypeCodes = exports.Linearization = exports.SdrRecordType = exports.EventType = exports.ipmi = void 0;
     const index_1 = require("./index");
-    const event_data23 = {
+    const event_data_field = {
+        // table 29-6 event data field
         'threshold': {
             b76: [
                 'unspecified byte 2',
@@ -638,14 +639,14 @@
             },
             0x01: (selr) => {
                 // Event Type Logging Disabled
-                const et = index_1.SelRecord.event_type_of(selr.event_data2);
+                const et = name_of_et(selr.event_data2);
                 let s;
                 if ((selr.event_data3 >> 5) == 1) {
                     s = 'logging has been disabled for all events of given type';
                 }
                 else {
                     const dir = (selr.event_data3 >> 4) == 1 ? 'assert' : 'deassert';
-                    const os = index_1.SelRecord.event_of(selr.event_data2, selr.event_data3 & 0xf, 0xff);
+                    const os = p_event(selr.event_data2, selr.event_data3 & 0xf, 0xff);
                     s = `logging is disabled for ${dir}: ${os}`;
                 }
                 return { d2: et, d3: s };
@@ -880,7 +881,7 @@
     }
     event_data[0x23][8] = event_data[0x23][0x00];
     const ipmi = {
-        event_data23,
+        event_data_field,
         generic_event_type_codes,
         sensor_type_codes,
         event_data,
@@ -918,5 +919,233 @@
         Linearization[Linearization["cubeByNegOne"] = 11] = "cubeByNegOne";
     })(Linearization || (Linearization = {}));
     exports.Linearization = Linearization;
+    var SensorUnitTypeCodes;
+    (function (SensorUnitTypeCodes) {
+        SensorUnitTypeCodes[SensorUnitTypeCodes["unspecified"] = 0] = "unspecified";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["degrees C"] = 1] = "degrees C";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["degrees F"] = 2] = "degrees F";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["degrees K"] = 3] = "degrees K";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Volts"] = 4] = "Volts";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Amps"] = 5] = "Amps";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Watts"] = 6] = "Watts";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Joules"] = 7] = "Joules";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Coulombs"] = 8] = "Coulombs";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["VA"] = 9] = "VA";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Nits"] = 10] = "Nits";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["lumen"] = 11] = "lumen";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["lux"] = 12] = "lux";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Candela"] = 13] = "Candela";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["kPa"] = 14] = "kPa";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["PSI"] = 15] = "PSI";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Newton"] = 16] = "Newton";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["CFM"] = 17] = "CFM";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["RPM"] = 18] = "RPM";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Hz"] = 19] = "Hz";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["microsecond"] = 20] = "microsecond";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["millisecond"] = 21] = "millisecond";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["second"] = 22] = "second";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["minute"] = 23] = "minute";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["hour"] = 24] = "hour";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["day"] = 25] = "day";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["week"] = 26] = "week";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["mil"] = 27] = "mil";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["inches"] = 28] = "inches";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["feet"] = 29] = "feet";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cu in"] = 30] = "cu in";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cu feet"] = 31] = "cu feet";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["mm"] = 32] = "mm";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cm"] = 33] = "cm";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["m"] = 34] = "m";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cu cm"] = 35] = "cu cm";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cu m"] = 36] = "cu m";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["liters"] = 37] = "liters";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["fluid ounce"] = 38] = "fluid ounce";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["radians"] = 39] = "radians";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["steradians"] = 40] = "steradians";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["revolutions"] = 41] = "revolutions";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["cycles"] = 42] = "cycles";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gravities"] = 43] = "gravities";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["ounce"] = 44] = "ounce";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["pound"] = 45] = "pound";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["ft-lb"] = 46] = "ft-lb";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["oz-in"] = 47] = "oz-in";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gauss"] = 48] = "gauss";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gilberts"] = 49] = "gilberts";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["henry"] = 50] = "henry";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["millihenry"] = 51] = "millihenry";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["farad"] = 52] = "farad";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["microfarad"] = 53] = "microfarad";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["ohms"] = 54] = "ohms";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["siemens"] = 55] = "siemens";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["mole"] = 56] = "mole";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["becquerel"] = 57] = "becquerel";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["PPM"] = 58] = "PPM";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["reserved"] = 59] = "reserved";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["Decibels"] = 60] = "Decibels";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["DbA"] = 61] = "DbA";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["DbC"] = 62] = "DbC";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gray"] = 63] = "gray";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["sievert"] = 64] = "sievert";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["color temp deg K"] = 65] = "color temp deg K";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["bit"] = 66] = "bit";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["kilobit"] = 67] = "kilobit";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["megabit"] = 68] = "megabit";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gigabit"] = 69] = "gigabit";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["byte"] = 70] = "byte";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["kilobyte"] = 71] = "kilobyte";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["megabyte"] = 72] = "megabyte";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["gigabyte"] = 73] = "gigabyte";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["word"] = 74] = "word";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["dword"] = 75] = "dword";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["qword"] = 76] = "qword";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["line"] = 77] = "line";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["hit"] = 78] = "hit";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["miss"] = 79] = "miss";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["retry"] = 80] = "retry";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["reset"] = 81] = "reset";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["overrun / overflow"] = 82] = "overrun / overflow";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["underrun"] = 83] = "underrun";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["collision"] = 84] = "collision";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["packets"] = 85] = "packets";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["messages"] = 86] = "messages";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["characters"] = 87] = "characters";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["error"] = 88] = "error";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["correctable error"] = 89] = "correctable error";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["uncorrectable error"] = 90] = "uncorrectable error";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["fatal error"] = 91] = "fatal error";
+        SensorUnitTypeCodes[SensorUnitTypeCodes["grams"] = 92] = "grams";
+    })(SensorUnitTypeCodes || (SensorUnitTypeCodes = {}));
+    exports.SensorUnitTypeCodes = SensorUnitTypeCodes;
+    function name_of_sdr_rt(n) {
+        return index_1.name_of(SdrRecordType, n);
+    }
+    exports.name_of_sdr_rt = name_of_sdr_rt;
+    function name_of_linear(n) {
+        return index_1.name_of(Linearization, n);
+    }
+    exports.name_of_linear = name_of_linear;
+    function name_of_unit(n) {
+        return index_1.name_of(SensorUnitTypeCodes, n);
+    }
+    exports.name_of_unit = name_of_unit;
+    function name_of_sel_rt(n) {
+        if (n == 2) {
+            return 'system event';
+        }
+        if ((n >= 0xc0) && (n <= 0xdf)) {
+            return 'OEM timestamped';
+        }
+        if ((n >= 0xe0) && (n <= 0xff)) {
+            return 'OEM non-timestamped';
+        }
+        return 'unspecified';
+    }
+    exports.name_of_sel_rt = name_of_sel_rt;
+    function name_of_et(n) {
+        n = n & 0x7f;
+        if (n == 0) {
+            return 'unspecified';
+        }
+        if (n == 1) {
+            return 'threshold';
+        }
+        if ((n >= 0x2) && (n <= 0xc)) {
+            return Object.keys(ipmi.generic_event_type_codes[n])[0];
+        }
+        if (n == 0x6f) {
+            return 'sensor-specific';
+        }
+        if ((n >= 0x70) && (n <= 0x7f)) {
+            return 'OEM';
+        }
+        // 0dh-6eh
+        return 'reserved';
+    }
+    exports.name_of_et = name_of_et;
+    function name_of_st(n) {
+        if (n < ipmi.sensor_type_codes.length) {
+            return Object.keys(ipmi.sensor_type_codes[n])[0];
+        }
+        if ((n >= 0xc0) && (n <= 0xff)) {
+            return 'OEM';
+        }
+        return 'reserved';
+    }
+    exports.name_of_st = name_of_st;
+    function p_edf(et, n) {
+        // table 29-6 event data field
+        et = et & 0x7f;
+        let k;
+        if (et == 1) {
+            k = 'threshold';
+        }
+        else if ((et >= 0x2) && (et <= 0xc)) {
+            k = 'discrete';
+        }
+        else if (et == 0x6f) {
+            k = 'discrete';
+        }
+        else {
+            k = 'OEM';
+        }
+        const b76 = (n >> 6) & 0x3;
+        const b54 = (n >> 4) & 0x3;
+        // console.log('n ' + (n >> 4) + ', k ' + k + ', b76 ' + b76 + ', b54 ' + b54)
+        return ipmi.event_data_field[k]['b76'][b76] + ', ' + ipmi.event_data_field[k]['b54'][b54];
+    }
+    exports.p_edf = p_edf;
+    function p_event(n, offset, sensor_type) {
+        n = n & 0x7f;
+        offset = offset & 0xf;
+        if (n == 0) {
+            return "unspecified";
+        }
+        if ((n >= 0x1) && (n <= 0xc)) {
+            return p_generic_event(n, offset);
+        }
+        if (n == 0x6f) {
+            return p_sensor_event(sensor_type, offset);
+        }
+        if ((n >= 0x70) && (n <= 0x7f)) {
+            return 'OEM';
+        }
+        else {
+            // [0xd, 0x6e]
+            return 'reserved';
+        }
+    }
+    exports.p_event = p_event;
+    function p_generic_event(n, offset) {
+        const x = ipmi.generic_event_type_codes[n];
+        const name = Object.keys(x)[0];
+        const values = Object.values(x)[0];
+        if (offset >= values.length) {
+            return 'unspecified';
+        }
+        return values[offset];
+    }
+    function p_sensor_event(n, offset) {
+        if (n == 0) {
+            return 'reserved';
+        }
+        if ((n >= ipmi.sensor_type_codes.length) && (n <= 0xc0)) {
+            return 'reserved';
+        }
+        if ((n >= 0xc0) && (n <= 0xff)) {
+            return 'OEM';
+        }
+        // [01h, IPMI_Spec.sensor_type_codes.length)
+        const x = ipmi.sensor_type_codes[n];
+        const name = Object.keys(x)[0];
+        const values = Object.values(x)[0];
+        if ((n >= 1) && (n <= 4)) {
+            return name;
+        }
+        // [05h, IPMI_Spec.sensor_type_codes.length)
+        if (offset >= values.length) {
+            return 'unspecified';
+        }
+        return values[offset];
+    }
 });
 //# sourceMappingURL=ipmi.js.map

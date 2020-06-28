@@ -10,107 +10,11 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SdrRecordTypeC0 = exports.SdrRecordType12 = exports.SdrRecordType11 = exports.SdrRecordType3 = exports.SdrRecordType2 = exports.SdrRecordType1 = exports.SdrRecord = void 0;
-    // import './index'
     const index_1 = require("./index");
     const index_2 = require("./index");
     const index_3 = require("./index");
     const index_4 = require("./index");
     const index_5 = require("./index");
-    const SensorUnitTypeCodes = [
-        "unspecified",
-        "degrees C",
-        "degrees F",
-        "degrees K",
-        "Volts",
-        "Amps",
-        "Watts",
-        "Joules",
-        "Coulombs",
-        "VA",
-        "Nits",
-        "lumen",
-        "lux",
-        "Candela",
-        "kPa",
-        "PSI",
-        "Newton",
-        "CFM",
-        "RPM",
-        "Hz",
-        "microsecond",
-        "millisecond",
-        "second",
-        "minute",
-        "hour",
-        "day",
-        "week",
-        "mil",
-        "inches",
-        "feet",
-        "cu in",
-        "cu feet",
-        "mm",
-        "cm",
-        "m",
-        "cu cm",
-        "cu m",
-        "liters",
-        "fluid ounce",
-        "radians",
-        "steradians",
-        "revolutions",
-        "cycles",
-        "gravities",
-        "ounce",
-        "pound",
-        "ft-lb",
-        "oz-in",
-        "gauss",
-        "gilberts",
-        "henry",
-        "millihenry",
-        "farad",
-        "microfarad",
-        "ohms",
-        "siemens",
-        "mole",
-        "becquerel",
-        "PPM",
-        "reserved",
-        "Decibels",
-        "DbA",
-        "DbC",
-        "gray",
-        "sievert",
-        "color temp deg K",
-        "bit",
-        "kilobit",
-        "megabit",
-        "gigabit",
-        "byte",
-        "kilobyte",
-        "megabyte",
-        "gigabyte",
-        "word",
-        "dword",
-        "qword",
-        "line",
-        "hit",
-        "miss",
-        "retry",
-        "reset",
-        "overrun / overflow",
-        "underrun",
-        "collision",
-        "packets",
-        "messages",
-        "characters",
-        "error",
-        "correctable error",
-        "uncorrectable error",
-        "fatal error",
-        "grams"
-    ];
     class SdrRecord {
         constructor(dv, offset = 0) {
             this.dv = dv;
@@ -134,22 +38,22 @@
                 }
                 let sdr;
                 let rt = dv.getUint8(offset + 3);
-                if (rt == index_3.SdrRecordType.Full) {
+                if (rt == index_2.SdrRecordType.Full) {
                     sdr = new SdrRecordType1(dv, offset);
                 }
-                else if (rt == index_3.SdrRecordType.Compact) {
+                else if (rt == index_2.SdrRecordType.Compact) {
                     sdr = new SdrRecordType2(dv, offset);
                 }
-                else if (rt == index_3.SdrRecordType.EventOnly) {
+                else if (rt == index_2.SdrRecordType.EventOnly) {
                     sdr = new SdrRecordType3(dv, offset);
                 }
-                else if (rt == index_3.SdrRecordType.FruDeviceLocator) {
+                else if (rt == index_2.SdrRecordType.FruDeviceLocator) {
                     sdr = new SdrRecordType11(dv, offset);
                 }
-                else if (rt == index_3.SdrRecordType.ManagementControllerDeviceLocator) {
+                else if (rt == index_2.SdrRecordType.ManagementControllerDeviceLocator) {
                     sdr = new SdrRecordType12(dv, offset);
                 }
-                else if (rt == index_3.SdrRecordType.OEM) {
+                else if (rt == index_2.SdrRecordType.OEM) {
                     sdr = new SdrRecordTypeC0(dv, offset);
                 }
                 else {
@@ -159,18 +63,6 @@
                 offset = sdr.next_record;
             }
             return sdrs;
-        }
-        static unit_of(n) {
-            if (n >= SensorUnitTypeCodes.length) {
-                return n.toHexh();
-            }
-            return SensorUnitTypeCodes[n];
-        }
-        static record_type_of(n) {
-            return index_5.name_of(index_3.SdrRecordType, n);
-        }
-        static linear_of(n) {
-            return index_5.name_of(index_4.Linearization, n);
         }
         static get_id_string(dv, offset) {
             let len = dv.getUint8(offset) & 0x1f;
@@ -192,19 +84,19 @@
     class SdrRecordType1 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.Full;
+            this.record_type = index_2.SdrRecordType.Full;
             this.sensor_num = dv.getUint8(offset + 7);
             this.sensor_type_n = dv.getUint8(offset + 12);
-            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
+            this.sensor_type = index_5.name_of_st(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
             this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3;
-            this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
+            this.unit = index_5.name_of_unit(dv.getUint8(offset + 21));
             this.linear = dv.getUint8(offset + 23);
-            this.m = index_5.two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8));
-            this.b = index_5.two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8);
-            this.rexp = index_5.two_complement((dv.getUint8(offset + 29) >> 4) & 0xf, 4);
-            this.bexp = index_5.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
-            if (this.event_type === index_2.EventType.threshold) {
+            this.m = index_4.two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8));
+            this.b = index_4.two_complement(dv.getUint8(offset + 26) + ((dv.getUint8(offset + 27) >> 6) & 3) << 8);
+            this.rexp = index_4.two_complement((dv.getUint8(offset + 29) >> 4) & 0xf, 4);
+            this.bexp = index_4.two_complement(dv.getUint8(offset + 29) & 0xf, 4);
+            if (this.event_type === index_1.EventType.threshold) {
                 this.threshold = {};
                 const threshold_mask = dv.getUint16(offset + 18, true);
                 if (((threshold_mask >> 13) & 1) === 1) {
@@ -239,7 +131,7 @@
                     if (((x >> i) & 1) === 1)
                         v.push({
                             v: i,
-                            s: index_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                            s: index_5.p_event(this.event_type, i, this.sensor_type_n)
                         });
                 }
                 this.event = v;
@@ -274,7 +166,7 @@
         }
         get_reading_formula_text() {
             const sdr = this;
-            const f = SdrRecord.linear_of(sdr.linear);
+            const f = index_5.name_of_linear(sdr.linear);
             // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
             // return `$$${f}[(${sdr.m} x + (${sdr.b}  \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`
             const f1 = `$$${f}[(${sdr.m} x + (${sdr.b} \\times 10 ^ {${sdr.bexp}})) \\times 10 ^ {${sdr.rexp}}]$$`;
@@ -386,49 +278,49 @@
                     x = raw;
                 }
                 if (sdr.unit1 == 2) {
-                    x = index_5.two_complement(x);
+                    x = index_4.two_complement(x);
                 }
                 // y=L((m*x+(b*power(10,bexp))*power(10,r))
                 let y = x;
                 x = (sdr.m * x + (sdr.b * Math.pow(10, sdr.bexp))) * Math.pow(10, sdr.rexp);
                 // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
-                if (sdr.linear == index_4.Linearization.linear) {
+                if (sdr.linear == index_3.Linearization.linear) {
                     y = x;
                 }
-                else if (sdr.linear == index_4.Linearization.ln) {
+                else if (sdr.linear == index_3.Linearization.ln) {
                     y = Math.log(x);
                 }
-                else if (sdr.linear == index_4.Linearization.log10) {
+                else if (sdr.linear == index_3.Linearization.log10) {
                     y = Math.log10(x);
                 }
-                else if (sdr.linear == index_4.Linearization.log2) {
+                else if (sdr.linear == index_3.Linearization.log2) {
                     y = Math.log2(x);
                 }
-                else if (sdr.linear == index_4.Linearization.e) {
+                else if (sdr.linear == index_3.Linearization.e) {
                     y = Math.exp(x);
                 }
-                else if (sdr.linear == index_4.Linearization.exp10) {
+                else if (sdr.linear == index_3.Linearization.exp10) {
                     y = Math.pow(10, x);
                 }
-                else if (sdr.linear == index_4.Linearization.exp2) {
+                else if (sdr.linear == index_3.Linearization.exp2) {
                     y = Math.pow(2, x);
                 }
-                else if (sdr.linear == index_4.Linearization.reciprocal) {
+                else if (sdr.linear == index_3.Linearization.reciprocal) {
                     y = Math.pow(x, -1);
                 }
-                else if (sdr.linear == index_4.Linearization.sqr) {
+                else if (sdr.linear == index_3.Linearization.sqr) {
                     // sqrt = square root.
                     // sqr = square.
                     // sqrt(9) = 3, while sqr(9) = 81.
                     y = Math.pow(x, 2);
                 }
-                else if (sdr.linear == index_4.Linearization.cube) {
+                else if (sdr.linear == index_3.Linearization.cube) {
                     y = Math.pow(x, 3);
                 }
-                else if (sdr.linear == index_4.Linearization.sqrt) {
+                else if (sdr.linear == index_3.Linearization.sqrt) {
                     y = Math.sqrt(x);
                 }
-                else if (sdr.linear == index_4.Linearization.cubeByNegOne) {
+                else if (sdr.linear == index_3.Linearization.cubeByNegOne) {
                     y = Math.pow(Math.pow(x, 3), -1);
                 }
                 else {
@@ -442,19 +334,19 @@
     class SdrRecordType2 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.Compact;
+            this.record_type = index_2.SdrRecordType.Compact;
             this.sensor_num = dv.getUint8(offset + 7);
             this.sensor_type_n = dv.getUint8(offset + 12);
-            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 12));
+            this.sensor_type = index_5.name_of_st(dv.getUint8(offset + 12));
             this.event_type = dv.getUint8(offset + 13);
-            if (this.event_type !== index_2.EventType.threshold) {
+            if (this.event_type !== index_1.EventType.threshold) {
                 const v = [];
                 const x = dv.getUint16(offset + 14, true);
                 for (let i = 0; i < 16; i++) {
                     if (((x >> i) & 1) === 1)
                         v.push({
                             v: i,
-                            s: index_1.SelRecord.event_of(this.event_type, i, this.sensor_type_n)
+                            s: index_5.p_event(this.event_type, i, this.sensor_type_n)
                         });
                 }
                 this.event = v;
@@ -462,7 +354,7 @@
             else {
                 throw new Error('event_type of SdrRecordType2 should not be threshold');
             }
-            this.unit = SdrRecord.unit_of(dv.getUint8(offset + 21));
+            this.unit = index_5.name_of_unit(dv.getUint8(offset + 21));
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 31); // offset of 'id string type/length code'
         }
     }
@@ -470,9 +362,9 @@
     class SdrRecordType3 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.EventOnly;
+            this.record_type = index_2.SdrRecordType.EventOnly;
             this.sensor_num = dv.getUint8(offset + 7);
-            this.sensor_type = index_1.SelRecord.sensor_type_of(dv.getUint8(offset + 10));
+            this.sensor_type = index_5.name_of_st(dv.getUint8(offset + 10));
             this.event_type = dv.getUint8(offset + 11);
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 16); // offset of 'id string type/length code'
         }
@@ -481,7 +373,7 @@
     class SdrRecordType11 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.FruDeviceLocator;
+            this.record_type = index_2.SdrRecordType.FruDeviceLocator;
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 15); // offset of 'id string type/length code'
         }
     }
@@ -489,7 +381,7 @@
     class SdrRecordType12 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.ManagementControllerDeviceLocator;
+            this.record_type = index_2.SdrRecordType.ManagementControllerDeviceLocator;
             this.sensor_name = SdrRecord.get_id_string(dv, offset + 15); // offset of 'id string type/length code'
         }
     }
@@ -497,7 +389,7 @@
     class SdrRecordTypeC0 extends SdrRecord {
         constructor(dv, offset = 0) {
             super(dv, offset);
-            this.record_type = index_3.SdrRecordType.OEM;
+            this.record_type = index_2.SdrRecordType.OEM;
             // const a = new Uint8Array(dv.buffer, offset + 5, 3)
             const a = new Uint8Array(dv.buffer, offset + 5, this.next_record - offset - 5);
             const h = [];

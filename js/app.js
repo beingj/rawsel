@@ -102,8 +102,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 });
             },
-            event_type_of: function (n) {
-                return index_1.SelRecord.event_type_of(n);
+            et: function (n) {
+                return index_1.name_of_et(n);
             },
             sorted_threshold: function (sdr) {
                 if (!sdr.threshold) {
@@ -167,8 +167,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
         },
         filters: {
-            record_type: function (sdr) {
-                return index_2.SdrRecord.record_type_of(sdr.record_type);
+            sdr_rt: function (sdr) {
+                return index_1.name_of_sdr_rt(sdr.record_type);
             },
             toHex: function (n) {
                 if ((n == undefined) || (n == null))

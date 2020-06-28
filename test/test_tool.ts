@@ -4,6 +4,7 @@ import { hex2ArrayBuffer, name_of, EventType, two_complement } from '../src/ipmi
 describe('tool', () => {
     it('name_of', () => {
         expect(name_of(EventType, 1)).to.equal('threshold')
+        expect(name_of(EventType, 0xff)).to.equal('ffh')
     })
     it('hex2ArrayBuffer', () => {
         const hex = `

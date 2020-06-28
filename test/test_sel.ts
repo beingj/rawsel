@@ -310,7 +310,7 @@ Generic event
         // sensor-specific with sensor type 05, offset out of range
         expect(srs[9].event).to.equal('unspecified')
     })
-    it('event data 2&3', () => {
+    it('event data field', () => {
         const raw = `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|

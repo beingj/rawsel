@@ -7,7 +7,7 @@ Todo:
   ✘ modify uploader to let vue handle onchange => fixed by change created to mounted @cancelled(20-06-12 13:54)
   ✔ add MathJax @done(20-06-12 21:53)
   ✔ fix bug by force td re-render to remove all children including mathjax elements: sdr record type change from 1 to != 1, formula will stay. sdr.formula is removed, why mathjax stay? @done(20-06-13 11:33)
-  ☐ sel record_type change to enum
+  ✘ sel record_type change to enum @cancelled(20-06-28 18:42)
   ✔ reorg sdr/sel to ipmi @done(20-06-19 21:35)
   ✔ update non-threshold event data2&3 with sdr @done(20-06-19 21:57)
   ✔ check sdr bin file whether invalid @done(20-06-11 22:52)

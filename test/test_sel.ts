@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { SelRecord } from '../src/ipmi'
+import { SelRecord, hex2ArrayBuffer, str2ArrayBuffer, ArrayBuffer2str } from '../src/ipmi'
 
 describe('sel', () => {
     it('id', () => {
@@ -518,5 +518,133 @@ Generic event
         expect(srs[1].event_data3_parsed).to.equal('logging is disabled for assert: Transition to Active')
         expect(srs[2].event_data2_parsed).to.equal('DMI-based Usage State')
         expect(srs[2].event_data3_parsed).to.equal('logging is disabled for deassert: Transition to Busy')
+    })
+    it('bin format', () => {
+        const hex = `
+00000000:	0100	0271	d5c5	5e20
+00000008:	0004	0466	0150	0001
+00000010:	0200	0276	d5c5	5e20
+00000018:	0004	0466	8150	1701
+00000020:	0300	0282	d5c5	5e20
+00000028:	0004	0466	0150	0001
+00000030:	0400	0283	d5c5	5e20
+00000038:	0004	0466	8150	1401
+`
+        const srs = SelRecord.from_ArrayBuffer(hex2ArrayBuffer(hex))
+
+        // console.log(srs[0]);
+        expect(srs[0].id).to.equal(1)
+        expect(srs[0].record_type).to.equal('system event')
+        expect(srs[0].time_seconds).to.equal(0x5ec5d571)
+        expect(srs[0].generator).to.equal('0020h')
+        expect(srs[0].event_receiver).to.equal('04h')
+        expect(srs[0].sensor_type).to.equal('Fan')
+        expect(srs[0].sensor_num).to.equal(0x66)
+        expect(srs[0].event_direction).to.equal('Assert')
+        expect(srs[0].event_type).to.equal('threshold')
+        expect(srs[0].event_data_field).to.equal('trigger reading in byte 2, trigger threshold value in byte 3')
+        expect(srs[0].event).to.equal('Lower Non-critical - going low')
+        expect(srs[0].event_data2).to.equal(0x00)
+        expect(srs[0].event_data3).to.equal(0x01)
+
+        expect(srs[1].id).to.equal(2)
+    })
+    it('from_ArrayBuffer', () => {
+        const hex = `
+00000000:	0100	0271	d5c5	5e20
+00000008:	0004	0466	0150	0001
+00000010:	0200	0276	d5c5	5e20
+00000018:	0004	0466	8150	1701
+00000020:	0300	0282	d5c5	5e20
+00000028:	0004	0466	0150	0001
+00000030:	0400	0283	d5c5	5e20
+00000038:	0004	0466	8150	1401
+`
+        const srs = SelRecord.from_ArrayBuffer(hex2ArrayBuffer(hex))
+
+        // console.log(srs[0]);
+        expect(srs[0].id).to.equal(1)
+        expect(srs[0].record_type).to.equal('system event')
+        expect(srs[0].time_seconds).to.equal(0x5ec5d571)
+        expect(srs[0].generator).to.equal('0020h')
+        expect(srs[0].event_receiver).to.equal('04h')
+        expect(srs[0].sensor_type).to.equal('Fan')
+        expect(srs[0].sensor_num).to.equal(0x66)
+        expect(srs[0].event_direction).to.equal('Assert')
+        expect(srs[0].event_type).to.equal('threshold')
+        expect(srs[0].event_data_field).to.equal('trigger reading in byte 2, trigger threshold value in byte 3')
+        expect(srs[0].event).to.equal('Lower Non-critical - going low')
+        expect(srs[0].event_data2).to.equal(0x00)
+        expect(srs[0].event_data3).to.equal(0x01)
+
+        expect(srs[1].id).to.equal(2)
+
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+Generic event
+ 0001h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0002h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0100h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     92h|   03h|  01h|  ffh|  ffh|
+ ffffh|   02h| 5ecd735fh |  20h|   00h|   04h|   01h|     2ch|   81h|  59h|  2ch|  2dh|
+ `
+        const srs2 = SelRecord.from_ArrayBuffer(str2ArrayBuffer(raw))
+        expect(srs2[0].id).to.equal(1)
+        expect(srs2[1].id).to.equal(2)
+        expect(srs2[2].id).to.equal(0x100)
+        expect(srs2[3].id).to.equal(0xffff)
+    })
+    it('from_str', () => {
+        const hex = `
+00000000:	0100	0271	d5c5	5e20
+00000008:	0004	0466	0150	0001
+00000010:	0200	0276	d5c5	5e20
+00000018:	0004	0466	8150	1701
+00000020:	0300	0282	d5c5	5e20
+00000028:	0004	0466	0150	0001
+00000030:	0400	0283	d5c5	5e20
+00000038:	0004	0466	8150	1401
+`
+        const srs = SelRecord.from_str(ArrayBuffer2str(hex2ArrayBuffer(hex)))
+
+        // console.log(srs[0]);
+        expect(srs[0].id).to.equal(1)
+        expect(srs[0].record_type).to.equal('system event')
+        expect(srs[0].time_seconds).to.equal(0x5ec5d571)
+        expect(srs[0].generator).to.equal('0020h')
+        expect(srs[0].event_receiver).to.equal('04h')
+        expect(srs[0].sensor_type).to.equal('Fan')
+        expect(srs[0].sensor_num).to.equal(0x66)
+        expect(srs[0].event_direction).to.equal('Assert')
+        expect(srs[0].event_type).to.equal('threshold')
+        expect(srs[0].event_data_field).to.equal('trigger reading in byte 2, trigger threshold value in byte 3')
+        expect(srs[0].event).to.equal('Lower Non-critical - going low')
+        expect(srs[0].event_data2).to.equal(0x00)
+        expect(srs[0].event_data3).to.equal(0x01)
+
+        expect(srs[1].id).to.equal(2)
+
+        const raw = `
+      |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
+  ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
+     0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
+Generic event
+ 0001h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0002h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+ 0100h|   02h| 5ecd80f5h |  20h|   00h|   04h|   07h|     92h|   03h|  01h|  ffh|  ffh|
+ ffffh|   02h| 5ecd735fh |  20h|   00h|   04h|   01h|     2ch|   81h|  59h|  2ch|  2dh|
+ `
+        const srs2 = SelRecord.from_str(raw)
+        expect(srs2[0].id).to.equal(1)
+        expect(srs2[1].id).to.equal(2)
+        expect(srs2[2].id).to.equal(0x100)
+        expect(srs2[3].id).to.equal(0xffff)
+
+        const x = `
+        some random string
+ `
+        const srs3 = SelRecord.from_str(x)
+        expect(srs3.length).to.equal(0)
     })
 })

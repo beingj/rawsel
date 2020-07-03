@@ -126,7 +126,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 const o = this.sel;
                 if (o.raw == '')
                     return;
-                const x = index_1.SelRecord.from_raw(o.raw);
+                const x = index_1.SelRecord.from_str(o.raw);
                 if (x.length == 0) {
                     o.emsg = 'no raw sel in file';
                 }

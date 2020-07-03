@@ -109,7 +109,7 @@ const app = new Vue({
         "sel.raw": function () {
             const o = this.sel
             if (o.raw == '') return
-            const x = SelRecord.from_raw(o.raw)
+            const x = SelRecord.from_str(o.raw)
             if (x.length == 0) {
                 o.emsg = 'no raw sel in file'
             } else {

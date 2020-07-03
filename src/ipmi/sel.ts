@@ -5,12 +5,62 @@
 import { ipmi } from './index'
 import { SdrRecordType1 } from './index'
 import { name_of_sel_rt, name_of_st, name_of_et, p_edf, p_event } from './index'
+import { str2ArrayBuffer, ArrayBuffer2str } from './index'
 
 export class SelRecord {
     static timezone = 0 - (new Date().getTimezoneOffset() / 60)
+    static from_str(str: string) {
+        //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+        if (str.match(/[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
+            return SelRecord.from_raw(str)
+        } else {
+            const ab = str2ArrayBuffer(str)
+            const dv = new DataView(ab)
+            if (dv.getUint8(9) == 4) {
+                // this check is not safe
+                return SelRecord.from_bin(ab)
+            } else {
+                return [] as SelRecord[]
+            }
+        }
+    }
+    static from_ArrayBuffer(ab: ArrayBuffer) {
+        const dv = new DataView(ab)
+        if (dv.getUint8(9) == 4) {
+            // this check is not safe
+            return SelRecord.from_bin(ab)
+        } else {
+            return SelRecord.from_raw(ArrayBuffer2str(ab))
+        }
+    }
+    static from_bin(bin: ArrayBuffer) {
+        const dv = new DataView(bin)
+        const len = dv.byteLength
+        let offset = 0
+        const x = [] as SelRecord[]
+        while (offset < len) {
+            //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+            const a: number[] = []
+            a[0] = dv.getUint16(offset, true)
+            a[1] = dv.getUint8(offset + 2)
+            a[2] = dv.getUint32(offset + 3, true)
+            for (let i = 3; i < 12; i++) {
+                a[i] = dv.getUint8(offset + 7 + i - 3)
+            }
+            x.push(new SelRecord(a))
+            offset += 16
+        }
+        return x
+    }
     static from_raw(raw: string) {
         const x = [] as SelRecord[]
-        raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null)
+        //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+        raw.split('\n').forEach(i => {
+            if (i.match(/^ *[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
+                const a = i.split('|').map(j => parseInt(j.trim(), 16))
+                x.push(new SelRecord(a))
+            }
+        })
         return x
     }
 
@@ -33,9 +83,8 @@ export class SelRecord {
     sdr?: SdrRecordType1
     timezone = SelRecord.timezone
 
-    constructor(raw: string) {
+    constructor(a: number[]) {
         //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
-        const a = raw.split('|').map(i => parseInt(i.trim(), 16))
         this.id = a[0]
         this.record_type = name_of_sel_rt(a[1])
         this.time_seconds = a[2]

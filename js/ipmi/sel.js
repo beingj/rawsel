@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./index", "./index"], factory);
+        define(["require", "exports", "./index", "./index", "./index"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -16,12 +16,12 @@
     //      0|     1|          2|    3|     4|     5|     6|       7|     8|    9|   10|   11|
     const index_1 = require("./index");
     const index_2 = require("./index");
+    const index_3 = require("./index");
     let SelRecord = /** @class */ (() => {
         class SelRecord {
-            constructor(raw) {
+            constructor(a) {
                 this.timezone = SelRecord.timezone;
                 //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
-                const a = raw.split('|').map(i => parseInt(i.trim(), 16));
                 this.id = a[0];
                 this.record_type = index_2.name_of_sel_rt(a[1]);
                 this.time_seconds = a[2];
@@ -48,9 +48,61 @@
                 }
                 // console.log(this.event_data2_parsed)
             }
+            static from_str(str) {
+                //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+                if (str.match(/[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
+                    return SelRecord.from_raw(str);
+                }
+                else {
+                    const ab = index_3.str2ArrayBuffer(str);
+                    const dv = new DataView(ab);
+                    if (dv.getUint8(9) == 4) {
+                        // this check is not safe
+                        return SelRecord.from_bin(ab);
+                    }
+                    else {
+                        return [];
+                    }
+                }
+            }
+            static from_ArrayBuffer(ab) {
+                const dv = new DataView(ab);
+                if (dv.getUint8(9) == 4) {
+                    // this check is not safe
+                    return SelRecord.from_bin(ab);
+                }
+                else {
+                    return SelRecord.from_raw(index_3.ArrayBuffer2str(ab));
+                }
+            }
+            static from_bin(bin) {
+                const dv = new DataView(bin);
+                const len = dv.byteLength;
+                let offset = 0;
+                const x = [];
+                while (offset < len) {
+                    //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+                    const a = [];
+                    a[0] = dv.getUint16(offset, true);
+                    a[1] = dv.getUint8(offset + 2);
+                    a[2] = dv.getUint32(offset + 3, true);
+                    for (let i = 3; i < 12; i++) {
+                        a[i] = dv.getUint8(offset + 7 + i - 3);
+                    }
+                    x.push(new SelRecord(a));
+                    offset += 16;
+                }
+                return x;
+            }
             static from_raw(raw) {
                 const x = [];
-                raw.split('\n').forEach(i => i.match('^ *[0-9a-f]{4}h') ? x.push(new SelRecord(i)) : null);
+                //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
+                raw.split('\n').forEach(i => {
+                    if (i.match(/^ *[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
+                        const a = i.split('|').map(j => parseInt(j.trim(), 16));
+                        x.push(new SelRecord(a));
+                    }
+                });
                 return x;
             }
             change_timezone(tz) {

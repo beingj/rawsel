@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.two_complement = exports.hex2ArrayBuffer = exports.name_of = void 0;
+    exports.ArrayBuffer2str = exports.str2ArrayBuffer = exports.hex2ArrayBuffer = exports.two_complement = exports.name_of = void 0;
     function name_of(myEnum, n) {
         // https://stackoverflow.com/questions/18111657/how-to-get-names-of-enum-entries/18112157#18112157
         let ns = n.toString(10);
@@ -52,5 +52,21 @@
         return ab;
     }
     exports.hex2ArrayBuffer = hex2ArrayBuffer;
+    function str2ArrayBuffer(str) {
+        // https://stackoverflow.com/questions/6965107/converting-between-strings-and-arraybuffers/11058858#11058858
+        var buf = new ArrayBuffer(str.length);
+        var bufView = new Uint8Array(buf);
+        for (var i = 0, strLen = str.length; i < strLen; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+    }
+    exports.str2ArrayBuffer = str2ArrayBuffer;
+    function ArrayBuffer2str(ab) {
+        // https://stackoverflow.com/questions/26754486/how-to-convert-arraybuffer-to-string/38306880#38306880
+        // https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
+        return new TextDecoder("ascii").decode(new Uint8Array(ab));
+    }
+    exports.ArrayBuffer2str = ArrayBuffer2str;
 });
 //# sourceMappingURL=tool.js.map

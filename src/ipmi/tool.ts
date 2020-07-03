@@ -41,4 +41,20 @@ function hex2ArrayBuffer(hex: string, offset: number = 0) {
     return ab
 }
 
-export { name_of, hex2ArrayBuffer, two_complement }
+function str2ArrayBuffer(str: string) {
+    // https://stackoverflow.com/questions/6965107/converting-between-strings-and-arraybuffers/11058858#11058858
+    var buf = new ArrayBuffer(str.length)
+    var bufView = new Uint8Array(buf);
+    for (var i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+
+function ArrayBuffer2str(ab: ArrayBuffer) {
+    // https://stackoverflow.com/questions/26754486/how-to-convert-arraybuffer-to-string/38306880#38306880
+    // https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
+    return new TextDecoder("ascii").decode(new Uint8Array(ab))
+}
+
+export { name_of, two_complement, hex2ArrayBuffer, str2ArrayBuffer, ArrayBuffer2str }

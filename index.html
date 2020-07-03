@@ -169,6 +169,7 @@
                             <th>sensor_type</th>
                             <th>event_type</th>
                             <th>raw</th>
+                            <th>signed</th>
                             <th>formula</th>
                             <th>reading</th>
                             <th>unit</th>
@@ -185,6 +186,7 @@
                                 <td>
                                     <input type="text" v-model="sdr.raw_reading[idx]" class="small-text number">
                                 </td>
+                                <td>{{sdrr.signed ? 'signed' : 'unsigned'}}</td>
                                 <!-- <td>{{sdrr.reading_formula | rmTex}}<span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td> -->
                                 <td><span v-if="sdr.show_formula">{{sdrr.reading_formula}}</span></td>
                                 <td class="number">{{sdrr.reading(sdr.raw_reading[idx])}}</td>
@@ -201,6 +203,7 @@
                                 </template>
                             </template>
                             <template v-else>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

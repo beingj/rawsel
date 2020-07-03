@@ -95,6 +95,7 @@ export class SdrRecordType1 extends SdrRecord {
     sensor_type: string
     event_type: EventType
     unit1: number
+    signed: boolean
     unit: string
     linear: Linearization
     m: number
@@ -114,6 +115,7 @@ export class SdrRecordType1 extends SdrRecord {
         this.sensor_type = name_of_st(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3
+        this.signed = (this.unit1 == 1) || (this.unit1 == 2)
         this.unit = name_of_unit(dv.getUint8(offset + 21))
         this.linear = dv.getUint8(offset + 23)
         this.m = two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8))

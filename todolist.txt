@@ -18,3 +18,4 @@ Todo:
   ✔ change ipmi_spec from class to namespace/type @done(20-06-17 12:00)
   ✘ speed js load, or load js before body @cancelled(20-06-28 19:28)
   ✔ support sel bin format @done(20-07-03 15:03)
+  ✔ add signed/unsigned col for sdr in html @done(20-07-03 16:06)

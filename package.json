@@ -5,6 +5,7 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
+        "dist": "dotnet serve -d docs -p 8081 -a 0.0.0.0 --path-base rawsel",
         "lint": "vue-cli-service lint",
         "test": "set TS_NODE_PROJECT=tsconfig.testing.json&&mocha --require ts-node/register test/**/*.ts",
         "nyc": "set TS_NODE_PROJECT=tsconfig.testing.json&&nyc --all --reporter=html --reporter=text --reporter=lcov node_modules/mocha/bin/_mocha --require ts-node/register test/**/*.ts --exit"

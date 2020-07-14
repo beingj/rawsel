@@ -1,19 +1,43 @@
 {
+    "name": "rawsel",
+    "version": "0.1.0",
+    "private": true,
     "scripts": {
-        "test": "mocha --require ts-node/register test/**/*.ts",
-        "nyc": "nyc --all --reporter=html --reporter=text --reporter=lcov node_modules/mocha/bin/_mocha --require ts-node/register test/**/*.ts --exit"
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint",
+        "test": "set TS_NODE_PROJECT=tsconfig.testing.json&&mocha --require ts-node/register test/**/*.ts",
+        "nyc": "set TS_NODE_PROJECT=tsconfig.testing.json&&nyc --all --reporter=html --reporter=text --reporter=lcov node_modules/mocha/bin/_mocha --require ts-node/register test/**/*.ts --exit"
+    },
+    "dependencies": {
+        "core-js": "^3.6.5",
+        "vue": "^2.6.11",
+        "vue-class-component": "^7.2.3",
+        "vue-property-decorator": "^8.4.2",
+        "vuetify": "^2.2.11"
     },
     "devDependencies": {
         "@types/chai": "^4.2.11",
         "@types/mathjax": "0.0.36",
-        "@types/mocha": "^7.0.2",
-        "@types/node": "^14.0.13",
+        "@types/mocha": "^8.0.0",
+        "@vue/cli-plugin-babel": "~4.4.0",
+        "@vue/cli-plugin-typescript": "~4.4.0",
+        "@vue/cli-service": "~4.4.0",
         "chai": "^4.2.0",
-        "mocha": "^7.2.0",
+        "mocha": "^8.0.1",
         "nyc": "^15.1.0",
+        "sass": "^1.19.0",
+        "sass-loader": "^8.0.0",
         "ts-node": "^8.10.2",
-        "typescript": "^3.9.3",
-        "vue": "^2.6.11"
+        "typescript": "^3.9.6",
+        "vue-cli-plugin-vuetify": "~2.0.6",
+        "vue-template-compiler": "^2.6.11",
+        "vuetify-loader": "^1.3.0"
     },
-    "dependencies": {}
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead"
+    ],
+    "eslintConfig": {}
 }

@@ -7,44 +7,31 @@ import { two_complement } from './index'
 import { name_of_unit, name_of_linear, name_of_st, p_event } from './index'
 
 export class SdrRecord {
-    dv: DataView
-    offset: number
-    record_id: number
-    sdr_version: number
-    record_type: SdrRecordType
-    record_length: number
-    next_record: number
-    static from(bin: ArrayBuffer | SharedArrayBuffer) {
+    public static from(bin: ArrayBuffer | SharedArrayBuffer) {
         const dv = new DataView(bin)
-        let buf_len = dv.byteLength
+        const buf_len = dv.byteLength
         let offset = 0
-        let sdrs = [] as SdrRecord[]
+        const sdrs = [] as SdrRecord[]
         while (offset < buf_len) {
-            if (dv.getUint8(offset + 2) != 0x51) {
+            if (dv.getUint8(offset + 2) !== 0x51) {
                 // sdr_version invalid
                 break
             }
             let sdr: SdrRecord
-            let rt = dv.getUint8(offset + 3)
-            if (rt == SdrRecordType.Full) {
+            const rt = dv.getUint8(offset + 3)
+            if (rt === SdrRecordType.Full) {
                 sdr = new SdrRecordType1(dv, offset)
-            }
-            else if (rt == SdrRecordType.Compact) {
+            } else if (rt === SdrRecordType.Compact) {
                 sdr = new SdrRecordType2(dv, offset)
-            }
-            else if (rt == SdrRecordType.EventOnly) {
+            } else if (rt === SdrRecordType.EventOnly) {
                 sdr = new SdrRecordType3(dv, offset)
-            }
-            else if (rt == SdrRecordType.FruDeviceLocator) {
+            } else if (rt === SdrRecordType.FruDeviceLocator) {
                 sdr = new SdrRecordType11(dv, offset)
-            }
-            else if (rt == SdrRecordType.ManagementControllerDeviceLocator) {
+            } else if (rt === SdrRecordType.ManagementControllerDeviceLocator) {
                 sdr = new SdrRecordType12(dv, offset)
-            }
-            else if (rt == SdrRecordType.OEM) {
+            } else if (rt === SdrRecordType.OEM) {
                 sdr = new SdrRecordTypeC0(dv, offset)
-            }
-            else {
+            } else {
                 sdr = new SdrRecord(dv, offset)
             }
             sdrs.push(sdr)
@@ -52,6 +39,21 @@ export class SdrRecord {
         }
         return sdrs
     }
+    public static get_id_string(dv: DataView, offset: number) {
+        const len = dv.getUint8(offset) & 0x1f
+        const ns: number[] = []
+        for (let i = offset + 1; i < offset + 1 + len; i++) {
+            ns.push(dv.getUint8(i))
+        }
+        return String.fromCharCode.apply(null, ns)
+    }
+    public dv: DataView
+    public offset: number
+    public record_id: number
+    public sdr_version: number
+    public record_type: SdrRecordType
+    public record_length: number
+    public next_record: number
 
     constructor(dv: DataView, offset: number = 0) {
         this.dv = dv
@@ -62,14 +64,6 @@ export class SdrRecord {
         this.record_type = dv.getUint8(offset + 3)
         this.record_length = dv.getUint8(offset + 4)
         this.next_record = offset + 5 + this.record_length
-    }
-    static get_id_string(dv: DataView, offset: number) {
-        let len = dv.getUint8(offset) & 0x1f
-        let ns: number[] = []
-        for (let i = offset + 1; i < offset + 1 + len; i++) {
-            ns.push(dv.getUint8(i))
-        }
-        return String.fromCharCode.apply(null, ns)
     }
     public toString() {
         let s = `id: ${this.record_id}, offset: ${this.offset.toHexh()}, length: ${this.record_length.toHexh()}, rt: ${this.record_type.toHexh()}`
@@ -89,23 +83,23 @@ interface Thresholds {
 }
 
 export class SdrRecordType1 extends SdrRecord {
-    sensor_num: number
-    sensor_name: string
-    sensor_type_n: number
-    sensor_type: string
-    event_type: EventType
-    unit1: number
-    signed: boolean
-    unit: string
-    linear: Linearization
-    m: number
-    b: number
-    rexp: number
-    bexp: number
-    reading: (x: number | string) => string
-    reading_formula: string
-    threshold?: Thresholds
-    event?: { v: number, s: string }[]
+    public sensor_num: number
+    public sensor_name: string
+    public sensor_type_n: number
+    public sensor_type: string
+    public event_type: EventType
+    public unit1: number
+    public signed: boolean
+    public unit: string
+    public linear: Linearization
+    public m: number
+    public b: number
+    public rexp: number
+    public bexp: number
+    public reading: (x: number | string) => string
+    public reading_formula: string
+    public threshold?: Thresholds
+    public event?: Array<{ v: number, s: string }>
 
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
@@ -115,7 +109,7 @@ export class SdrRecordType1 extends SdrRecord {
         this.sensor_type = name_of_st(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         this.unit1 = (dv.getUint8(offset + 20) >> 6) & 3
-        this.signed = (this.unit1 == 1) || (this.unit1 == 2)
+        this.signed = (this.unit1 === 1) || (this.unit1 === 2)
         this.unit = name_of_unit(dv.getUint8(offset + 21))
         this.linear = dv.getUint8(offset + 23)
         this.m = two_complement(dv.getUint8(offset + 24) + (((dv.getUint8(offset + 25) >> 6) & 3) << 8))
@@ -127,36 +121,38 @@ export class SdrRecordType1 extends SdrRecord {
             const threshold_mask = dv.getUint16(offset + 18, true)
             if (((threshold_mask >> 13) & 1) === 1) {
                 const v = dv.getUint8(offset + 36)
-                this.threshold.unr = { v: v, s: '' }
+                this.threshold.unr = { v, s: '' }
             }
             if (((threshold_mask >> 12) & 1) === 1) {
                 const v = dv.getUint8(offset + 37)
-                this.threshold.uc = { v: v, s: '' }
+                this.threshold.uc = { v, s: '' }
             }
             if (((threshold_mask >> 11) & 1) === 1) {
                 const v = dv.getUint8(offset + 38)
-                this.threshold.unc = { v: v, s: '' }
+                this.threshold.unc = { v, s: '' }
             }
             if (((threshold_mask >> 10) & 1) === 1) {
                 const v = dv.getUint8(offset + 39)
-                this.threshold.lnr = { v: v, s: '' }
+                this.threshold.lnr = { v, s: '' }
             }
             if (((threshold_mask >> 9) & 1) === 1) {
                 const v = dv.getUint8(offset + 40)
-                this.threshold.lc = { v: v, s: '' }
+                this.threshold.lc = { v, s: '' }
             }
             if (((threshold_mask >> 8) & 1) === 1) {
                 const v = dv.getUint8(offset + 41)
-                this.threshold.lnc = { v: v, s: '' }
+                this.threshold.lnc = { v, s: '' }
             }
         } else {
-            const v: { v: number, s: string }[] = []
+            const v: Array<{ v: number, s: string }> = []
             const x = dv.getUint16(offset + 14, true)
             for (let i = 0; i < 16; i++) {
-                if (((x >> i) & 1) === 1) v.push({
-                    v: i,
-                    s: p_event(this.event_type, i, this.sensor_type_n)
-                })
+                if (((x >> i) & 1) === 1) {
+                    v.push({
+                        v: i,
+                        s: p_event(this.event_type, i, this.sensor_type_n),
+                    })
+                }
             }
             this.event = v
         }
@@ -166,15 +162,15 @@ export class SdrRecordType1 extends SdrRecord {
 
         this.sensor_name = SdrRecord.get_id_string(dv, offset + 47) // offset of 'id string type/length code'
     }
-    update_formula() {
+    public update_formula() {
         // change m/b/bexp/rexp after init, then call this method to update reading formula
         this.reading = this.get_reading_formula()
         this.reading_formula = this.get_reading_formula_text()
         this.update_threshold()
     }
-    update_threshold() {
+    public update_threshold() {
         const t = this.threshold
-        if (t === undefined) return
+        if (t === undefined) { return }
         const thresholds = [t.unr, t.uc, t.unc, t.lnr, t.lc, t.lnc]
         thresholds.forEach((i) => {
             if (i !== undefined) {
@@ -182,13 +178,13 @@ export class SdrRecordType1 extends SdrRecord {
             }
         })
     }
-    get_reading_formula_text_full() {
+    public get_reading_formula_text_full() {
         const sdr = this
         // const f = SdrRecord.linear_of(sdr.linear)
         // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
         return `(${sdr.m}x + (${sdr.b} \\\\times 10 ^ {${sdr.bexp}})) \\\\times 10 ^ {${sdr.rexp}}`
     }
-    get_reading_formula_text() {
+    public get_reading_formula_text() {
         const sdr = this
         const f = name_of_linear(sdr.linear)
         // return `${f}[(${sdr.m} * x + (${sdr.b} * 10 ^ (${sdr.bexp}))) * 10 ^ (${sdr.rexp})]`
@@ -197,7 +193,7 @@ export class SdrRecordType1 extends SdrRecord {
 
         let m: string = ''
         // m=1
-        if (sdr.m == 1) {
+        if (sdr.m === 1) {
             m = `x`
         } else {
             m = `${sdr.m}x`
@@ -206,19 +202,19 @@ export class SdrRecordType1 extends SdrRecord {
         let b_bexp: string = ''
         // b=0,1
         // bexp=0,1
-        if (sdr.b == 0) {
+        if (sdr.b === 0) {
             b_bexp = ''
         } else {
-            if (sdr.bexp == 0) {
+            if (sdr.bexp === 0) {
                 // b x 1
                 if (sdr.b < 0) {
                     b_bexp = `(${sdr.b})`
                 } else {
                     b_bexp = `${sdr.b}`
                 }
-            } else if (sdr.bexp == 1) {
+            } else if (sdr.bexp === 1) {
                 // b x 10
-                if (sdr.b == 1) {
+                if (sdr.b === 1) {
                     b_bexp = `10`
                 } else {
                     if (sdr.b < 0) {
@@ -231,7 +227,7 @@ export class SdrRecordType1 extends SdrRecord {
                     }
                 }
             } else {
-                if (sdr.b == 1) {
+                if (sdr.b === 1) {
                     // 1 x 10 x ?
                     b_bexp = `10 ^ {${sdr.bexp}}`
                 } else {
@@ -244,7 +240,7 @@ export class SdrRecordType1 extends SdrRecord {
             }
         }
         let m_b_bexp: string
-        if (sdr.b == 0) {
+        if (sdr.b === 0) {
             m_b_bexp = m
         } else {
             m_b_bexp = `${m} + ${b_bexp}`
@@ -252,19 +248,19 @@ export class SdrRecordType1 extends SdrRecord {
 
         let rexp = ''
         // rexp=0,1
-        if (sdr.rexp == 0) {
+        if (sdr.rexp === 0) {
             rexp = ''
-        } else if (sdr.rexp == 1) {
+        } else if (sdr.rexp === 1) {
             rexp = `10`
         } else {
             rexp = `10 ^ {${sdr.rexp}}`
         }
 
         let m_b_bexp_r_rexp = ''
-        if (sdr.rexp == 0) {
+        if (sdr.rexp === 0) {
             m_b_bexp_r_rexp = m_b_bexp
         } else {
-            if (sdr.b == 0 && sdr.m === 1) {
+            if (sdr.b === 0 && sdr.m === 1) {
                 m_b_bexp_r_rexp = `${m_b_bexp} \\times ${rexp}`
             } else {
                 m_b_bexp_r_rexp = `(${m_b_bexp}) \\times ${rexp}`
@@ -272,7 +268,7 @@ export class SdrRecordType1 extends SdrRecord {
         }
 
         let f2: string
-        if (f == 'linear') {
+        if (f === 'linear') {
             f2 = `$$${m_b_bexp_r_rexp}$$`
         } else {
             f2 = `$$${f}[${m_b_bexp_r_rexp}]$$`
@@ -281,48 +277,48 @@ export class SdrRecordType1 extends SdrRecord {
         // return `${f1} $$=$$ ${f2}`
         return f2
     }
-    get_reading_formula() {
+    public get_reading_formula() {
         const sdr = this
         return (raw: number | string) => {
             let x: number
-            if (typeof raw == 'string') {
-                x = parseInt(raw)
+            if (typeof raw === 'string') {
+                x = parseInt(raw, undefined)
             } else {
                 x = raw
             }
-            if (sdr.unit1 == 2) {
+            if (sdr.unit1 === 2) {
                 x = two_complement(x)
             }
             // y=L((m*x+(b*power(10,bexp))*power(10,r))
             let y: number = x
             x = (sdr.m * x + (sdr.b * Math.pow(10, sdr.bexp))) * Math.pow(10, sdr.rexp)
             // linear, ln, log10, log2, e, exp10, exp2, reciprocal, sqr, cube, sqrt, cubeByNegOne
-            if (sdr.linear == Linearization.linear) {
+            if (sdr.linear === Linearization.linear) {
                 y = x
-            } else if (sdr.linear == Linearization.ln) {
+            } else if (sdr.linear === Linearization.ln) {
                 y = Math.log(x)
-            } else if (sdr.linear == Linearization.log10) {
+            } else if (sdr.linear === Linearization.log10) {
                 y = Math.log10(x)
-            } else if (sdr.linear == Linearization.log2) {
+            } else if (sdr.linear === Linearization.log2) {
                 y = Math.log2(x)
-            } else if (sdr.linear == Linearization.e) {
+            } else if (sdr.linear === Linearization.e) {
                 y = Math.exp(x)
-            } else if (sdr.linear == Linearization.exp10) {
+            } else if (sdr.linear === Linearization.exp10) {
                 y = Math.pow(10, x)
-            } else if (sdr.linear == Linearization.exp2) {
+            } else if (sdr.linear === Linearization.exp2) {
                 y = Math.pow(2, x)
-            } else if (sdr.linear == Linearization.reciprocal) {
+            } else if (sdr.linear === Linearization.reciprocal) {
                 y = Math.pow(x, -1)
-            } else if (sdr.linear == Linearization.sqr) {
+            } else if (sdr.linear === Linearization.sqr) {
                 // sqrt = square root.
                 // sqr = square.
                 // sqrt(9) = 3, while sqr(9) = 81.
                 y = Math.pow(x, 2)
-            } else if (sdr.linear == Linearization.cube) {
+            } else if (sdr.linear === Linearization.cube) {
                 y = Math.pow(x, 3)
-            } else if (sdr.linear == Linearization.sqrt) {
+            } else if (sdr.linear === Linearization.sqrt) {
                 y = Math.sqrt(x)
-            } else if (sdr.linear == Linearization.cubeByNegOne) {
+            } else if (sdr.linear === Linearization.cubeByNegOne) {
                 y = Math.pow(Math.pow(x, 3), -1)
             } else {
                 y = x
@@ -333,13 +329,13 @@ export class SdrRecordType1 extends SdrRecord {
 }
 
 export class SdrRecordType2 extends SdrRecord {
-    sensor_num: number
-    sensor_name: string
-    sensor_type_n: number
-    sensor_type: string
-    event_type: EventType
-    unit: string
-    event?: { v: number, s: string }[]
+    public sensor_num: number
+    public sensor_name: string
+    public sensor_type_n: number
+    public sensor_type: string
+    public event_type: EventType
+    public unit: string
+    public event?: Array<{ v: number, s: string }>
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.Compact
@@ -348,13 +344,15 @@ export class SdrRecordType2 extends SdrRecord {
         this.sensor_type = name_of_st(dv.getUint8(offset + 12))
         this.event_type = dv.getUint8(offset + 13)
         if (this.event_type !== EventType.threshold) {
-            const v: { v: number, s: string }[] = []
+            const v: Array<{ v: number, s: string }> = []
             const x = dv.getUint16(offset + 14, true)
             for (let i = 0; i < 16; i++) {
-                if (((x >> i) & 1) === 1) v.push({
-                    v: i,
-                    s: p_event(this.event_type, i, this.sensor_type_n)
-                })
+                if (((x >> i) & 1) === 1) {
+                    v.push({
+                        v: i,
+                        s: p_event(this.event_type, i, this.sensor_type_n),
+                    })
+                }
             }
             this.event = v
         } else {
@@ -367,10 +365,10 @@ export class SdrRecordType2 extends SdrRecord {
 }
 
 export class SdrRecordType3 extends SdrRecord {
-    sensor_num: number
-    sensor_name: string
-    sensor_type: string
-    event_type: EventType
+    public sensor_num: number
+    public sensor_name: string
+    public sensor_type: string
+    public event_type: EventType
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.EventOnly
@@ -381,7 +379,7 @@ export class SdrRecordType3 extends SdrRecord {
     }
 }
 export class SdrRecordType11 extends SdrRecord {
-    sensor_name: string
+    public sensor_name: string
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.FruDeviceLocator
@@ -389,7 +387,7 @@ export class SdrRecordType11 extends SdrRecord {
     }
 }
 export class SdrRecordType12 extends SdrRecord {
-    sensor_name: string
+    public sensor_name: string
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.ManagementControllerDeviceLocator
@@ -397,14 +395,14 @@ export class SdrRecordType12 extends SdrRecord {
     }
 }
 export class SdrRecordTypeC0 extends SdrRecord {
-    sensor_name: string
+    public sensor_name: string
     constructor(dv: DataView, offset: number = 0) {
         super(dv, offset)
         this.record_type = SdrRecordType.OEM
         // const a = new Uint8Array(dv.buffer, offset + 5, 3)
         const a = new Uint8Array(dv.buffer, offset + 5, this.next_record - offset - 5)
         const h: string[] = []
-        a.forEach(i => h.push(i.toHex()))
+        a.forEach((i) => h.push(i.toHex()))
         // this.sensor_name = h.join(' ')
         this.sensor_name = `${h.slice(0, 3).join(' ')} / ${h.slice(3).join(' ')}`
     }

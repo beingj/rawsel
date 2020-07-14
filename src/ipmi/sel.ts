@@ -8,15 +8,15 @@ import { name_of_sel_rt, name_of_st, name_of_et, p_edf, p_event } from './index'
 import { str2ArrayBuffer, ArrayBuffer2str } from './index'
 
 export class SelRecord {
-    static timezone = 0 - (new Date().getTimezoneOffset() / 60)
-    static from_str(str: string) {
+    public static timezone = 0 - (new Date().getTimezoneOffset() / 60)
+    public static from_str(str: string) {
         //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
         if (str.match(/[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
             return SelRecord.from_raw(str)
         } else {
             const ab = str2ArrayBuffer(str)
             const dv = new DataView(ab)
-            if (dv.getUint8(9) == 4) {
+            if (dv.getUint8(9) === 4) {
                 // this check is not safe
                 return SelRecord.from_bin(ab)
             } else {
@@ -24,16 +24,16 @@ export class SelRecord {
             }
         }
     }
-    static from_ArrayBuffer(ab: ArrayBuffer) {
+    public static from_ArrayBuffer(ab: ArrayBuffer) {
         const dv = new DataView(ab)
-        if (dv.getUint8(9) == 4) {
+        if (dv.getUint8(9) === 4) {
             // this check is not safe
             return SelRecord.from_bin(ab)
         } else {
             return SelRecord.from_raw(ArrayBuffer2str(ab))
         }
     }
-    static from_bin(bin: ArrayBuffer) {
+    public static from_bin(bin: ArrayBuffer) {
         const dv = new DataView(bin)
         const len = dv.byteLength
         let offset = 0
@@ -52,36 +52,41 @@ export class SelRecord {
         }
         return x
     }
-    static from_raw(raw: string) {
+    public static from_raw(raw: string) {
         const x = [] as SelRecord[]
         //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
-        raw.split('\n').forEach(i => {
+        raw.split('\n').forEach((i) => {
             if (i.match(/^ *[0-9a-f]{4}h\| +[0-9a-f]{2}h\| +[0-9a-f]{8}h \|( +[0-9a-f]{2}h\|){8}/)) {
-                const a = i.split('|').map(j => parseInt(j.trim(), 16))
+                const a = i.split('|').map((j) => parseInt(j.trim(), 16))
                 x.push(new SelRecord(a))
             }
         })
         return x
     }
+    public static timestamp_with_timezone(t: number, tz: number) {
+        if (t === 0xffffffff) { return t.toHexh() } // invalid
+        if (t <= 0x20000000) { return t + 's' } // initialization
+        return new Date((t + (tz * 3600)) * 1000).format('yyyy/MM/dd-hh:mm:ss')
+    }
 
-    id: number
-    record_type: string
-    time_seconds: number
-    timestamp: string
-    generator: string
-    event_receiver: string
-    sensor_type: string
-    sensor_num: number
-    event_direction: string
-    event_type: string
-    event_data_field: string
-    event: string
-    event_data2: number
-    event_data3: number
-    event_data2_parsed?: string
-    event_data3_parsed?: string
-    sdr?: SdrRecordType1
-    timezone = SelRecord.timezone
+    public id: number
+    public record_type: string
+    public time_seconds: number
+    public timestamp: string
+    public generator: string
+    public event_receiver: string
+    public sensor_type: string
+    public sensor_num: number
+    public event_direction: string
+    public event_type: string
+    public event_data_field: string
+    public event: string
+    public event_data2: number
+    public event_data3: number
+    public event_data2_parsed?: string
+    public event_data3_parsed?: string
+    public sdr?: SdrRecordType1
+    public timezone = SelRecord.timezone
 
     constructor(a: number[]) {
         //  0e37h|   02h| 5ecd80fbh |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
@@ -93,7 +98,7 @@ export class SelRecord {
         this.event_receiver = a[5].toHexh()
         this.sensor_type = name_of_st(a[6])
         this.sensor_num = a[7]
-        this.event_direction = ((a[8] >> 7) & 1) == 0 ? 'Assert' : 'Deassert'
+        this.event_direction = ((a[8] >> 7) & 1) === 0 ? 'Assert' : 'Deassert'
         this.event_type = name_of_et(a[8])
         this.event_data_field = p_edf(a[8], a[9])
         this.event = p_event(a[8], a[9], a[6])
@@ -111,13 +116,8 @@ export class SelRecord {
         }
         // console.log(this.event_data2_parsed)
     }
-    change_timezone(tz: number) {
+    public change_timezone(tz: number) {
         this.timezone = tz
         this.timestamp = SelRecord.timestamp_with_timezone(this.time_seconds, this.timezone)
-    }
-    static timestamp_with_timezone(t: number, tz: number) {
-        if (t == 0xffffffff) { return t.toHexh() } // invalid
-        if (t <= 0x20000000) { return t + 's' } // initialization
-        return new Date((t + (tz * 3600)) * 1000).format("yyyy/MM/dd-hh:mm:ss")
     }
 }

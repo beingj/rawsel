@@ -1,12 +1,4 @@
 {
-    "mocha.files.glob": "test/**/*.ts",
-    "mocha.requires": [
-        "ts-node/register"
-    ],
-    "mocha.debugSettingsName": "Mocha Tests",
-    "mocha.coverage": {
-        "enable": true
-    },
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -16,13 +8,13 @@
         "node_modules": true,
         ".nyc_output": true,
         "coverage": true,
-        // "js": true
+        "docs": true // the dist folder
     },
     "search.exclude": {
         "**/node_modules": true,
         "**/bower_components": true,
         "**/*.code-search": true,
-        "js": true
+        "docs": true // the dist folder
     },
     "todo.embedded.exclude": [
         "coverage",

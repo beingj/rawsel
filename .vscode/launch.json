@@ -6,13 +6,16 @@
             "request": "launch",
             "type": "pwa-msedge",
             "runtimeExecutable": "dev",
-            "url": "file:///${workspaceFolder}/index.html",
-            "webRoot": "${workspaceFolder}"
+            "url": "http://127.0.0.1:8080",
+            "webRoot": "${workspaceFolder}/docs"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Mocha Tests",
+            "env": {
+                "TS_NODE_PROJECT": "tsconfig.testing.json"
+            },
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--require",

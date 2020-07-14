@@ -1,27 +1,14 @@
 {
-    "version": "2.0.0",
-    "tasks": [
+	"version": "2.0.0",
+	"tasks": [
         {
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "option": "watch",
+            "type": "npm",
+            "script": "lint",
             "problemMatcher": [
-                "$tsc-watch"
+                "$eslint-stylish"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "label": "tsc: watch - tsconfig.json"
-        },
-        {
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ],
-            "group": "build",
-            "label": "tsc: build - tsconfig.json"
+            "label": "npm: lint",
+            "detail": "vue-cli-service lint"
         }
     ]
 }

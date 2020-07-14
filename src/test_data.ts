@@ -1,4 +1,4 @@
-import { SdrRecord, SdrRecordType1, hex2ArrayBuffer } from "./ipmi/index"
+import { SdrRecord, SdrRecordType1, hex2ArrayBuffer } from './ipmi/index'
 
 export { test_data }
 
@@ -7,7 +7,7 @@ const test_data = {
     sel: `
       |Record|           |GenID|GenID |      |Sensor|        |EvtDir|Event|Event|Event|
   ID  | Type | TimeStamp |(Low)|(High)|EvMRev| Type |Sensor #| Type |Data1|Data2|Data3|
-------|------|-----------|-----|------|------|------|--------|------|-----|-----|-----| 
+------|------|-----------|-----|------|------|------|--------|------|-----|-----|-----|
      0|    1 |         2 |   3 |    4 |    5 |    6 |      7 |    8 |   9 |  10 |  11 |
  0109h|   02h| 5ed08d86h |  20h|   00h|   04h|   01h|     33h|   81h|  57h|  27h|  28h|
  0e35h|   02h| 00000001h |  20h|   00h|   04h|   07h|     92h|   83h|  01h|  ffh|  ffh|
@@ -16,7 +16,7 @@ const test_data = {
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     64h|   6fh|  01h|  ffh|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  23h|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  11h|
-`
+`,
 }
 
 function sdr_data() {
@@ -64,22 +64,22 @@ function repeat_sdr(bin: ArrayBuffer) {
     }
 
     const x = SdrRecord.from(ab) as SdrRecordType1[]
-    x.forEach((sdr, idx) => {
-        sdr.record_id = idx + 1
-        sdr.sensor_num = idx + 1
-        sdr.m = 6
-        sdr.b = 7
-        sdr.bexp = 8
-        sdr.rexp = 9
+    x.forEach((r, i) => {
+        r.record_id = i + 1
+        r.sensor_num = i + 1
+        r.m = 6
+        r.b = 7
+        r.bexp = 8
+        r.rexp = 9
     })
 
     let idx = 0
     // total 72= 2*4*3*3
     let sdr = x[idx]
-    for (let m of [1, 2]) {
-        for (let b of [0, 1, 3.4, -3.5]) {
-            for (let bexp of [0, 1, 4]) {
-                for (let rexp of [0, 1, 5]) {
+    for (const m of [1, 2]) {
+        for (const b of [0, 1, 3.4, -3.5]) {
+            for (const bexp of [0, 1, 4]) {
+                for (const rexp of [0, 1, 5]) {
                     sdr.m = m
                     sdr.b = b
                     sdr.bexp = bexp

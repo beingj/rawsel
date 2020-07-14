@@ -21,8 +21,14 @@ describe('ext', () => {
         expect((1).toHexh(2)).to.equal('01h')
         expect((18).toHexh(4)).to.equal('0012h')
     })
+    it('number.toDecHexh', () => {
+        expect((1).toDecHexh()).to.equal('1 / 01h')
+        expect((18).toDecHexh()).to.equal('18 / 12h')
+        expect((1).toDecHexh(2)).to.equal('1 / 01h')
+        expect((18).toDecHexh(4)).to.equal('18 / 0012h')
+    })
     it('Date.format', () => {
-        const date = new Date(2020,6,2)
+        const date = new Date(2020, 6, 2)
         date.setHours(0, 0, 0, 0);
         // month start with 0
         expect(date.format('yyyy/MM/dd-HH:mm:ss')).to.equal('2020/07/02-00:00:00')

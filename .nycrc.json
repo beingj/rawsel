@@ -1,8 +1,4 @@
 {
-    "include": [
-        "src/ipmi"
-    ],
-    "exclude": [
-        "src/app.ts"
-    ]
+    "include": ["src/ipmi"],
+    "exclude": ["src/app.ts"]
 }

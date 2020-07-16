@@ -40,5 +40,13 @@
         "last 2 versions",
         "not dead"
     ],
-    "eslintConfig": {}
+    "eslintConfig": {},
+    "prettier": {
+        "printWidth": 80,
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": false,
+        "arrowParens": "always",
+        "bracketSpacing": true
+    }
 }

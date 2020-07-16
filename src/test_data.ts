@@ -1,4 +1,4 @@
-import { SdrRecord, SdrRecordType1, hex2ArrayBuffer } from './ipmi/index'
+import { SdrRecord, SdrRecordType1, hex2ArrayBuffer } from "./ipmi/index"
 
 export { test_data }
 
@@ -16,7 +16,7 @@ const test_data = {
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   04h|     64h|   6fh|  01h|  ffh|  ffh|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  23h|
  0e35h|   02h| 5ecd80f5h |  20h|   00h|   04h|   10h|     ffh|   6fh|  f1h|  02h|  11h|
-`,
+`
 }
 
 function sdr_data() {
@@ -49,6 +49,7 @@ function sdr_data() {
     // return repeat_sdr(ab)
 }
 
+// @ts-ignore
 function repeat_sdr(bin: ArrayBuffer) {
     // there are 3 records in sdr_data above
     // we need total 72(2*4*3*3), so repeat=72/3=24

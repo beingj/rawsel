@@ -21,7 +21,7 @@ Todo:
   ✘ rm mdi in head @cancelled(20-07-14 10:44)
   ✘ check css folder <== auto generated, nothing to do @cancelled(20-07-14 10:44)
   ✔ app.data.sel/sdr to pass data between sel & sdr => props @done(20-07-14 10:44)
-  ☐ github io change folder to dist => to docs/ folder, https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch
+  ✔ github io change folder to dist => to docs/ folder, https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch @done(20-07-16 21:57)
   ✔ update help page @done(20-07-14 16:56)
   ✘ web full screen => https://www.w3schools.com/howto/howto_js_fullscreen.asp @cancelled(20-07-14 10:44)
   ✔ add mathjax @done(20-07-14 10:44)
@@ -33,6 +33,8 @@ Todo:
   ✔ clear sdr/sel cache @done(20-07-14 16:50)
   ✔ move "module": "umd" for mocha test to seperated config file to run test only: https://stackoverflow.com/a/60994632 @done(20-07-14 10:45)
   ✔ add loading... @done(20-07-14 17:16)
+  ✔ format with prettier @done(20-07-16 22:06)
   ☐ add test data
   ☐ add sel timezone
   ☐ lauch.json debug support .vue file
+  ☐ fix warning: asset size limit

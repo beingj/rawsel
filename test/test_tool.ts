@@ -1,12 +1,17 @@
-import { expect } from 'chai';
-import { hex2ArrayBuffer, name_of, EventType, two_complement } from '../src/ipmi';
+import { expect } from "chai"
+import {
+    hex2ArrayBuffer,
+    name_of,
+    EventType,
+    two_complement
+} from "../src/ipmi"
 
-describe('tool', () => {
-    it('name_of', () => {
-        expect(name_of(EventType, 1)).to.equal('threshold')
-        expect(name_of(EventType, 0xff)).to.equal('ffh')
+describe("tool", () => {
+    it("name_of", () => {
+        expect(name_of(EventType, 1)).to.equal("threshold")
+        expect(name_of(EventType, 0xff)).to.equal("ffh")
     })
-    it('hex2ArrayBuffer', () => {
+    it("hex2ArrayBuffer", () => {
         const hex = `
 00000508:	6f77	6572	1700	5102
 00000510:	2620	0070	0600	6740
@@ -23,7 +28,7 @@ describe('tool', () => {
         expect(dv.getUint16(4, true)).to.equal(0x17)
         expect(dv.getUint8(2)).to.equal(0x65)
     })
-    it('two_complement', () => {
+    it("two_complement", () => {
         expect(two_complement(0x00)).to.equal(0)
         expect(two_complement(0x80)).to.equal(-128)
         expect(two_complement(0x80, 16)).to.equal(0x80)

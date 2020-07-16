@@ -10,7 +10,7 @@ function name_of(myEnum: any, n: number): string {
 }
 
 function two_complement(v: number, bits: number = 8) {
-    if ((v >> (bits - 1)) === 0) {
+    if (v >> (bits - 1) === 0) {
         // positive
         return v
     } else {
@@ -21,13 +21,16 @@ function two_complement(v: number, bits: number = 8) {
 
 function hex2ArrayBuffer(hex: string, offset: number = 0) {
     let ns: number[] = []
-    hex.split('\n')
-        .filter((i) => i.startsWith('0000'))
-        .forEach((j) => j.split(/\s+/).slice(1)
-            .forEach((k) => {
-                ns.push(parseInt(k.substr(0, 2), 16))
-                ns.push(parseInt(k.substr(2, 2), 16))
-            })
+    hex.split("\n")
+        .filter((i) => i.startsWith("0000"))
+        .forEach((j) =>
+            j
+                .split(/\s+/)
+                .slice(1)
+                .forEach((k) => {
+                    ns.push(parseInt(k.substr(0, 2), 16))
+                    ns.push(parseInt(k.substr(2, 2), 16))
+                })
         )
     if (offset !== 0) {
         ns = ns.slice(offset)
@@ -43,11 +46,11 @@ function hex2ArrayBuffer(hex: string, offset: number = 0) {
 function str2ArrayBuffer(str: string) {
     // https://stackoverflow.com/questions/6965107/converting-between-strings-and-arraybuffers/11058858#11058858
     const buf = new ArrayBuffer(str.length)
-    const bufView = new Uint8Array(buf);
+    const bufView = new Uint8Array(buf)
     for (let i = 0, strLen = str.length; i < strLen; i++) {
-        bufView[i] = str.charCodeAt(i);
+        bufView[i] = str.charCodeAt(i)
     }
-    return buf;
+    return buf
 }
 
 function ArrayBuffer2str(ab: ArrayBuffer) {
@@ -56,4 +59,10 @@ function ArrayBuffer2str(ab: ArrayBuffer) {
     return new TextDecoder("ascii").decode(new Uint8Array(ab))
 }
 
-export { name_of, two_complement, hex2ArrayBuffer, str2ArrayBuffer, ArrayBuffer2str }
+export {
+    name_of,
+    two_complement,
+    hex2ArrayBuffer,
+    str2ArrayBuffer,
+    ArrayBuffer2str
+}
